@@ -49,11 +49,17 @@ class SplashController extends GetxController {
     Get.put(MedicalRecordsController());
     Get.offAllNamed(AppRoutes.dashboard);
 
-    // Step 2: Background tasks (non-blocking)
-    //  - Fetch profile (with timeout) and update UI if fresh data available
-    //  - Fetch other data in background
-    _fetchProfileInBackground(token);
-    _fetchBackgroundData(token, bloodBankId, patientId);
+    // Step 2: Background tasks (non-blocking, role-aware)
+    final userRole = storage.read('userRole') ?? 'patient';
+    final isPatient = userRole == 'patient';
+
+    if (isPatient) {
+      _fetchProfileInBackground(token);
+      _fetchBackgroundData(token, bloodBankId, patientId);
+    } else {
+      // For non-patient roles (doctor/staff), only fetch dashboard data
+      _fetchDashboardData();
+    }
   }
 
   // Load cached data from local storage
@@ -180,14 +186,52 @@ class SplashController extends GetxController {
     }
   }
 
+  // Fetch only dashboard-level data for non-patient roles
+  Future<void> _fetchDashboardData() async {
+    try {
+      await Get.find<DashboardController>()
+          .fetchRecords()
+          .timeout(apiTimeout)
+          .catchError((e) {
+            (kDebugMode)
+                ? debugPrint("DashboardController.fetchRecords error: $e")
+                : null;
+          });
+    } catch (e) {
+      (kDebugMode)
+          ? debugPrint("DashboardController.fetchRecords failed: $e")
+          : null;
+    }
+
+    try {
+      await Get.find<MedicalRecordsController>()
+          .fetchRecords()
+          .timeout(apiTimeout)
+          .catchError((e) {
+            (kDebugMode)
+                ? debugPrint("MedicalRecordsController.fetchRecords error: $e")
+                : null;
+          });
+    } catch (e) {
+      (kDebugMode)
+          ? debugPrint("MedicalRecordsController.fetchRecords failed: $e")
+          : null;
+    }
+  }
+
   /// Public method to refresh all data (e.g., pull-to-refresh)
   Future<void> refreshAllData() async {
     String? token = storage.read('token');
     int? bloodBankId = storage.read('bloodBankId');
     int? patientId = storage.read('patientId');
+    final userRole = storage.read('userRole') ?? 'patient';
 
     if (token != null && token.isNotEmpty) {
-      await _fetchBackgroundData(token, bloodBankId, patientId);
+      if (userRole == 'patient') {
+        await _fetchBackgroundData(token, bloodBankId, patientId);
+      } else {
+        await _fetchDashboardData();
+      }
     }
   }
 

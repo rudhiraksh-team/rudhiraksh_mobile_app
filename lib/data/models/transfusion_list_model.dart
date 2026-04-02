@@ -9,10 +9,24 @@ class TransfusionResponse {
   TransfusionResponse({required this.success, this.data, required this.count});
 
   factory TransfusionResponse.fromJson(Map<String, dynamic> j) {
+    TransfusionData? data;
+    if (j['data'] != null) {
+      if (j['data'] is List) {
+        // API returns paginated: { data: [...], pagination: {...} }
+        data = TransfusionData(
+          transfusions: (j['data'] as List)
+              .map((e) => Transfusion.fromJson(Map<String, dynamic>.from(e)))
+              .toList(),
+          missedTransfusions: [],
+        );
+      } else {
+        data = TransfusionData.fromJson(j['data']);
+      }
+    }
     return TransfusionResponse(
       success: j['success'] ?? false,
-      data: j['data'] != null ? TransfusionData.fromJson(j['data']) : null,
-      count: j['count'] ?? 0,
+      data: data,
+      count: j['pagination']?['total'] ?? j['count'] ?? 0,
     );
   }
 

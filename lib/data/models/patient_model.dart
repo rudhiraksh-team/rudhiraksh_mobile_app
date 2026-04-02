@@ -76,45 +76,56 @@ class Patient {
 
   factory Patient.fromJson(Map<String, dynamic> json) {
     final data = json['data'];
-    if (data == null || data['patient'] == null) {
+    if (data == null) {
       throw Exception("Patient data is missing");
     }
 
-    final patient = data['patient'];
+    // Support both { data: { patient: {...} } } and { data: {...patientFields} }
+    final patient = data['patient'] ?? data;
 
     // Build full name from parts if available
-    final firstName = patient['first_name'] ?? patient['firstName'] ?? '';
+    final firstName = patient['first_name'] ?? patient['firstName'] ?? patient['name'] ?? '';
     final middleName = patient['middle_name'] ?? patient['middleName'];
     final surname = patient['surname'] ?? patient['last_name'] ?? patient['lastName'] ?? '';
     final fullName = patient['full_name'] ?? patient['fullName'] ??
         [firstName, middleName, surname].where((s) => s != null && s.toString().isNotEmpty).join(' ');
 
+    // Helper to extract label/value from enum relation objects or plain strings
+    String enumLabel(dynamic field, [String fallback = '']) {
+      if (field == null) return fallback;
+      if (field is String) return field;
+      if (field is Map) return field['label'] ?? field['value'] ?? fallback;
+      return fallback;
+    }
+
     return Patient(
       id: patient['id'] ?? 0,
-      bloodbankId: patient['bloodbank_id'] ?? patient['bloodBankId'] ?? 0,
+      bloodbankId: patient['bloodbank_id'] ?? patient['bloodBankId'] ?? patient['bloodBank']?['id'] ?? 0,
       firstName: firstName,
       middleName: middleName,
       surname: surname,
       fullName: fullName,
       dateOfBirth: patient['date_of_birth'] ?? patient['dateOfBirth'] ?? '',
-      gender: patient['gender'] ?? '',
-      phoneNumber: patient['phone_number'] ?? patient['phoneNumber'] ?? '',
+      gender: enumLabel(patient['gender']),
+      phoneNumber: patient['phone'] ?? patient['phone_number'] ?? patient['phoneNumber'] ?? '',
       email: patient['email'] ?? '',
       addressStreet: patient['address_street'] ?? patient['street'] ?? '',
       addressArea: patient['address_area'] ?? patient['area'] ?? '',
       addressCity: patient['address_city'] ?? patient['city'] ?? '',
       addressState: patient['address_state'] ?? patient['state'] ?? '',
-      addressPincode: patient['address_pincode'] ?? patient['pinCode'] ?? '',
-      bloodGroup: patient['blood_group'] ?? patient['bloodGroup'] ?? '',
-      thalassemiaType: patient['thalassemia_type'] ?? patient['thalassemiaType'] ?? '',
+      addressPincode: patient['address_pincode'] ?? patient['pincode'] ?? patient['pinCode'] ?? '',
+      bloodGroup: enumLabel(patient['blood_group'] ?? patient['bloodGroup']),
+      thalassemiaType: enumLabel(patient['thalassemia_type'] ?? patient['thalassemiaType']),
       emergencyContactName: patient['emergency_contact_name'] ?? patient['emergencyContactName'] ?? '',
       emergencyContactPhone: patient['emergency_contact_phone'] ?? patient['emergencyContactPhone'] ?? '',
       emergencyContactPhone2: patient['emergency_contact_phone_2'] ?? patient['emergencyContactPhone2'],
       abhaId: patient['abha_id'] ?? patient['abhaId'],
-      thalassemiaPatientId: patient['thalassemia_patient_id'] ?? patient['thalassemiaPatientId'],
-      patientStatus: patient['status'] ?? patient['patientStatus'] ?? 'active',
+      thalassemiaPatientId: patient['thalassemia_patient_id'] ?? patient['thalassemiaPatientId'] ?? patient['thalassemia_user_id'] ?? patient['thalassemiaUserId'],
+      patientStatus: enumLabel(patient['status'] ?? patient['patientStatus'], 'active'),
       diagnosisDate: patient['diagnosis_date'] ?? patient['diagnosisDate'],
-      ferritinLevel: patient['ferritin_level'] != null ? (patient['ferritin_level'] as num).toDouble() : null,
+      ferritinLevel: patient['ferritin_level'] != null
+          ? double.tryParse(patient['ferritin_level'].toString())
+          : (patient['ferritinLevel'] != null ? double.tryParse(patient['ferritinLevel'].toString()) : null),
       assignedDoctorId: patient['assigned_doctor_id'] ?? patient['assignedDoctorId'],
       assignedDoctorName: patient['assigned_doctor_name'] ?? patient['assignedDoctorName'],
       cardiacComplication: patient['cardiac_complication'] ?? patient['cardiacComplication'],
@@ -122,7 +133,7 @@ class Patient {
       endocrineDisorder: patient['endocrine_disorder'] ?? patient['endocrineDisorder'],
       alloantibodyPresent: patient['alloantibody_present'] ?? patient['alloantibodyPresent'],
       recurrentReactionFlag: patient['recurrent_reaction_flag'] ?? patient['recurrentReactionFlag'],
-      profilePhotoUrl: patient['profile_photo_url'] ?? patient['profilePhotoUrl'],
+      profilePhotoUrl: patient['profile_photo_url'] ?? patient['profilePhotoUrl'] ?? patient['profileImageUrl'],
       userId: patient['user_id'] ?? patient['userId'],
     );
   }

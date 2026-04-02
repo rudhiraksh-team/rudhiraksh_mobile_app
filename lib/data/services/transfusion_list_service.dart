@@ -26,8 +26,7 @@ class TransfusionListService {
 
     final uri = Uri.parse('${ApiConstants.baseUrl}/admin/transfusions').replace(
       queryParameters: {
-        'patient_id': patientId.toString(),
-        'bloodbank_id': bloodbankId.toString(),
+        'patientId': patientId.toString(),
         'limit': limit.toString(),
         'offset': offset.toString(),
       },

@@ -50,8 +50,7 @@ class ProfileReviewScreen extends StatelessWidget {
             physics: const BouncingScrollPhysics(),
             children: [
               Obx(() {
-                if (globalProfile.profileData.isEmpty ||
-                    globalProfile.bloodBankData.isEmpty) {
+                if (globalProfile.profileData.isEmpty) {
                   return SizedBox(
                     height: screenHeight,
                     child: Center(

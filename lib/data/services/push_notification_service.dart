@@ -253,8 +253,6 @@ class PushNotificationService {
     }
 
     try {
-      final body = {"fcm_token": token};
-
       if (kDebugMode) {
         final oldToken = box.read<String>('fcmToken');
         if (oldToken == token) {
@@ -264,7 +262,7 @@ class PushNotificationService {
         }
       }
 
-      await ProfileUpdateService.updateProfile(body);
+      await ProfileUpdateService.updateFcmToken(token);
 
       if (kDebugMode) print('[FCM] Successfully sent token to backend.');
     } catch (e) {

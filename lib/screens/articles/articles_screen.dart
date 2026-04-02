@@ -129,11 +129,11 @@ class _ArticleCard extends StatelessWidget {
                 child: CachedNetworkImage(
                   imageUrl: article.imageUrl!,
                   fit: BoxFit.cover,
-                  placeholder: (_, __) => Container(
+                  placeholder: (_, _a) => Container(
                     color: AppColors.brandRed.withValues(alpha: 0.05),
                     child: const Center(child: CircularProgressIndicator()),
                   ),
-                  errorWidget: (_, __, ___) => Container(
+                  errorWidget: (_, _a, _b) => Container(
                     color: AppColors.brandRed.withValues(alpha: 0.05),
                     child: Icon(
                       SolarLinearIcons.gallery,

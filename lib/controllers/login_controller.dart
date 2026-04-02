@@ -63,6 +63,7 @@ class LoginController extends GetxController {
 
     try {
       isLoading.value = true;
+      debugPrint('[LOGIN] Starting login for: ${userIdController.value.text.trim()}');
 
       // ---------------- LOGIN via /auth/login ----------------
       final loginData = await LoginService.login(
@@ -70,8 +71,11 @@ class LoginController extends GetxController {
         passwordController.value.text.trim(),
       );
 
+      debugPrint('[LOGIN] /auth/login response: $loginData');
+
       if (loginData == null || loginData['success'] == false) {
         final serverMsg = loginData?['error'] ?? 'Login failed';
+        debugPrint('[LOGIN] Login failed: $serverMsg');
         Get.snackbar('Error', serverMsg, snackPosition: SnackPosition.BOTTOM);
         isLoading.value = false;
         return;
@@ -81,94 +85,140 @@ class LoginController extends GetxController {
       final accessToken = loginData['data']?['accessToken'];
 
       if (accessToken == null) {
+        debugPrint('[LOGIN] No accessToken in response. Full response: $loginData');
         Get.snackbar('Error', 'Invalid login response', snackPosition: SnackPosition.BOTTOM);
         isLoading.value = false;
         return;
       }
 
+      debugPrint('[LOGIN] Got accessToken: ${accessToken.substring(0, 20)}...');
+
       // Save token locally
       final storage = GetStorage();
       storage.write('token', accessToken);
+
+      // ---------------- FETCH ME (get user + patient info) ----------------
+      debugPrint('[LOGIN] Fetching /auth/me...');
+      final meData = await LoginService.fetchMe(accessToken);
+      debugPrint('[LOGIN] /auth/me response: $meData');
+
+      if (meData != null && meData['data'] != null) {
+        final userData = meData['data'];
+        final userId = userData['id'];
+        final patientId = userData['patientId'];
+        final authId = userData['authId'];
+        debugPrint('[LOGIN] userId=$userId, patientId=$patientId, authId=$authId');
+        storage.write('userId', patientId ?? userId);
+        storage.write('dbUserId', userId);
+        storage.write('supabaseUserId', authId ?? userId);
+        if (userData['bloodBankId'] != null) {
+          storage.write('tenantId', userData['bloodBankId']);
+          debugPrint('[LOGIN] tenantId=${userData['bloodBankId']}');
+        }
+      } else {
+        debugPrint('[LOGIN] WARNING: /auth/me returned null or no data');
+      }
 
       // Send existing FCM token to backend
       try {
         final fcmToken = storage.read<String>('fcmToken');
         if (fcmToken != null && fcmToken.isNotEmpty) {
-          await ProfileUpdateService.updateProfile({'fcm_token': fcmToken});
-          if (kDebugMode) print('FCM token sent on login: $fcmToken');
+          debugPrint('[LOGIN] Sending FCM token to backend...');
+          await ProfileUpdateService.updateFcmToken(fcmToken);
+          debugPrint('[LOGIN] FCM token sent successfully');
         }
       } catch (e) {
-        if (kDebugMode) print('Failed to send fcm token on login: $e');
+        debugPrint('[LOGIN] Failed to send FCM token: $e');
       }
 
-      // ---------------- FETCH ME (get user + patient info) ----------------
-      final meData = await LoginService.fetchMe(accessToken);
-      if (meData != null && meData['data'] != null) {
-        final userData = meData['data'];
-        final userId = userData['id'];
-        final patientId = userData['patientId'];
-        storage.write('userId', patientId ?? userId);
-        storage.write('supabaseUserId', userId);
-        if (userData['bloodBankId'] != null) {
-          storage.write('tenantId', userData['bloodBankId']);
-        }
-      }
+      // ---------------- ROLE-BASED DATA FETCH ----------------
+      final userRole = meData?['data']?['role']?['value'] ?? meData?['data']?['role'];
+      final isPatient = userRole == 'patient';
+      storage.write('userRole', userRole ?? 'patient');
+      debugPrint('[LOGIN] userRole=$userRole, isPatient=$isPatient');
 
-      // ---------------- PROFILE ----------------
-      final profileData = await ProfileService.fetchProfile(accessToken);
-      if (profileData == null) {
-        Get.snackbar('Error', 'Profile API failed', snackPosition: SnackPosition.BOTTOM);
-        isLoading.value = false;
-        return;
-      }
-
-      // ---------------- BLOODBANK ----------------
-      final bloodBankId = profileData['data']?['patient']?['bloodbank_id'] ??
-          profileData['data']?['patient']?['bloodBankId'];
+      Map<String, dynamic>? profileData;
       Map<String, dynamic>? bloodBankData;
-      if (bloodBankId != null) {
-        bloodBankData = await BloodBankService.fetchBloodBank(bloodBankId, accessToken);
-      }
-
-      // ---------------- TRANSFUSION LIST ----------------
-      final patientId = storage.read('userId');
       TransfusionResponse? transfusionList;
-      if (patientId != null && bloodBankId != null) {
-        transfusionList = await TransfusionListService().fetchTransfusions(
-          patientId: patientId,
-          bloodbankId: bloodBankId,
-        );
+
+      if (isPatient) {
+        // Fetch patient-specific data
+        debugPrint('[LOGIN] Fetching patient profile...');
+        profileData = await ProfileService.fetchProfile(accessToken);
+        debugPrint('[LOGIN] Profile response: ${profileData != null ? 'OK' : 'NULL'}');
+
+        if (profileData == null) {
+          debugPrint('[LOGIN] Profile API failed - stopping login');
+          Get.snackbar('Error', 'Profile API failed', snackPosition: SnackPosition.BOTTOM);
+          isLoading.value = false;
+          return;
+        }
+
+        final bloodBankId = profileData['data']?['patient']?['bloodbank_id'] ??
+            profileData['data']?['patient']?['bloodBankId'] ??
+            profileData['data']?['bloodbank_id'] ??
+            profileData['data']?['bloodBankId'] ??
+            profileData['data']?['bloodBank']?['id'];
+        debugPrint('[LOGIN] bloodBankId from profile: $bloodBankId');
+
+        if (bloodBankId != null) {
+          bloodBankData = await BloodBankService.fetchBloodBank(bloodBankId, accessToken);
+          debugPrint('[LOGIN] BloodBank API response: ${bloodBankData != null ? 'OK' : 'NULL'}');
+        }
+
+        // Fallback: use bloodBank from profile response if separate fetch failed
+        if (bloodBankData == null) {
+          final embeddedBank = profileData['data']?['bloodBank'] ?? profileData['data']?['patient']?['bloodBank'];
+          if (embeddedBank != null) {
+            bloodBankData = {'success': true, 'data': embeddedBank};
+            debugPrint('[LOGIN] Using embedded bloodBank from profile response');
+          }
+        }
+
+        final patientId = storage.read('userId');
+        if (patientId != null && bloodBankId != null) {
+          debugPrint('[LOGIN] Fetching transfusions for patient=$patientId, bank=$bloodBankId');
+          transfusionList = await TransfusionListService().fetchTransfusions(
+            patientId: patientId,
+            bloodbankId: bloodBankId,
+          );
+          debugPrint('[LOGIN] Transfusions: ${transfusionList != null ? 'OK' : 'NULL'}');
+        }
+      } else {
+        debugPrint('[LOGIN] Non-patient role ($userRole) - skipping patient-specific fetches');
       }
 
       // ---------------- SAVE IN GLOBAL CONTROLLER ----------------
-      globalProfile.setProfileData(profileData);
+      if (profileData != null) {
+        globalProfile.setProfileData(profileData);
+        storage.write('profileData', profileData);
+      }
       if (bloodBankData != null) {
         globalProfile.setBloodBankData(bloodBankData);
+        storage.write('bloodBankData', bloodBankData);
       }
       if (transfusionList != null) {
         globalProfile.setTransfusionList(transfusionList);
-      }
-
-      // Save for offline
-      storage.write('profileData', profileData);
-      if (bloodBankData != null) storage.write('bloodBankData', bloodBankData);
-      if (transfusionList != null) {
         storage.write('transfusionList', transfusionList.toJson());
       }
 
       // ---------------- NAVIGATE ----------------
       isLoading.value = false;
-
+      debugPrint('[LOGIN] Initializing push notifications...');
       await PushNotificationService.initializeCore();
 
       Get.put(DashboardController());
       Get.put(MedicalRecordsController());
 
+      debugPrint('[LOGIN] Fetching dashboard & medical records...');
       await Get.find<DashboardController>().fetchRecords();
       await Get.find<MedicalRecordsController>().fetchRecords();
+      debugPrint('[LOGIN] Login complete - navigating to dashboard');
       NavigationHelper.goToDashboard();
-    } catch (e) {
+    } catch (e, stackTrace) {
       isLoading.value = false;
+      debugPrint('[LOGIN] EXCEPTION: $e');
+      debugPrint('[LOGIN] STACKTRACE: $stackTrace');
       Get.snackbar(
         'Error',
         'Something went wrong. Please try again.',

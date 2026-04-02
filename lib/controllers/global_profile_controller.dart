@@ -63,23 +63,30 @@ class GlobalProfileController extends GetxController {
     if (profile != null) {
       setProfileData(profile);
 
-      final patientId = profile['data']['patient']['id'];
-      final bloodBankId = profile['data']['patient']['bloodbank_id'];
+      final data = profile['data'];
+      final patient = data?['patient'] ?? data;
+      final patientId = patient?['id'];
+      final bloodBankId = patient?['bloodbank_id'] ?? patient?['bloodBankId'] ?? patient?['bloodBank']?['id'];
 
-      final bloodBank = await BloodBankService.fetchBloodBank(
-        bloodBankId,
-        token,
-      );
-      if (bloodBank != null) {
-        setBloodBankData(bloodBank);
+      if (bloodBankId != null) {
+        var bloodBank = await BloodBankService.fetchBloodBank(bloodBankId, token);
+        // Fallback: use embedded bloodBank from profile
+        if (bloodBank == null && patient?['bloodBank'] != null) {
+          bloodBank = {'success': true, 'data': patient['bloodBank']};
+        }
+        if (bloodBank != null) {
+          setBloodBankData(bloodBank);
+        }
       }
 
-      final transfusions = await TransfusionListService().fetchTransfusions(
-        patientId: patientId,
-        bloodbankId: bloodBankId,
-      );
-      if (transfusions != null) {
-        setTransfusionList(transfusions);
+      if (patientId != null && bloodBankId != null) {
+        final transfusions = await TransfusionListService().fetchTransfusions(
+          patientId: patientId,
+          bloodbankId: bloodBankId,
+        );
+        if (transfusions != null) {
+          setTransfusionList(transfusions);
+        }
       }
     }
   }
