@@ -51,11 +51,28 @@ class DashboardController extends GetxController {
       }
 
       final Map<String, dynamic> decoded = json.decode(cached);
-      final Map<String, dynamic> data = decoded['data'] ?? {};
+      final rawData = decoded['data'];
 
-      final List doneList = data['transfusions'] ?? [];
-      final dynamic nextTransRaw = data['next_transfusion'];
-      final List missedRaw = List.from(data['missed_transfusions'] ?? []);
+      // Handle both formats: structured { transfusions, next_transfusion, ... } and flat array
+      late final List doneList;
+      late final dynamic nextTransRaw;
+      late final List missedRaw;
+
+      if (rawData is Map) {
+        final data = Map<String, dynamic>.from(rawData);
+        doneList = data['transfusions'] ?? [];
+        nextTransRaw = data['next_transfusion'];
+        missedRaw = List.from(data['missed_transfusions'] ?? []);
+      } else if (rawData is List) {
+        // Flat array from older API format
+        doneList = rawData;
+        nextTransRaw = null;
+        missedRaw = [];
+      } else {
+        doneList = [];
+        nextTransRaw = null;
+        missedRaw = [];
+      }
 
       // Clear existing data
       doneTransfusions.clear();
@@ -230,9 +247,10 @@ class DashboardController extends GetxController {
     Map<String, dynamic> profileData,
     Map<String, dynamic> bloodBankData,
   ) {
-    userName.value = profileData['data']?['patient']?['full_name'] ?? '';
+    final patient = profileData['data']?['patient'] ?? profileData['data'];
+    userName.value = patient?['full_name'] ?? patient?['name'] ?? '';
     bloodBankName.value = bloodBankData['data']?['name'] ?? '';
-    bloodBankPhoto.value = bloodBankData['data']?['logo_url'] ?? '';
+    bloodBankPhoto.value = bloodBankData['data']?['logo_url'] ?? bloodBankData['data']?['logoUrl'] ?? '';
   }
 
   // UI helpers

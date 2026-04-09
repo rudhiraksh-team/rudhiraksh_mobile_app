@@ -33,8 +33,10 @@ class MedicalRecordsController extends GetxController {
         return;
       }
 
-      final patientId = profile['data']['patient']['id'];
-      final bloodBankId = bloodBank['data']['id'];
+      // profile response is { data: { id, name, ... } } — patient IS data directly
+      final profileData = profile['data'];
+      final patientId = profileData?['patient']?['id'] ?? profileData?['id'];
+      final bloodBankId = bloodBank['data']?['id'];
 
       final transfusionsResponse = await TransfusionListService()
           .fetchTransfusions(patientId: patientId, bloodbankId: bloodBankId);

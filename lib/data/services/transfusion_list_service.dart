@@ -16,19 +16,18 @@ class TransfusionListService {
 
   // Fetch transfusion list from API with caching
   Future<TransfusionResponse?> fetchTransfusions({
-    required int patientId,
-    required int bloodbankId,
+    int? patientId,
+    int? bloodbankId,
     int limit = 50,
     int offset = 0,
   }) async {
     final token = _getToken();
     if (token == null || token.isEmpty) return null;
 
-    final uri = Uri.parse('${ApiConstants.baseUrl}/admin/transfusions').replace(
+    final uri = Uri.parse('${ApiConstants.baseUrl}/patient-portal/transfusions').replace(
       queryParameters: {
-        'patientId': patientId.toString(),
         'limit': limit.toString(),
-        'offset': offset.toString(),
+        'page': '1',
       },
     );
 
@@ -46,10 +45,11 @@ class TransfusionListService {
       final bodyString = await streamedResponse.stream.bytesToString();
 
       if (streamedResponse.statusCode == 200) {
-        // Save successful response to cache
-        storage.write('transfusions_json', bodyString);
         final Map<String, dynamic> decoded = json.decode(bodyString);
-        return TransfusionResponse.fromJson(decoded);
+        final parsed = TransfusionResponse.fromJson(decoded);
+        // Save normalized format so DashboardController can read it consistently
+        storage.write('transfusions_json', json.encode(parsed.toJson()));
+        return parsed;
       } else {
         // Load cached data if API fails
         final cached = storage.read<String>('transfusions_json');

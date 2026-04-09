@@ -25,7 +25,9 @@ class ProfileReviewController extends GetxController {
   final addressStateController = TextEditingController();
   final addressPincodeController = TextEditingController();
 
+  final emergencyContactNameController = TextEditingController();
   final emergencyContactController = TextEditingController();
+  final emergencyContactName2Controller = TextEditingController();
   final emergencyContactController2 = TextEditingController();
 
   // Error states (reactive)
@@ -53,33 +55,42 @@ class ProfileReviewController extends GetxController {
     final globalProfile = Get.find<GlobalProfileController>();
 
     if (globalProfile.profileData.isNotEmpty) {
-      //parse profile data
-      final patient = Patient.fromJson(
-        Map<String, dynamic>.from(globalProfile.profileData),
-      );
+      try {
+        //parse profile data
+        final patient = Patient.fromJson(
+          Map<String, dynamic>.from(globalProfile.profileData),
+        );
 
-      // Fill text controllers
-      nameController.text = patient.fullName;
-      dobController.text = patient.dateOfBirth;
-      genderController.text = patient.gender;
-      bloodGroupController.text = patient.bloodGroup;
-      emailController.text = patient.email;
-      addressStreetController.text = patient.addressStreet;
-      addressAreaController.text = patient.addressArea;
-      addressCityController.text = patient.addressCity;
-      addressStateController.text = patient.addressState;
-      addressPincodeController.text = patient.addressPincode;
-      contactController.text = patient.phoneNumber;
-      emergencyContactController.text = patient.emergencyContactPhone;
-      emergencyContactController2.text = patient.emergencyContactPhone2 ?? '';
+        // Fill text controllers
+        nameController.text = patient.fullName;
+        dobController.text = patient.dateOfBirth;
+        genderController.text = patient.gender;
+        bloodGroupController.text = patient.bloodGroup;
+        emailController.text = patient.email;
+        addressStreetController.text = patient.addressStreet;
+        addressAreaController.text = patient.addressArea;
+        addressCityController.text = patient.addressCity;
+        addressStateController.text = patient.addressState;
+        addressPincodeController.text = patient.addressPincode;
+        contactController.text = patient.phoneNumber;
+        emergencyContactNameController.text = patient.emergencyContactName;
+        emergencyContactController.text = patient.emergencyContactPhone;
+        emergencyContactName2Controller.text = patient.emergencyContactName2 ?? '';
+        emergencyContactController2.text = patient.emergencyContactPhone2 ?? '';
+      } catch (e) {
+        debugPrint('[PROFILE] Error parsing profile data: $e');
+      }
     }
     // Fill blood bank if available
     if (globalProfile.bloodBankData.isNotEmpty) {
-      final bank = BloodBank.fromJson(
-        Map<String, dynamic>.from(globalProfile.bloodBankData),
-      );
-
-      bloodBaankNameController.text = bank.name;
+      try {
+        final bank = BloodBank.fromJson(
+          Map<String, dynamic>.from(globalProfile.bloodBankData),
+        );
+        bloodBaankNameController.text = bank.name;
+      } catch (e) {
+        debugPrint('[PROFILE] Error parsing blood bank data: $e');
+      }
     }
   }
 
@@ -248,30 +259,41 @@ class ProfileReviewController extends GetxController {
 
       final changedFields = <String, dynamic>{};
 
+      // Use camelCase keys to match backend Zod validation schema
       if (addressStreetController.text.trim() != patient.addressStreet.trim()) {
-        changedFields['address_street'] = addressStreetController.text.trim();
+        changedFields['street'] = addressStreetController.text.trim();
       }
       if (addressAreaController.text.trim() != (patient.addressArea).trim()) {
-        changedFields['address_area'] = addressAreaController.text.trim();
+        changedFields['address'] = addressAreaController.text.trim();
       }
       if (addressPincodeController.text.trim() !=
           (patient.addressPincode).trim()) {
-        changedFields['address_pincode'] = addressPincodeController.text.trim();
+        changedFields['pincode'] = addressPincodeController.text.trim();
       }
       if (addressCityController.text.trim() != patient.addressCity.trim()) {
-        changedFields['address_city'] = addressCityController.text.trim();
+        changedFields['city'] = addressCityController.text.trim();
       }
       if (addressStateController.text.trim() != patient.addressState.trim()) {
-        changedFields['address_state'] = addressStateController.text.trim();
+        changedFields['state'] = addressStateController.text.trim();
+      }
+      if (emergencyContactNameController.text.trim() !=
+          patient.emergencyContactName.trim()) {
+        changedFields['emergencyContactName'] =
+            emergencyContactNameController.text.trim();
       }
       if (emergencyContactController.text.trim() !=
           patient.emergencyContactPhone.trim()) {
-        changedFields['emergency_contact_phone'] =
+        changedFields['emergencyContactPhone'] =
             emergencyContactController.text.trim();
+      }
+      if (emergencyContactName2Controller.text.trim() !=
+          (patient.emergencyContactName2 ?? '').trim()) {
+        changedFields['emergencyContactName2'] =
+            emergencyContactName2Controller.text.trim();
       }
       if (emergencyContactController2.text.trim() !=
           (patient.emergencyContactPhone2 ?? '').trim()) {
-        changedFields['emergency_contact_phone_2'] =
+        changedFields['emergencyContactPhone2'] =
             emergencyContactController2.text.trim();
       }
 

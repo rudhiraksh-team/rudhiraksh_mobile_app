@@ -55,4 +55,36 @@ class LoginService {
     if (response.statusCode != 200) return null;
     return json.decode(response.body);
   }
+
+  /// Setup patient profile when user record doesn't exist yet
+  /// Called when /auth/me returns "User not found"
+  static Future<Map<String, dynamic>?> setupPatientProfile(
+    String token, {
+    required String name,
+    String? phone,
+    int? bloodBankId,
+  }) async {
+    final url = '${ApiConstants.baseUrl}/auth/setup-patient-profile';
+    debugPrint('[LoginService] POST $url');
+
+    final body = <String, dynamic>{'name': name};
+    if (phone != null && phone.isNotEmpty) body['phone'] = phone;
+    if (bloodBankId != null) body['bloodBankId'] = bloodBankId;
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: json.encode(body),
+    );
+
+    debugPrint('[LoginService] setup-patient-profile status: ${response.statusCode}');
+    debugPrint('[LoginService] setup-patient-profile body: ${response.body}');
+
+    if (response.statusCode != 200 && response.statusCode != 201) return null;
+    return json.decode(response.body);
+  }
 }

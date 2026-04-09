@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:rudhirakshapp/controllers/dashboard_controller.dart';
 import 'package:rudhirakshapp/controllers/medical_records_controller.dart';
+import 'package:rudhirakshapp/controllers/doctor_dashboard_controller.dart';
 import 'package:rudhirakshapp/data/models/transfusion_list_model.dart';
 import 'package:rudhirakshapp/data/services/bloodbank_service.dart';
 import 'package:rudhirakshapp/data/services/profile_service.dart';
@@ -44,21 +45,26 @@ class SplashController extends GetxController {
       return;
     }
 
-    //if Logged in: put controllers and navigate immediately (don't wait for network)
-    Get.put(DashboardController());
-    Get.put(MedicalRecordsController());
-    Get.offAllNamed(AppRoutes.dashboard);
-
-    // Step 2: Background tasks (non-blocking, role-aware)
+    // Step 2: Role-based navigation and background tasks
     final userRole = storage.read('userRole') ?? 'patient';
-    final isPatient = userRole == 'patient';
 
-    if (isPatient) {
-      _fetchProfileInBackground(token);
-      _fetchBackgroundData(token, bloodBankId, patientId);
+    if (userRole == 'doctor') {
+      // Doctor role: navigate to doctor dashboard
+      Get.put(DoctorDashboardController());
+      Get.offAllNamed(AppRoutes.doctorDashboard);
     } else {
-      // For non-patient roles (doctor/staff), only fetch dashboard data
-      _fetchDashboardData();
+      // Patient/other roles: navigate to patient dashboard
+      Get.put(DashboardController());
+      Get.put(MedicalRecordsController());
+      Get.offAllNamed(AppRoutes.dashboard);
+
+      final isPatient = userRole == 'patient';
+      if (isPatient) {
+        _fetchProfileInBackground(token);
+        _fetchBackgroundData(token, bloodBankId, patientId);
+      } else {
+        _fetchDashboardData();
+      }
     }
   }
 
@@ -227,7 +233,12 @@ class SplashController extends GetxController {
     final userRole = storage.read('userRole') ?? 'patient';
 
     if (token != null && token.isNotEmpty) {
-      if (userRole == 'patient') {
+      if (userRole == 'doctor') {
+        // Doctor refresh handled by DoctorDashboardController
+        if (Get.isRegistered<DoctorDashboardController>()) {
+          await Get.find<DoctorDashboardController>().refreshData();
+        }
+      } else if (userRole == 'patient') {
         await _fetchBackgroundData(token, bloodBankId, patientId);
       } else {
         await _fetchDashboardData();

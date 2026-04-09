@@ -53,16 +53,16 @@ class TransfusionData {
     return TransfusionData(
       transfusions:
           (j['transfusions'] as List<dynamic>?)
-              ?.map((e) => Transfusion.fromJson(e))
+              ?.map((e) => Transfusion.fromJson(Map<String, dynamic>.from(e)))
               .toList() ??
           [],
       nextTransfusion:
           j['next_transfusion'] != null
-              ? DateTime.parse(j['next_transfusion']).toLocal()
+              ? DateTime.tryParse(j['next_transfusion'].toString())?.toLocal()
               : null,
       missedTransfusions:
           (j['missed_transfusions'] as List<dynamic>?)
-              ?.map((e) => MissedTransfusion.fromJson(e))
+              ?.map((e) => MissedTransfusion.fromJson(Map<String, dynamic>.from(e)))
               .toList() ??
           [],
     );
@@ -161,64 +161,73 @@ class Transfusion {
   });
 
   factory Transfusion.fromJson(Map<String, dynamic> j) {
-    DateTime? parse(String? s) =>
-        s != null ? DateTime.parse(s).toLocal() : null;
+    DateTime? parse(dynamic v) {
+      if (v == null) return null;
+      final s = v.toString();
+      return DateTime.tryParse(s)?.toLocal();
+    }
     String? str(dynamic v) => v?.toString();
+    double? toDouble(dynamic v) {
+      if (v == null) return null;
+      if (v is num) return v.toDouble();
+      return double.tryParse(v.toString());
+    }
+    int? toInt(dynamic v) {
+      if (v == null) return null;
+      if (v is int) return v;
+      if (v is num) return v.toInt();
+      return int.tryParse(v.toString().split('.').first);
+    }
+    // Extract .value from enum relation objects or return string as-is
+    String? enumVal(dynamic v) {
+      if (v == null) return null;
+      if (v is Map) return v['value']?.toString() ?? v['label']?.toString();
+      return v.toString();
+    }
 
     return Transfusion(
-      id: j['id'],
-      patientId: j['patient_id'],
-      visitDate: parse(j['visit_date']),
-      bloodbankId: j['bloodbank_id'],
-      attendingStaffUserId: j['attending_staff_user_id'],
-      preHb:
-          j['pre_hb_g_dl'] != null
-              ? (j['pre_hb_g_dl'] as num).toDouble()
-              : null,
-      patientWeightKg:
-          j['patient_weight_kg'] != null
-              ? (j['patient_weight_kg'] as num).toDouble()
-              : null,
-      preTempC:
-          j['pre_temp_c'] != null ? (j['pre_temp_c'] as num).toDouble() : null,
-      prePulseBpm: j['pre_pulse_bpm'],
-      preBpSystolic: j['pre_bp_systolic'],
-      preBpDiastolic: j['pre_bp_diastolic'],
-      preSymptomsPresent: j['pre_symptoms_present'],
-      preSymptomsNotes: str(j['pre_symptoms_notes']),
-      bloodUnitId: j['blood_unit_id'],
-      unitBloodGroup: j['unit_blood_group'],
-      volumeMl: j['volume_ml'],
-      startTime: parse(j['start_time']),
-      endTime: parse(j['end_time']),
-      transfusionType: j['transfusion_type'],
-      crossMatchingDone: j['cross_matching_done'],
-      preWarmed: j['pre_warmed'],
-      consentSigned: j['consent_signed'],
-      postTempC:
-          j['post_temp_c'] != null
-              ? (j['post_temp_c'] as num).toDouble()
-              : null,
-      postPulseBpm: j['post_pulse_bpm'],
-      postBpSystolic: j['post_bp_systolic'],
-      postBpDiastolic: j['post_bp_diastolic'],
-      reactionSeverity: j['reaction_severity'],
-      reactionNotes: str(j['reaction_notes']),
-      reactionTreatment: str(j['reaction_treatment']),
-      medicationGiven: j['medication_given'],
+      id: toInt(j['id']),
+      patientId: toInt(j['patient_id'] ?? j['patientId']) ?? 0,
+      visitDate: parse(j['visit_date'] ?? j['transfusion_date'] ?? j['transfusionDate']),
+      bloodbankId: toInt(j['bloodbank_id'] ?? j['blood_bank_id'] ?? j['bloodBankId']),
+      attendingStaffUserId: toInt(j['attending_staff_user_id'] ?? j['performed_by_id'] ?? j['performedById']),
+      preHb: toDouble(j['pre_hb_g_dl'] ?? j['pre_hemoglobin'] ?? j['preHemoglobin']),
+      patientWeightKg: toDouble(j['patient_weight_kg'] ?? j['patientWeightKg']),
+      preTempC: toDouble(j['pre_temp_c'] ?? j['preTempC']),
+      prePulseBpm: toInt(j['pre_pulse_bpm'] ?? j['prePulseBpm']),
+      preBpSystolic: toInt(j['pre_bp_systolic'] ?? j['preBpSystolic']),
+      preBpDiastolic: toInt(j['pre_bp_diastolic'] ?? j['preBpDiastolic']),
+      preSymptomsPresent: j['pre_symptoms_present'] ?? j['preSymptomsPresent'],
+      preSymptomsNotes: str(j['pre_symptoms_notes'] ?? j['preSymptomsNotes']),
+      bloodUnitId: str(j['blood_unit_id'] ?? j['blood_bag_number'] ?? j['bloodBagNumber']),
+      unitBloodGroup: str(j['unit_blood_group'] ?? j['donor_blood_group'] ?? j['donorBloodGroup']),
+      volumeMl: toInt(j['volume_ml'] ?? j['units_transfused'] ?? j['unitsTransfused']),
+      startTime: parse(j['start_time'] ?? j['startTime']),
+      endTime: parse(j['end_time'] ?? j['endTime']),
+      transfusionType: enumVal(j['transfusion_type'] ?? j['transfusionType']),
+      crossMatchingDone: j['cross_matching_done'] ?? j['crossMatchingDone'],
+      preWarmed: j['pre_warmed'] ?? j['preWarmed'],
+      consentSigned: j['consent_signed'] ?? j['consentSigned'],
+      postTempC: toDouble(j['post_temp_c'] ?? j['postTempC']),
+      postPulseBpm: toInt(j['post_pulse_bpm'] ?? j['postPulseBpm']),
+      postBpSystolic: toInt(j['post_bp_systolic'] ?? j['postBpSystolic']),
+      postBpDiastolic: toInt(j['post_bp_diastolic'] ?? j['postBpDiastolic']),
+      reactionSeverity: enumVal(j['reaction_severity'] ?? j['reactionSeverity']),
+      reactionNotes: str(j['reaction_notes'] ?? j['reaction_details'] ?? j['reactionDetails']),
+      reactionTreatment: str(j['reaction_treatment'] ?? j['reactionTreatment']),
+      medicationGiven: j['medication_given'] ?? j['medicationGiven'],
       medications: str(j['medications']),
-
-      notes: j['notes'],
-      nextTransfusionDate: parse(j['next_transfusion_date']),
-      recommendedLabTests: j['recommended_lab_tests'],
-      createdAt: parse(j['created_at']),
-      updatedAt: parse(j['updated_at']),
+      notes: str(j['notes']),
+      nextTransfusionDate: parse(j['next_transfusion_date'] ?? j['next_scheduled_date'] ?? j['nextScheduledDate']),
+      recommendedLabTests: str(j['recommended_lab_tests'] ?? j['recommendedLabTests']),
+      createdAt: parse(j['created_at'] ?? j['createdAt']),
+      updatedAt: parse(j['updated_at'] ?? j['updatedAt']),
       attendingStaff:
-          j['attending_staff'] != null
-              ? AttendingStaff.fromJson(j['attending_staff'])
+          (j['attending_staff'] ?? j['performedBy']) != null
+              ? AttendingStaff.fromJson(Map<String, dynamic>.from(j['attending_staff'] ?? j['performedBy']))
               : null,
       bloodBagType: str(
-        j['blood_bag_type'] ?? j['bloodbagtype'] ?? j['bloodbgtype'],
+        j['blood_bag_type'] ?? j['bloodbagtype'] ?? j['bloodbgtype'] ?? j['bloodBagType'],
       ),
     );
   }
@@ -314,7 +323,7 @@ class AttendingStaff {
   AttendingStaff({this.fullName});
 
   factory AttendingStaff.fromJson(Map<String, dynamic> j) =>
-      AttendingStaff(fullName: j['full_name']);
+      AttendingStaff(fullName: j['full_name'] ?? j['fullName'] ?? j['name'] ?? j['email']);
 
   Map<String, dynamic> toJson() => {'full_name': fullName};
 }

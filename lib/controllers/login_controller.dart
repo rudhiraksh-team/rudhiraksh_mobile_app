@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -14,6 +13,7 @@ import 'package:rudhirakshapp/data/services/profile_service.dart';
 import 'package:rudhirakshapp/data/services/profile_update_service.dart';
 import 'package:rudhirakshapp/data/services/push_notification_service.dart';
 import 'package:rudhirakshapp/data/services/transfusion_list_service.dart';
+import 'package:rudhirakshapp/controllers/doctor_dashboard_controller.dart';
 import '../core/utils/validators.dart';
 
 class LoginController extends GetxController {
@@ -99,10 +99,35 @@ class LoginController extends GetxController {
 
       // ---------------- FETCH ME (get user + patient info) ----------------
       debugPrint('[LOGIN] Fetching /auth/me...');
-      final meData = await LoginService.fetchMe(accessToken);
+      var meData = await LoginService.fetchMe(accessToken);
       debugPrint('[LOGIN] /auth/me response: $meData');
 
-      if (meData != null && meData['data'] != null) {
+      // If user record doesn't exist yet, auto-create patient profile
+      if (meData == null) {
+        debugPrint('[LOGIN] /auth/me failed - attempting setup-patient-profile...');
+        final email = userIdController.value.text.trim();
+        final setupResult = await LoginService.setupPatientProfile(
+          accessToken,
+          name: email.split('@').first,
+        );
+        debugPrint('[LOGIN] setup-patient-profile result: $setupResult');
+
+        if (setupResult != null && setupResult['success'] == true) {
+          // Retry /auth/me after setup
+          meData = await LoginService.fetchMe(accessToken);
+          debugPrint('[LOGIN] /auth/me retry result: $meData');
+        }
+
+        if (meData == null) {
+          debugPrint('[LOGIN] Profile setup failed');
+          Get.snackbar('Error', 'Account setup failed. Please contact support.',
+              snackPosition: SnackPosition.BOTTOM);
+          isLoading.value = false;
+          return;
+        }
+      }
+
+      if (meData['data'] != null) {
         final userData = meData['data'];
         final userId = userData['id'];
         final patientId = userData['patientId'];
@@ -111,12 +136,17 @@ class LoginController extends GetxController {
         storage.write('userId', patientId ?? userId);
         storage.write('dbUserId', userId);
         storage.write('supabaseUserId', authId ?? userId);
+        // Store patientId and bloodBankId for splash controller
+        if (patientId != null) {
+          storage.write('patientId', patientId);
+        }
         if (userData['bloodBankId'] != null) {
           storage.write('tenantId', userData['bloodBankId']);
-          debugPrint('[LOGIN] tenantId=${userData['bloodBankId']}');
+          storage.write('bloodBankId', userData['bloodBankId']);
+          debugPrint('[LOGIN] tenantId/bloodBankId=${userData['bloodBankId']}');
         }
       } else {
-        debugPrint('[LOGIN] WARNING: /auth/me returned null or no data');
+        debugPrint('[LOGIN] WARNING: /auth/me returned no data');
       }
 
       // Send existing FCM token to backend
@@ -132,7 +162,7 @@ class LoginController extends GetxController {
       }
 
       // ---------------- ROLE-BASED DATA FETCH ----------------
-      final userRole = meData?['data']?['role']?['value'] ?? meData?['data']?['role'];
+      final userRole = meData['data']?['role']?['value'] ?? meData['data']?['role'];
       final isPatient = userRole == 'patient';
       storage.write('userRole', userRole ?? 'patient');
       debugPrint('[LOGIN] userRole=$userRole, isPatient=$isPatient');
@@ -154,11 +184,11 @@ class LoginController extends GetxController {
           return;
         }
 
-        final bloodBankId = profileData['data']?['patient']?['bloodbank_id'] ??
-            profileData['data']?['patient']?['bloodBankId'] ??
+        final bloodBankId = profileData['data']?['bloodBankId'] ??
             profileData['data']?['bloodbank_id'] ??
-            profileData['data']?['bloodBankId'] ??
-            profileData['data']?['bloodBank']?['id'];
+            profileData['data']?['bloodBank']?['id'] ??
+            profileData['data']?['patient']?['bloodBankId'] ??
+            profileData['data']?['patient']?['bloodbank_id'];
         debugPrint('[LOGIN] bloodBankId from profile: $bloodBankId');
 
         if (bloodBankId != null) {
@@ -168,11 +198,16 @@ class LoginController extends GetxController {
 
         // Fallback: use bloodBank from profile response if separate fetch failed
         if (bloodBankData == null) {
-          final embeddedBank = profileData['data']?['bloodBank'] ?? profileData['data']?['patient']?['bloodBank'];
+          final embeddedBank = profileData['data']?['bloodBank'];
           if (embeddedBank != null) {
             bloodBankData = {'success': true, 'data': embeddedBank};
             debugPrint('[LOGIN] Using embedded bloodBank from profile response');
           }
+        }
+
+        // Store bloodBankId from profile if not yet stored
+        if (bloodBankId != null && storage.read('bloodBankId') == null) {
+          storage.write('bloodBankId', bloodBankId);
         }
 
         final patientId = storage.read('userId');
@@ -207,14 +242,20 @@ class LoginController extends GetxController {
       debugPrint('[LOGIN] Initializing push notifications...');
       await PushNotificationService.initializeCore();
 
-      Get.put(DashboardController());
-      Get.put(MedicalRecordsController());
+      if (userRole == 'doctor') {
+        debugPrint('[LOGIN] Doctor role - navigating to doctor dashboard');
+        Get.put(DoctorDashboardController());
+        NavigationHelper.goToDoctorDashboard();
+      } else {
+        Get.put(DashboardController());
+        Get.put(MedicalRecordsController());
 
-      debugPrint('[LOGIN] Fetching dashboard & medical records...');
-      await Get.find<DashboardController>().fetchRecords();
-      await Get.find<MedicalRecordsController>().fetchRecords();
-      debugPrint('[LOGIN] Login complete - navigating to dashboard');
-      NavigationHelper.goToDashboard();
+        debugPrint('[LOGIN] Fetching dashboard & medical records...');
+        await Get.find<DashboardController>().fetchRecords();
+        await Get.find<MedicalRecordsController>().fetchRecords();
+        debugPrint('[LOGIN] Login complete - navigating to dashboard');
+        NavigationHelper.goToDashboard();
+      }
     } catch (e, stackTrace) {
       isLoading.value = false;
       debugPrint('[LOGIN] EXCEPTION: $e');

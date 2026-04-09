@@ -18,7 +18,7 @@ class BloodBankService {
     };
     var request = http.Request(
       'GET',
-      Uri.parse('${ApiConstants.baseUrl}/admin/bloodbanks/$id'),
+      Uri.parse('${ApiConstants.baseUrl}/blood-banks/$id'),
     );
     request.headers.addAll(headers);
 

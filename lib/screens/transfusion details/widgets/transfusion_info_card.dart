@@ -28,9 +28,10 @@ class TransfusionInfoCard extends StatelessWidget {
         controller.upcomingTransfusion.value;
 
     String bloodGroup = "-";
-    final patientData = globalProfile.profileData['data']?['patient'];
+    final patientData = globalProfile.profileData['data']?['patient'] ?? globalProfile.profileData['data'];
     if (patientData != null && patientData is Map<String, dynamic>) {
-      bloodGroup = patientData['blood_group'] ?? "-";
+      final bg = patientData['blood_group'] ?? patientData['bloodGroup'];
+      bloodGroup = (bg is Map ? bg['value'] ?? bg['label'] : bg)?.toString() ?? "-";
     }
 
     final dateFmt = DateFormat('dd MMM yyyy');

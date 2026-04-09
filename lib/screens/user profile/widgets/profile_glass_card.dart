@@ -185,22 +185,41 @@ class ProfileGlassCard extends StatelessWidget {
               },
               readOnlyChildren: [
                 _buildInfoRow(
+                    SolarLinearIcons.user,
+                    "Contact 1 Name",
+                    controller.emergencyContactNameController.text.isEmpty
+                        ? "Not set"
+                        : controller.emergencyContactNameController.text),
+                _buildInfoRow(
                     SolarLinearIcons.phone,
-                    "Contact 1",
+                    "Contact 1 Phone",
                     controller.emergencyContactController.text.isEmpty
                         ? "Not set"
                         : controller.emergencyContactController.text),
                 _buildInfoRow(
+                    SolarLinearIcons.user,
+                    "Contact 2 Name",
+                    controller.emergencyContactName2Controller.text.isEmpty
+                        ? "Not set"
+                        : controller.emergencyContactName2Controller.text),
+                _buildInfoRow(
                     SolarLinearIcons.phone,
-                    "Contact 2",
+                    "Contact 2 Phone",
                     controller.emergencyContactController2.text.isEmpty
                         ? "Not set"
                         : controller.emergencyContactController2.text),
               ],
               editChildren: [
+                ModernTextField(
+                  labelText: "Contact 1 Name",
+                  controller: controller.emergencyContactNameController,
+                  prefixIcon: SolarLinearIcons.user,
+                  screenWidth: screenWidth,
+                ),
+                const SizedBox(height: 12),
                 Obx(
                   () => ModernTextField(
-                    labelText: "Emergency Contact 1",
+                    labelText: "Contact 1 Phone",
                     controller: controller.emergencyContactController,
                     prefixIcon: SolarLinearIcons.phone,
                     screenWidth: screenWidth,
@@ -209,9 +228,16 @@ class ProfileGlassCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
+                ModernTextField(
+                  labelText: "Contact 2 Name (Optional)",
+                  controller: controller.emergencyContactName2Controller,
+                  prefixIcon: SolarLinearIcons.user,
+                  screenWidth: screenWidth,
+                ),
+                const SizedBox(height: 12),
                 Obx(
                   () => ModernTextField(
-                    labelText: "Emergency Contact 2 (Optional)",
+                    labelText: "Contact 2 Phone (Optional)",
                     controller: controller.emergencyContactController2,
                     prefixIcon: SolarLinearIcons.phone,
                     screenWidth: screenWidth,

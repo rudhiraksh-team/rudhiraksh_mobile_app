@@ -80,9 +80,10 @@ class UpcomingTransfusionCardWidget extends StatelessWidget {
 
     final staffName = transfusion.attendingStaff?.fullName ?? '';
 
+    final rawNotes = (transfusion.notes ?? '').replaceAll(RegExp(r'<!--.*?-->', dotAll: true), '').trim();
     final notes =
-        (transfusion.notes ?? '').isNotEmpty
-            ? transfusion.notes!
+        rawNotes.isNotEmpty
+            ? rawNotes
             : (status == TransfusionStatus.upcoming
                 ? "Please arrive a few minutes early for your transfusion."
                 : status == TransfusionStatus.missed

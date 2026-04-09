@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:rudhirakshapp/data/models/doctor_models.dart';
 import 'package:rudhirakshapp/routes/app_routes.dart';
 
 class NavigationHelper {
@@ -47,5 +48,17 @@ class NavigationHelper {
 
   static void goToBloodBankInfo() {
     Get.toNamed(AppRoutes.bloodBankInfo);
+  }
+
+  // Doctor routes
+  static void goToDoctorDashboard() {
+    Get.offAllNamed(AppRoutes.doctorDashboard);
+  }
+
+  static void goToDoctorPatientDetail(int patientId, AssignedPatient patient) {
+    Get.toNamed(
+      AppRoutes.doctorPatientDetail,
+      arguments: {'patientId': patientId, 'patient': patient},
+    );
   }
 }

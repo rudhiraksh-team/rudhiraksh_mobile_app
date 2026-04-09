@@ -18,6 +18,7 @@ class Patient {
   final String thalassemiaType;
   final String emergencyContactName;
   final String emergencyContactPhone;
+  final String? emergencyContactName2;
   final String? emergencyContactPhone2;
   // New SaaS fields
   final String? abhaId;
@@ -57,6 +58,7 @@ class Patient {
     required this.thalassemiaType,
     required this.emergencyContactName,
     required this.emergencyContactPhone,
+    this.emergencyContactName2,
     this.emergencyContactPhone2,
     this.abhaId,
     this.thalassemiaPatientId,
@@ -109,16 +111,17 @@ class Patient {
       gender: enumLabel(patient['gender']),
       phoneNumber: patient['phone'] ?? patient['phone_number'] ?? patient['phoneNumber'] ?? '',
       email: patient['email'] ?? '',
-      addressStreet: patient['address_street'] ?? patient['street'] ?? '',
-      addressArea: patient['address_area'] ?? patient['area'] ?? '',
-      addressCity: patient['address_city'] ?? patient['city'] ?? '',
-      addressState: patient['address_state'] ?? patient['state'] ?? '',
-      addressPincode: patient['address_pincode'] ?? patient['pincode'] ?? patient['pinCode'] ?? '',
+      addressStreet: patient['address_street'] ?? patient['addressStreet'] ?? patient['street'] ?? '',
+      addressArea: patient['address_area'] ?? patient['addressArea'] ?? patient['address'] ?? patient['area'] ?? '',
+      addressCity: patient['address_city'] ?? patient['addressCity'] ?? patient['city'] ?? '',
+      addressState: patient['address_state'] ?? patient['addressState'] ?? patient['state'] ?? '',
+      addressPincode: patient['address_pincode'] ?? patient['addressPincode'] ?? patient['pincode'] ?? patient['pinCode'] ?? '',
       bloodGroup: enumLabel(patient['blood_group'] ?? patient['bloodGroup']),
       thalassemiaType: enumLabel(patient['thalassemia_type'] ?? patient['thalassemiaType']),
-      emergencyContactName: patient['emergency_contact_name'] ?? patient['emergencyContactName'] ?? '',
-      emergencyContactPhone: patient['emergency_contact_phone'] ?? patient['emergencyContactPhone'] ?? '',
-      emergencyContactPhone2: patient['emergency_contact_phone_2'] ?? patient['emergencyContactPhone2'],
+      emergencyContactName: patient['emergencyContactName'] ?? patient['emergency_contact_name'] ?? '',
+      emergencyContactPhone: patient['emergencyContactPhone'] ?? patient['emergency_contact_phone'] ?? '',
+      emergencyContactName2: patient['emergencyContactName2'] ?? patient['emergency_contact_name_2'],
+      emergencyContactPhone2: patient['emergencyContactPhone2'] ?? patient['emergency_contact_phone_2'],
       abhaId: patient['abha_id'] ?? patient['abhaId'],
       thalassemiaPatientId: patient['thalassemia_patient_id'] ?? patient['thalassemiaPatientId'] ?? patient['thalassemia_user_id'] ?? patient['thalassemiaUserId'],
       patientStatus: enumLabel(patient['status'] ?? patient['patientStatus'], 'active'),

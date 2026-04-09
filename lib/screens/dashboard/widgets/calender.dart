@@ -101,6 +101,7 @@ class CalendarSection extends StatelessWidget {
           firstDay: DateTime(2024, 1, 1),
           lastDay: DateTime(2030, 12, 31),
           focusedDay: focused,
+          availableGestures: AvailableGestures.none,
           selectedDayPredicate: (day) {
             final sd = controller.selectedDate.value;
             if (sd == null) return false;

@@ -33,9 +33,10 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
     }
 
     String bloodGroup = "-";
-    final patientData = globalProfile.profileData['data']?['patient'];
+    final patientData = globalProfile.profileData['data']?['patient'] ?? globalProfile.profileData['data'];
     if (patientData != null && patientData is Map<String, dynamic>) {
-      bloodGroup = patientData['blood_group'] ?? "-";
+      final bg = patientData['blood_group'] ?? patientData['bloodGroup'];
+      bloodGroup = (bg is Map ? bg['value'] ?? bg['label'] : bg)?.toString() ?? "-";
     }
 
     String doctorName = record.attendingStaff?.fullName ?? "-";
@@ -108,29 +109,36 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Badges row
-                  Row(
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      Icon(statusIcon, color: statusColor, size: 16),
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: statusColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          status,
-                          style: TextStyle(
-                            color: statusColor,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(statusIcon, color: statusColor, size: 16),
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: statusColor.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              status,
+                              style: TextStyle(
+                                color: statusColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
@@ -149,8 +157,7 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      if (record.id != null) ...[
-                        const Spacer(),
+                      if (record.id != null)
                         Text(
                           "#${record.id}",
                           style: TextStyle(
@@ -159,7 +166,6 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ],
                     ],
                   ),
                   const SizedBox(height: 14),
@@ -416,8 +422,8 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
                 ),
               ],
 
-              // Notes
-              if (record.notes != null && record.notes!.isNotEmpty) ...[
+              // Notes (strip embedded HTML comments like <!-- VITALS:{...} -->)
+              if (record.notes != null && record.notes!.replaceAll(RegExp(r'<!--.*?-->', dotAll: true), '').trim().isNotEmpty) ...[
                 const SizedBox(height: 12),
                 _sectionCard(
                   colors,
@@ -425,7 +431,7 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
                   "Notes",
                   AppColors.sky,
                   child: Text(
-                    record.notes!,
+                    record.notes!.replaceAll(RegExp(r'<!--.*?-->', dotAll: true), '').trim(),
                     style: TextStyle(
                       color: colors.textPrimary,
                       fontSize: 13,

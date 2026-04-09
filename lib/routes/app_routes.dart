@@ -10,6 +10,8 @@ import 'package:rudhirakshapp/screens/splash/splash_screen.dart';
 import 'package:rudhirakshapp/screens/articles/articles_screen.dart';
 import 'package:rudhirakshapp/screens/terms/terms_screen.dart';
 import 'package:rudhirakshapp/screens/bloodbank_info/bloodbank_info_screen.dart';
+import 'package:rudhirakshapp/screens/doctor/doctor_dashboard_screen.dart';
+import 'package:rudhirakshapp/screens/doctor/doctor_patient_detail_screen.dart';
 
 class AppRoutes {
   // Route Names
@@ -19,9 +21,13 @@ class AppRoutes {
   static const String login = '/login';
   static const String profileReviewScreen = '/login/profile-review-screen';
 
-  // Dashboard
+  // Dashboard (Patient)
   static const String dashboard = '/dashboard';
   static const String nextTransfusionDetails = '/dashboard/next-transfusion-details';
+
+  // Doctor Dashboard
+  static const String doctorDashboard = '/doctor-dashboard';
+  static const String doctorPatientDetail = '/doctor-dashboard/patient-detail';
 
   // Notification
   static const String notification = '/dashboard/notification';
@@ -52,5 +58,7 @@ class AppRoutes {
     GetPage(name: articles, page: () => const ArticlesScreen()),
     GetPage(name: terms, page: () => const TermsScreen()),
     GetPage(name: bloodBankInfo, page: () => const BloodBankInfoScreen()),
+    GetPage(name: doctorDashboard, page: () => const DoctorDashboardScreen()),
+    GetPage(name: doctorPatientDetail, page: () => const DoctorPatientDetailScreen()),
   ];
 }
