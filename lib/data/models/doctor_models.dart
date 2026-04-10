@@ -96,6 +96,39 @@ class AssignedPatient {
     if (parts.length == 1) return parts[0][0].toUpperCase();
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
+
+  String get nextTransfusionFormatted {
+    if (nextTransfusionDate == null || nextTransfusionDate!.isEmpty) return '';
+    try {
+      final dt = DateTime.parse(nextTransfusionDate!);
+      return DateFormat('dd MMM yyyy').format(dt);
+    } catch (_) {
+      return '';
+    }
+  }
+
+  String get lastTransfusionFormatted {
+    if (lastTransfusionDate == null || lastTransfusionDate!.isEmpty) return '';
+    try {
+      final dt = DateTime.parse(lastTransfusionDate!);
+      return DateFormat('dd MMM yyyy').format(dt);
+    } catch (_) {
+      return '';
+    }
+  }
+
+  int get daysUntilNextTransfusion {
+    if (nextTransfusionDate == null || nextTransfusionDate!.isEmpty) return -1;
+    try {
+      final dt = DateTime.parse(nextTransfusionDate!);
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final target = DateTime(dt.year, dt.month, dt.day);
+      return target.difference(today).inDays;
+    } catch (_) {
+      return -1;
+    }
+  }
 }
 
 /// Growth entry for patient growth charts

@@ -48,9 +48,9 @@ class DoctorProfileScreen extends StatelessWidget {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          AppColors.brandCrimson,
-                          AppColors.brandRed,
-                          AppColors.brandRose.withValues(alpha: 0.8),
+                          AppColors.doctorGreenDark,
+                          AppColors.doctorGreen,
+                          AppColors.doctorGreenLight.withValues(alpha: 0.8),
                         ],
                       ),
                     ),
@@ -316,10 +316,10 @@ class DoctorProfileScreen extends StatelessWidget {
                                             isEditing.value = false;
                                           },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.brandCrimson,
+                                      backgroundColor: AppColors.doctorGreen,
                                       foregroundColor: Colors.white,
                                       disabledBackgroundColor: AppColors
-                                          .brandCrimson
+                                          .doctorGreen
                                           .withValues(alpha: 0.5),
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 14),

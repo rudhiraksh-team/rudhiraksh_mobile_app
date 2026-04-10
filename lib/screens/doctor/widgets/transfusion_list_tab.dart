@@ -4,6 +4,7 @@ import 'package:solar_icon_pack/solar_icon_pack.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 import 'package:rudhirakshapp/controllers/doctor_patient_detail_controller.dart';
+import 'package:rudhirakshapp/routes/app_routes.dart';
 
 class TransfusionListTab extends StatelessWidget {
   final DoctorPatientDetailController controller;
@@ -28,107 +29,130 @@ class TransfusionListTab extends StatelessWidget {
         itemCount: controller.transfusions.length,
         itemBuilder: (context, index) {
           final t = controller.transfusions[index];
-          return Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: colors.surfaceColor,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: colors.borderColor),
+          return GestureDetector(
+            onTap: () => Get.toNamed(
+              AppRoutes.doctorTransfusionDetail,
+              arguments: t,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppColors.brandCrimson.withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: colors.surfaceColor,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: colors.borderColor),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppColors.doctorGreen
+                                  .withValues(alpha: 0.08),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(
+                              SolarLinearIcons.waterdrop,
+                              size: 18,
+                              color: AppColors.doctorGreen,
+                            ),
                           ),
-                          child: const Icon(
-                            SolarLinearIcons.waterdrop,
-                            size: 18,
-                            color: AppColors.brandCrimson,
+                          const SizedBox(width: 10),
+                          Text(
+                            t.formatDate(t.visitDate),
+                            style: TextStyle(
+                              color: colors.textPrimary,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          t.formatDate(t.visitDate),
-                          style: TextStyle(
-                            color: colors.textPrimary,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (t.transfusionType != null)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: AppColors.info.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          t.transfusionType!,
-                          style: const TextStyle(
-                            color: AppColors.info,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        ],
                       ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    _StatItem(
-                      label: 'Pre HB',
-                      value: t.preHb != null ? '${t.preHb!.toStringAsFixed(1)} g/dL' : 'N/A',
-                      color: AppColors.brandRed,
-                      colors: colors,
-                    ),
-                    const SizedBox(width: 20),
-                    _StatItem(
-                      label: 'Volume',
-                      value: t.volumeMl != null ? '${t.volumeMl} mL' : 'N/A',
-                      color: AppColors.indigo,
-                      colors: colors,
-                    ),
-                    const SizedBox(width: 20),
-                    _StatItem(
-                      label: 'Blood Group',
-                      value: t.unitBloodGroup ?? 'N/A',
-                      color: AppColors.teal,
-                      colors: colors,
-                    ),
-                  ],
-                ),
-                if (t.reactionSeverity != null && t.reactionSeverity!.isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppColors.warning.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      'Reaction: ${t.reactionSeverity}',
-                      style: const TextStyle(
-                        color: AppColors.warning,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
+                      Row(
+                        children: [
+                          if (t.transfusionType != null)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: AppColors.info.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                t.transfusionType!,
+                                style: const TextStyle(
+                                  color: AppColors.info,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          const SizedBox(width: 6),
+                          Icon(
+                            SolarLinearIcons.altArrowRight,
+                            size: 16,
+                            color: colors.textSecondary,
+                          ),
+                        ],
                       ),
-                    ),
+                    ],
                   ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      _StatItem(
+                        label: 'Pre HB',
+                        value: t.preHb != null
+                            ? '${t.preHb!.toStringAsFixed(1)} g/dL'
+                            : 'N/A',
+                        color: AppColors.doctorGreen,
+                        colors: colors,
+                      ),
+                      const SizedBox(width: 20),
+                      _StatItem(
+                        label: 'Volume',
+                        value:
+                            t.volumeMl != null ? '${t.volumeMl} mL' : 'N/A',
+                        color: AppColors.indigo,
+                        colors: colors,
+                      ),
+                      const SizedBox(width: 20),
+                      _StatItem(
+                        label: 'Blood Group',
+                        value: t.unitBloodGroup ?? 'N/A',
+                        color: AppColors.teal,
+                        colors: colors,
+                      ),
+                    ],
+                  ),
+                  if (t.reactionSeverity != null &&
+                      t.reactionSeverity!.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.warning.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'Reaction: ${t.reactionSeverity}',
+                        style: const TextStyle(
+                          color: AppColors.warning,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           );
         },

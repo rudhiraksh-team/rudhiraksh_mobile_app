@@ -30,7 +30,7 @@ class DoctorPatientDetailScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: colors.backgroundColor,
         appBar: AppBar(
-          backgroundColor: AppColors.brandCrimson,
+          backgroundColor: AppColors.doctorGreen,
           foregroundColor: Colors.white,
           elevation: 0,
           title: Column(
@@ -69,21 +69,24 @@ class DoctorPatientDetailScreen extends StatelessWidget {
             ],
           ),
         ),
-        body: Obx(() {
-          if (controller.isLoading.value) {
-            return Center(
-              child: CircularProgressIndicator(color: colors.primaryColor),
+        body: SafeArea(
+          top: false,
+          child: Obx(() {
+            if (controller.isLoading.value) {
+              return Center(
+                child: CircularProgressIndicator(color: colors.primaryColor),
+              );
+            }
+            return TabBarView(
+              children: [
+                TransfusionListTab(controller: controller),
+                GrowthChartTab(controller: controller),
+                DocumentsTab(controller: controller),
+                LabRequestsTab(controller: controller),
+              ],
             );
-          }
-          return TabBarView(
-            children: [
-              TransfusionListTab(controller: controller),
-              GrowthChartTab(controller: controller),
-              DocumentsTab(controller: controller),
-              LabRequestsTab(controller: controller),
-            ],
-          );
-        }),
+          }),
+        ),
       ),
     );
   }

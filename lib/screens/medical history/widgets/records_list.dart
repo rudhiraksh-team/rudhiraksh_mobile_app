@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:rudhirakshapp/controllers/medical_records_controller.dart';
 import 'package:rudhirakshapp/core/constants/app_strings.dart';
 import 'record_item.dart';
+import 'transfusion_charts.dart';
 
 class RecordsList extends StatelessWidget {
   final controller = Get.put(MedicalRecordsController());
@@ -43,14 +44,30 @@ class RecordsList extends StatelessWidget {
 
       return RefreshIndicator(
         onRefresh: controller.refreshRecords,
-        child: ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-          itemCount: sortedList.length,
-          itemBuilder: (context, index) {
-            final record = sortedList[index];
-            final status = controller.getRecordStatus(record);
-            return RecordItem(record: record, status: status);
-          },
+        child: CustomScrollView(
+          slivers: [
+            // Charts at top
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                child: TransfusionCharts(records: controller.records),
+              ),
+            ),
+            // Record list
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final record = sortedList[index];
+                  final status = controller.getRecordStatus(record);
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: RecordItem(record: record, status: status),
+                  );
+                },
+                childCount: sortedList.length,
+              ),
+            ),
+          ],
         ),
       );
     });

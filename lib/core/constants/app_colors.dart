@@ -65,6 +65,11 @@ class AppColors {
   static const Color darkDivider = Color(0xFF334155);
   static const Color darkBorder = Color(0xFF334155);
 
+  /// Doctor Green Palette
+  static const Color doctorGreen = Color(0xFF2D7A4F);
+  static const Color doctorGreenLight = Color(0xFF3A9D63);
+  static const Color doctorGreenDark = Color(0xFF1B5E3A);
+
   /// Gradient for header (PDF requirement: gradient background at top)
   static const List<Color> headerGradient = [
     Color(0xFFC50018),
@@ -74,6 +79,17 @@ class AppColors {
   static const List<Color> headerGradientDark = [
     Color(0xFF8E0006),
     Color(0xFFC50018),
+  ];
+
+  /// Doctor header gradient (green)
+  static const List<Color> doctorHeaderGradient = [
+    Color(0xFF1B5E3A),
+    Color(0xFF2D7A4F),
+  ];
+
+  static const List<Color> doctorHeaderGradientDark = [
+    Color(0xFF14452C),
+    Color(0xFF1B5E3A),
   ];
 }
 

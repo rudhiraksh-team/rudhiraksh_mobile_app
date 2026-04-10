@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:rudhirakshapp/core/theme/doctor_theme_wrapper.dart';
 import 'package:rudhirakshapp/screens/Login/login_screen.dart';
 import 'package:rudhirakshapp/screens/user%20profile/profile_review_screen.dart';
 import 'package:rudhirakshapp/screens/dashboard/dashboard_screen.dart';
@@ -12,6 +13,7 @@ import 'package:rudhirakshapp/screens/terms/terms_screen.dart';
 import 'package:rudhirakshapp/screens/bloodbank_info/bloodbank_info_screen.dart';
 import 'package:rudhirakshapp/screens/doctor/doctor_dashboard_screen.dart';
 import 'package:rudhirakshapp/screens/doctor/doctor_patient_detail_screen.dart';
+import 'package:rudhirakshapp/screens/doctor/doctor_transfusion_detail_screen.dart';
 
 class AppRoutes {
   // Route Names
@@ -28,6 +30,7 @@ class AppRoutes {
   // Doctor Dashboard
   static const String doctorDashboard = '/doctor-dashboard';
   static const String doctorPatientDetail = '/doctor-dashboard/patient-detail';
+  static const String doctorTransfusionDetail = '/doctor-dashboard/transfusion-detail';
 
   // Notification
   static const String notification = '/dashboard/notification';
@@ -58,7 +61,9 @@ class AppRoutes {
     GetPage(name: articles, page: () => const ArticlesScreen()),
     GetPage(name: terms, page: () => const TermsScreen()),
     GetPage(name: bloodBankInfo, page: () => const BloodBankInfoScreen()),
-    GetPage(name: doctorDashboard, page: () => const DoctorDashboardScreen()),
-    GetPage(name: doctorPatientDetail, page: () => const DoctorPatientDetailScreen()),
+    // Doctor routes — wrapped with green theme
+    GetPage(name: doctorDashboard, page: () => const DoctorThemeWrapper(child: DoctorDashboardScreen())),
+    GetPage(name: doctorPatientDetail, page: () => const DoctorThemeWrapper(child: DoctorPatientDetailScreen())),
+    GetPage(name: doctorTransfusionDetail, page: () => const DoctorThemeWrapper(child: DoctorTransfusionDetailScreen())),
   ];
 }

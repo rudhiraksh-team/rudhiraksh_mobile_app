@@ -18,6 +18,7 @@ class DoctorProfileController extends GetxController {
   String get doctorEmail => profileData['email'] ?? '';
   String get doctorPhone => profileData['phone'] ?? '';
   String get bloodBankName => profileData['bloodBank']?['name'] ?? '';
+  String get bloodBankLogo => profileData['bloodBank']?['logo_url'] ?? profileData['bloodBank']?['logoUrl'] ?? '';
   String get roleName => profileData['role']?['label'] ?? profileData['role']?['value'] ?? 'Doctor';
 
   String get initials {

@@ -14,6 +14,7 @@ import 'package:rudhirakshapp/data/services/profile_update_service.dart';
 import 'package:rudhirakshapp/data/services/push_notification_service.dart';
 import 'package:rudhirakshapp/data/services/transfusion_list_service.dart';
 import 'package:rudhirakshapp/controllers/doctor_dashboard_controller.dart';
+import 'package:rudhirakshapp/controllers/notification_controller.dart';
 import '../core/utils/validators.dart';
 
 class LoginController extends GetxController {
@@ -245,6 +246,7 @@ class LoginController extends GetxController {
       if (userRole == 'doctor') {
         debugPrint('[LOGIN] Doctor role - navigating to doctor dashboard');
         Get.put(DoctorDashboardController());
+        Get.put(NotificationController());
         NavigationHelper.goToDoctorDashboard();
       } else {
         Get.put(DashboardController());

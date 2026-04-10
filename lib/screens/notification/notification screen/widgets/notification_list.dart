@@ -61,9 +61,11 @@ class NotificationList extends StatelessWidget {
         ..sort((a, b) => b.date.compareTo(a.date));
 
       return ListView.builder(
-        padding: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.04,
-          vertical: screenHeight * 0.01,
+        padding: EdgeInsets.fromLTRB(
+          screenWidth * 0.04,
+          screenHeight * 0.01,
+          screenWidth * 0.04,
+          screenHeight * 0.01 + MediaQuery.of(context).padding.bottom,
         ),
         itemCount: sortedNotifications.length,
         itemBuilder: (context, index) {

@@ -170,4 +170,30 @@ class AppTheme {
       surfaceContainerHighest: AppColors.darkBackground,
     ),
   );
+
+  /// Doctor Light Theme (green primary)
+  static final ThemeData doctorLightTheme = _baseTheme(
+    const ColorScheme.light(
+      primary: AppColors.doctorGreen,
+      secondary: AppColors.doctorGreenLight,
+      surface: AppColors.lightSurface,
+      error: AppColors.error,
+      onSurface: AppColors.lightTextPrimary,
+      outline: AppColors.lightBorder,
+      surfaceContainerHighest: AppColors.lightBackground,
+    ),
+  );
+
+  /// Doctor Dark Theme (green primary)
+  static final ThemeData doctorDarkTheme = _baseTheme(
+    const ColorScheme.dark(
+      primary: AppColors.doctorGreenLight,
+      secondary: AppColors.doctorGreen,
+      surface: AppColors.darkSurface,
+      error: AppColors.darkError,
+      onSurface: AppColors.darkTextPrimary,
+      outline: AppColors.darkBorder,
+      surfaceContainerHighest: AppColors.darkBackground,
+    ),
+  );
 }

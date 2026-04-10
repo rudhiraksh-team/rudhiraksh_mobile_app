@@ -159,7 +159,7 @@ class LabRequestsTab extends StatelessWidget {
           right: 20,
           child: FloatingActionButton(
             onPressed: () => _showCreateSheet(context),
-            backgroundColor: AppColors.brandCrimson,
+            backgroundColor: AppColors.doctorGreen,
             child: const Icon(Icons.add, color: Colors.white),
           ),
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:rudhirakshapp/core/constants/app_assets.dart';
+import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:rudhirakshapp/core/constants/app_colors.dart';
 
 class SplashLogo extends StatelessWidget {
   final double logoSize;
@@ -7,10 +8,32 @@ class SplashLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
-      AppAssets.splash,
-      height: logoSize,
+    return Container(
       width: logoSize,
+      height: logoSize,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.brandCrimson,
+            AppColors.brandRed,
+          ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.brandCrimson.withValues(alpha: 0.3),
+            blurRadius: 30,
+            spreadRadius: 5,
+          ),
+        ],
+      ),
+      child: Icon(
+        SolarBoldIcons.waterdrop,
+        size: logoSize * 0.5,
+        color: Colors.white,
+      ),
     );
   }
 }

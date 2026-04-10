@@ -22,6 +22,31 @@ class DoctorDashboardController extends GetxController {
     }).toList();
   }
 
+  /// Patients with upcoming transfusion (within next 7 days)
+  int get upcomingTransfusionCount {
+    return assignedPatients.where((p) {
+      final days = p.daysUntilNextTransfusion;
+      return days >= 0 && days <= 7;
+    }).length;
+  }
+
+  /// Patients who have missed their transfusion (next date is in the past)
+  int get missedTransfusionCount {
+    return assignedPatients.where((p) {
+      final days = p.daysUntilNextTransfusion;
+      return days < 0 && p.nextTransfusionDate != null && p.nextTransfusionDate!.isNotEmpty;
+    }).length;
+  }
+
+  /// Patients with low hemoglobin (< 9 g/dL)
+  int get lowHbCount {
+    return assignedPatients.where((p) {
+      if (p.currentHemoglobin == null) return false;
+      final hb = double.tryParse(p.currentHemoglobin!);
+      return hb != null && hb < 9.0;
+    }).length;
+  }
+
   @override
   void onInit() {
     super.onInit();

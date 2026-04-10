@@ -121,7 +121,7 @@ class _CreateLabRequestSheetState extends State<CreateLabRequestSheet> {
             child: ElevatedButton(
               onPressed: _isSubmitting ? null : _submit,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.brandCrimson,
+                backgroundColor: AppColors.doctorGreen,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),

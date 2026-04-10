@@ -54,7 +54,7 @@ class GrowthChartTab extends StatelessWidget {
                 title: 'Hemoglobin (g/dL)',
                 entries: entries,
                 getValue: (e) => e.hbValue,
-                lineColor: AppColors.brandCrimson,
+                lineColor: AppColors.doctorGreen,
                 colors: colors,
               ),
             const SizedBox(height: 20),

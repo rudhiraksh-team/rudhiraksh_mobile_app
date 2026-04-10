@@ -6,6 +6,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:rudhirakshapp/controllers/dashboard_controller.dart';
 import 'package:rudhirakshapp/controllers/medical_records_controller.dart';
 import 'package:rudhirakshapp/controllers/doctor_dashboard_controller.dart';
+import 'package:rudhirakshapp/controllers/notification_controller.dart';
 import 'package:rudhirakshapp/data/models/transfusion_list_model.dart';
 import 'package:rudhirakshapp/data/services/bloodbank_service.dart';
 import 'package:rudhirakshapp/data/services/profile_service.dart';
@@ -51,6 +52,7 @@ class SplashController extends GetxController {
     if (userRole == 'doctor') {
       // Doctor role: navigate to doctor dashboard
       Get.put(DoctorDashboardController());
+      Get.put(NotificationController());
       Get.offAllNamed(AppRoutes.doctorDashboard);
     } else {
       // Patient/other roles: navigate to patient dashboard

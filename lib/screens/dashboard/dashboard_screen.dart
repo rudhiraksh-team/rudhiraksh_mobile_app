@@ -1,5 +1,6 @@
 // ignore_for_file: unused_local_variable
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:solar_icon_pack/solar_icon_pack.dart';
@@ -7,10 +8,12 @@ import 'package:rudhirakshapp/controllers/splash_controller.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/enums/transfusion_status.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
+import 'package:rudhirakshapp/core/utils/string_utils.dart';
+import 'package:rudhirakshapp/data/helper%20function/navigation_helper.dart';
 import 'package:rudhirakshapp/data/services/push_notification_service.dart';
 import 'package:rudhirakshapp/screens/articles/articles_screen.dart';
+import 'package:rudhirakshapp/screens/patient_health/patient_health_screen.dart';
 import 'package:rudhirakshapp/screens/dashboard/widgets/calender.dart';
-import 'package:rudhirakshapp/screens/dashboard/widgets/dashboard_app_bar.dart';
 import 'package:rudhirakshapp/screens/medical%20history/medical_records_screen.dart';
 import 'package:rudhirakshapp/screens/user%20profile/profile_review_screen.dart';
 import '../../controllers/dashboard_controller.dart';
@@ -40,8 +43,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final controller = Get.find<DashboardController>();
     final colors = AppThemeColors.of(context);
+    final isDark = colors.isDark;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final statusBarHeight = MediaQuery.of(context).padding.top;
 
     Widget homeContent() {
       return RefreshIndicator(
@@ -51,127 +56,291 @@ class _DashboardScreenState extends State<DashboardScreen> {
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: EdgeInsets.symmetric(
-            horizontal: screenWidth * 0.04,
-            vertical: screenHeight * 0.015,
-          ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // PDF #12: Dashboard stats - Recent Ferritin & HB
-              _DashboardStatsRow(controller: controller, colors: colors),
-              SizedBox(height: screenHeight * 0.02),
-
-              // Transfusions section title
-              Text(
-                'Transfusions',
-                style: TextStyle(
-                  color: colors.textPrimary,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
+              // ── Colored Header Area ──
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.only(
+                  top: statusBarHeight + 16,
+                  left: 20,
+                  right: 20,
+                  bottom: 40,
                 ),
-              ),
-              SizedBox(height: screenHeight * 0.015),
-
-              CalendarSection(controller: controller),
-              SizedBox(height: screenHeight * 0.02),
-
-              Obx(() {
-                final tmodel.Transfusion? selected =
-                    controller.selectedTransfusionRx.value;
-                if (selected != null) {
-                  TransfusionStatus status;
-                  if (controller.doneTransfusions.contains(selected)) {
-                    status = TransfusionStatus.done;
-                  } else if (controller.missedTransfusions.any(
-                    (m) =>
-                        m.expectedDate != null &&
-                        selected.visitDate != null &&
-                        m.expectedDate!.isAtSameMomentAs(selected.visitDate!),
-                  )) {
-                    status = TransfusionStatus.missed;
-                  } else if (controller.upcomingTransfusion.value == selected) {
-                    status = TransfusionStatus.upcoming;
-                  } else {
-                    status = TransfusionStatus.done;
-                  }
-                }
-                return const SizedBox.shrink();
-              }),
-
-              Obx(() {
-                final tmodel.Transfusion? selected =
-                    controller.selectedTransfusionRx.value;
-                if (selected != null) {
-                  TransfusionStatus status;
-                  if (controller.doneTransfusions.contains(selected)) {
-                    status = TransfusionStatus.done;
-                  } else if (controller.missedTransfusions.any(
-                    (m) =>
-                        m.expectedDate != null &&
-                        selected.visitDate != null &&
-                        m.expectedDate!.isAtSameMomentAs(selected.visitDate!),
-                  )) {
-                    status = TransfusionStatus.missed;
-                  } else if (controller.upcomingTransfusion.value == selected) {
-                    status = TransfusionStatus.upcoming;
-                  } else {
-                    status = TransfusionStatus.done;
-                  }
-
-                  return UpcomingTransfusionCardWidget(
-                    transfusion: selected,
-                    status: status,
-                  );
-                } else {
-                  final upcoming = controller.upcomingTransfusion.value;
-                  if (upcoming != null) {
-                    return UpcomingTransfusionCardWidget(
-                      transfusion: upcoming,
-                      status: TransfusionStatus.upcoming,
-                    );
-                  } else {
-                    return Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: colors.surfaceColor,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: colors.borderColor),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: isDark
+                        ? AppColors.headerGradientDark
+                        : AppColors.headerGradient,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    // Blood Bank Avatar
+                    Obx(
+                      () => GestureDetector(
+                        onTap: NavigationHelper.goToBloodBankInfo,
+                        child: Container(
+                          width: 46,
+                          height: 46,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            color: Colors.white.withValues(alpha: 0.2),
+                            image: controller.bloodBankPhoto.value.isNotEmpty
+                                ? DecorationImage(
+                                    image: CachedNetworkImageProvider(
+                                      controller.bloodBankPhoto.value,
+                                    ),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
+                          ),
+                          child: controller.bloodBankPhoto.value.isEmpty
+                              ? const Icon(
+                                  SolarLinearIcons.buildings,
+                                  size: 20,
+                                  color: Colors.white,
+                                )
+                              : null,
+                        ),
                       ),
-                      child: Row(
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: AppColors.calendarAccent.withValues(alpha: 0.08),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(
-                              SolarLinearIcons.calendarMinimalistic,
-                              color: AppColors.calendarAccent,
-                              size: 20,
+                          Obx(
+                            () => Text(
+                              controller.bloodBankName.value,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Text(
-                              "No transfusion info for selected date.",
+                          const SizedBox(height: 2),
+                          Obx(
+                            () => Text(
+                              'Hi, ${StringUtils.getFirstName(controller.userName.value)}',
                               style: TextStyle(
-                                color: colors.textSecondary,
-                                fontSize: 14,
+                                color: Colors.white.withValues(alpha: 0.85),
+                                fontSize: 13,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
                         ],
                       ),
-                    );
-                  }
-                }
-              }),
+                    ),
+                    // Notification bell
+                    GestureDetector(
+                      onTap: NavigationHelper.goToNotificationScreen,
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: const Icon(
+                          SolarLinearIcons.bellBing,
+                          color: Colors.white,
+                          size: 22,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    // Profile avatar
+                    GestureDetector(
+                      onTap: () => controller.bottomNavIndex.value = 4,
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: const Icon(
+                          SolarLinearIcons.userRounded,
+                          color: Colors.white,
+                          size: 22,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
-              SizedBox(height: screenHeight * 0.08),
+              // ── White Card Content ──
+              Transform.translate(
+                offset: const Offset(0, -24),
+                child: Container(
+                  width: double.infinity,
+                  constraints: BoxConstraints(
+                    minHeight: screenHeight * 0.7,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.backgroundColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(28),
+                      topRight: Radius.circular(28),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.04,
+                      vertical: 24,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Dashboard title
+                        Text(
+                          'Dashboard',
+                          style: TextStyle(
+                            color: colors.textPrimary,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        SizedBox(height: screenHeight * 0.018),
+
+                        // Stats row
+                        _DashboardStatsRow(
+                            controller: controller, colors: colors),
+                        SizedBox(height: screenHeight * 0.025),
+
+                        // Transfusions section
+                        Text(
+                          'Transfusions',
+                          style: TextStyle(
+                            color: colors.textPrimary,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        SizedBox(height: screenHeight * 0.015),
+
+                        CalendarSection(controller: controller),
+                        SizedBox(height: screenHeight * 0.02),
+
+                        Obx(() {
+                          final tmodel.Transfusion? selected =
+                              controller.selectedTransfusionRx.value;
+                          if (selected != null) {
+                            TransfusionStatus status;
+                            if (controller.doneTransfusions
+                                .contains(selected)) {
+                              status = TransfusionStatus.done;
+                            } else if (controller.missedTransfusions.any(
+                              (m) =>
+                                  m.expectedDate != null &&
+                                  selected.visitDate != null &&
+                                  m.expectedDate!
+                                      .isAtSameMomentAs(selected.visitDate!),
+                            )) {
+                              status = TransfusionStatus.missed;
+                            } else if (controller.upcomingTransfusion.value ==
+                                selected) {
+                              status = TransfusionStatus.upcoming;
+                            } else {
+                              status = TransfusionStatus.done;
+                            }
+                          }
+                          return const SizedBox.shrink();
+                        }),
+
+                        Obx(() {
+                          final tmodel.Transfusion? selected =
+                              controller.selectedTransfusionRx.value;
+                          if (selected != null) {
+                            TransfusionStatus status;
+                            if (controller.doneTransfusions
+                                .contains(selected)) {
+                              status = TransfusionStatus.done;
+                            } else if (controller.missedTransfusions.any(
+                              (m) =>
+                                  m.expectedDate != null &&
+                                  selected.visitDate != null &&
+                                  m.expectedDate!
+                                      .isAtSameMomentAs(selected.visitDate!),
+                            )) {
+                              status = TransfusionStatus.missed;
+                            } else if (controller.upcomingTransfusion.value ==
+                                selected) {
+                              status = TransfusionStatus.upcoming;
+                            } else {
+                              status = TransfusionStatus.done;
+                            }
+
+                            return UpcomingTransfusionCardWidget(
+                              transfusion: selected,
+                              status: status,
+                            );
+                          } else {
+                            final upcoming =
+                                controller.upcomingTransfusion.value;
+                            if (upcoming != null) {
+                              return UpcomingTransfusionCardWidget(
+                                transfusion: upcoming,
+                                status: TransfusionStatus.upcoming,
+                              );
+                            } else {
+                              return Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: colors.surfaceColor,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border:
+                                      Border.all(color: colors.borderColor),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.calendarAccent
+                                            .withValues(alpha: 0.08),
+                                        borderRadius:
+                                            BorderRadius.circular(12),
+                                      ),
+                                      child: Icon(
+                                        SolarLinearIcons.calendarMinimalistic,
+                                        color: AppColors.calendarAccent,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 14),
+                                    Expanded(
+                                      child: Text(
+                                        "No transfusion info for selected date.",
+                                        style: TextStyle(
+                                          color: colors.textSecondary,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          }
+                        }),
+
+                        SizedBox(height: screenHeight * 0.08),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -180,6 +349,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     Widget transfusionHistoryPage() {
       return const MedicalRecordsScreen();
+    }
+
+    Widget healthPage() {
+      return const PatientHealthScreen();
     }
 
     Widget articlesPage() {
@@ -194,25 +367,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
       final idx = controller.bottomNavIndex.value;
       return Scaffold(
         backgroundColor: colors.backgroundColor,
-        // PDF #9: Gradient header - only show on home tab
-        appBar: idx == 0
-            ? PreferredSize(
-                preferredSize: const Size.fromHeight(80),
-                child: SafeArea(
-                  child: DashboardAppBar(controller: controller),
-                ),
-              )
-            : null,
         body: IndexedStack(
           index: idx,
           children: [
             homeContent(),
             transfusionHistoryPage(),
+            healthPage(),
             articlesPage(),
             profilePage(),
           ],
         ),
-        // PDF #12: Bottom nav - Home, History, Blogs Tab, Profile
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
             color: colors.surfaceColor,
@@ -232,11 +396,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 onDestinationSelected: (index) {
                   controller.bottomNavIndex.value = index;
                 },
-                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+                labelBehavior:
+                    NavigationDestinationLabelBehavior.alwaysShow,
                 elevation: 0,
                 height: 64,
                 backgroundColor: Colors.transparent,
-                indicatorColor: colors.primaryColor.withValues(alpha: 0.1),
+                indicatorColor:
+                    colors.primaryColor.withValues(alpha: 0.1),
                 destinations: [
                   NavigationDestination(
                     icon: Icon(
@@ -263,6 +429,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       color: colors.primaryColor,
                     ),
                     label: 'History',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(
+                      SolarLinearIcons.heartPulse,
+                      size: 24,
+                      color: colors.textSecondary,
+                    ),
+                    selectedIcon: Icon(
+                      SolarBoldIcons.heartPulse,
+                      size: 24,
+                      color: colors.primaryColor,
+                    ),
+                    label: 'Health',
                   ),
                   NavigationDestination(
                     icon: Icon(
@@ -300,7 +479,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 }
 
-/// PDF #12: Dashboard stats - Recent Ferritin Level and Recent HB
+/// Dashboard stats - Recent Ferritin Level and Recent HB
 class _DashboardStatsRow extends StatelessWidget {
   final DashboardController controller;
   final AppThemeColors colors;
@@ -310,12 +489,10 @@ class _DashboardStatsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      // Get latest transfusion data for ferritin and HB
       String ferritinValue = 'N/A';
       String hbValue = 'N/A';
 
       if (controller.doneTransfusions.isNotEmpty) {
-        // Get the most recent completed transfusion
         final latest = controller.doneTransfusions.first;
         if (latest.preHb != null) {
           hbValue = latest.preHb!.toStringAsFixed(1);
@@ -381,7 +558,21 @@ class _StatCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Flexible(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: colors.textSecondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
@@ -392,7 +583,7 @@ class _StatCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -400,14 +591,14 @@ class _StatCard extends StatelessWidget {
                 value,
                 style: TextStyle(
                   color: color,
-                  fontSize: 28,
+                  fontSize: 26,
                   fontWeight: FontWeight.w800,
                 ),
               ),
               if (unit.isNotEmpty) ...[
                 const SizedBox(width: 4),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
+                  padding: const EdgeInsets.only(bottom: 3),
                   child: Text(
                     unit,
                     style: TextStyle(
@@ -419,15 +610,6 @@ class _StatCard extends StatelessWidget {
                 ),
               ],
             ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: colors.textSecondary,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
           ),
         ],
       ),

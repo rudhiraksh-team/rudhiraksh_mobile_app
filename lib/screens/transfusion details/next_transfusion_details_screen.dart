@@ -44,20 +44,23 @@ class NextTransfusionDetailsScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.05,
-          vertical: 12,
-        ),
-        child: Column(
-          children: [
-            const TransfusionInfoCard(),
-            const SizedBox(height: 12),
-            const PreparationGuidelinesCard(),
-            const Spacer(),
-            const CallButton(),
-            const SizedBox(height: 16),
-          ],
+      body: SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: screenWidth * 0.05,
+            vertical: 12,
+          ),
+          child: Column(
+            children: [
+              const TransfusionInfoCard(),
+              const SizedBox(height: 12),
+              const PreparationGuidelinesCard(),
+              const Spacer(),
+              const CallButton(),
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );

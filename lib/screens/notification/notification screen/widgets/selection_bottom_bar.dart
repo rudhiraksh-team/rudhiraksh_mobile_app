@@ -25,7 +25,7 @@ class SelectionBottomBar extends StatelessWidget {
                 screenWidth * 0.04,
                 0,
                 screenWidth * 0.04,
-                screenHeight * 0.02,
+                MediaQuery.of(context).padding.bottom + screenHeight * 0.02,
               ),
               child: Row(
                 children: [

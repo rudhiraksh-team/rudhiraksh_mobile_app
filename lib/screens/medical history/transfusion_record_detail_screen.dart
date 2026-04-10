@@ -86,9 +86,11 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.05,
-          vertical: 12,
+        padding: EdgeInsets.fromLTRB(
+          screenWidth * 0.05,
+          12,
+          screenWidth * 0.05,
+          12 + MediaQuery.of(context).padding.bottom,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
