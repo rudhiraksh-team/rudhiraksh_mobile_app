@@ -1,4 +1,25 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Required for all HTTP traffic (login API, FCM, Crashlytics uploads).
+         Plugins merge this in transitively, but declaring it here makes the
+         dependency explicit and survives plugin changes. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Required by connectivity_plus for the offline pre-check on login. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Android 13+ requires this for FCM to show notifications. Without it,
+         requestPermission() returns "denied" and pushes are silently dropped. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Required by image_picker when launching ImageSource.camera. Without
+         this, the camera intent is rejected on most devices and the user sees
+         a no-op. We use it for: profile avatar capture, doctor document
+         upload, and patient lab-report upload. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Camera is optional — file_picker / gallery work without it. Declaring
+         it as required=false keeps the app installable on devices without a
+         camera (e.g., some tablets, Chromebooks). -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
     <application
         android:label="Rudhiraksh"
         android:name="${applicationName}"
@@ -30,6 +51,19 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- FCM: tell Android which channel to use when a push arrives while
+             the app is killed/background. Must match the channel id created
+             in PushNotificationService._showNotification(). Without this on
+             Android 8+, background pushes are silently dropped. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="high_importance_channel" />
+        <!-- FCM: notification icon for background pushes. Falls back to
+             launcher icon if missing, but explicit avoids a blank icon. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
@@ -40,6 +74,17 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- Required so url_launcher's canLaunchUrl() can resolve http/https
+             VIEW intents on Android 11+. Without this, opening uploaded
+             documents silently fails. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="http" />
         </intent>
     </queries>
 </manifest>

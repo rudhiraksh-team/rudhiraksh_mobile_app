@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -8,9 +9,9 @@ import 'package:rudhirakshapp/controllers/medical_records_controller.dart';
 import 'package:rudhirakshapp/data/helper%20function/navigation_helper.dart';
 import 'package:rudhirakshapp/data/models/transfusion_list_model.dart';
 import 'package:rudhirakshapp/data/services/bloodbank_service.dart';
+import 'package:rudhirakshapp/data/services/error_reporting_service.dart';
 import 'package:rudhirakshapp/data/services/login_service.dart';
 import 'package:rudhirakshapp/data/services/profile_service.dart';
-import 'package:rudhirakshapp/data/services/profile_update_service.dart';
 import 'package:rudhirakshapp/data/services/push_notification_service.dart';
 import 'package:rudhirakshapp/data/services/transfusion_list_service.dart';
 import 'package:rudhirakshapp/controllers/doctor_dashboard_controller.dart';
@@ -56,132 +57,182 @@ class LoginController extends GetxController {
     });
   }
 
+  /// Map a service-layer error code to a single-line, user-facing message.
+  String _messageFor(LoginResult r, {String fallback = 'Login failed'}) {
+    switch (r.errorCode) {
+      case LoginErrorCodes.noInternet:
+        return 'No internet connection. Please check your network.';
+      case LoginErrorCodes.timeout:
+        return 'Connection is slow or unstable. Please try again.';
+      case LoginErrorCodes.invalidCredentials:
+        return r.errorMessage ?? 'Invalid email or password';
+      case LoginErrorCodes.serverError:
+        return 'Our servers are having trouble. Please try again shortly.';
+      case LoginErrorCodes.badResponse:
+        return 'Unexpected response from server. Please try again.';
+      default:
+        return r.errorMessage ?? fallback;
+    }
+  }
+
+  void _showError(String message) {
+    Get.snackbar(
+      'Login',
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 4),
+    );
+  }
+
+  Future<bool> _hasConnectivity() async {
+    try {
+      final result = await Connectivity()
+          .checkConnectivity()
+          .timeout(const Duration(seconds: 3));
+      // connectivity_plus 7.x returns List<ConnectivityResult>.
+      // Anything other than only-`none` counts as "has a network".
+      return result.any((r) => r != ConnectivityResult.none);
+    } catch (_) {
+      // If the check itself fails, don't block the user — let the request try.
+      return true;
+    }
+  }
+
   Future<void> login() async {
     validateUserId(userIdController.value.text.trim());
     validatePassword(passwordController.value.text.trim());
 
     if (userIdError.value != null || passwordError.value != null) return;
 
+    isLoading.value = true;
     try {
-      isLoading.value = true;
-      debugPrint('[LOGIN] Starting login for: ${userIdController.value.text.trim()}');
+      // Fail-fast offline check so the user isn't staring at a 20s spinner.
+      if (!await _hasConnectivity()) {
+        _showError('No internet connection. Please check your network.');
+        return;
+      }
 
-      // ---------------- LOGIN via /auth/login ----------------
-      final loginData = await LoginService.login(
+      debugPrint('[LOGIN] Starting login for: ${userIdController.value.text.trim()}');
+      await ErrorReportingService.log('login attempt started');
+
+      // ---------------- /auth/login ----------------
+      final loginRes = await LoginService.login(
         userIdController.value.text.trim(),
         passwordController.value.text.trim(),
       );
 
-      debugPrint('[LOGIN] /auth/login response: $loginData');
-
-      if (loginData == null || loginData['success'] == false) {
-        final serverMsg = loginData?['error'] ?? 'Login failed';
-        debugPrint('[LOGIN] Login failed: $serverMsg');
-        Get.snackbar('Error', serverMsg, snackPosition: SnackPosition.BOTTOM);
-        isLoading.value = false;
+      if (!loginRes.success) {
+        debugPrint('[LOGIN] Login failed: ${loginRes.errorCode} ${loginRes.errorMessage}');
+        _showError(_messageFor(loginRes));
         return;
       }
 
-      // New auth flow: /auth/login returns { data: { accessToken, refreshToken, user } }
+      final loginData = loginRes.data!;
       final accessToken = loginData['data']?['accessToken'];
-
       if (accessToken == null) {
-        debugPrint('[LOGIN] No accessToken in response. Full response: $loginData');
-        Get.snackbar('Error', 'Invalid login response', snackPosition: SnackPosition.BOTTOM);
-        isLoading.value = false;
+        await ErrorReportingService.recordError(
+          StateError('Missing accessToken in login response'),
+          StackTrace.current,
+          tag: 'login.shape',
+          context: {'has_data': loginData['data'] != null},
+        );
+        _showError('Invalid login response. Please try again.');
         return;
       }
 
-      debugPrint('[LOGIN] Got accessToken: ${accessToken.substring(0, 20)}...');
-
-      // Save token locally
       final storage = GetStorage();
       storage.write('token', accessToken);
 
-      // ---------------- FETCH ME (get user + patient info) ----------------
-      debugPrint('[LOGIN] Fetching /auth/me...');
-      var meData = await LoginService.fetchMe(accessToken);
-      debugPrint('[LOGIN] /auth/me response: $meData');
+      // ---------------- /auth/me ----------------
+      var meRes = await LoginService.fetchMe(accessToken);
 
-      // If user record doesn't exist yet, auto-create patient profile
-      if (meData == null) {
-        debugPrint('[LOGIN] /auth/me failed - attempting setup-patient-profile...');
+      // 404 -> attempt setup-patient-profile then retry /auth/me.
+      if (!meRes.success && meRes.statusCode == 404) {
         final email = userIdController.value.text.trim();
-        final setupResult = await LoginService.setupPatientProfile(
+        final setupRes = await LoginService.setupPatientProfile(
           accessToken,
           name: email.split('@').first,
         );
-        debugPrint('[LOGIN] setup-patient-profile result: $setupResult');
-
-        if (setupResult != null && setupResult['success'] == true) {
-          // Retry /auth/me after setup
-          meData = await LoginService.fetchMe(accessToken);
-          debugPrint('[LOGIN] /auth/me retry result: $meData');
-        }
-
-        if (meData == null) {
-          debugPrint('[LOGIN] Profile setup failed');
-          Get.snackbar('Error', 'Account setup failed. Please contact support.',
-              snackPosition: SnackPosition.BOTTOM);
-          isLoading.value = false;
+        if (setupRes.success) {
+          meRes = await LoginService.fetchMe(accessToken);
+        } else {
+          await ErrorReportingService.recordError(
+            StateError('setup-patient-profile failed'),
+            StackTrace.current,
+            tag: 'login.setup',
+            context: {
+              'code': setupRes.errorCode ?? 'unknown',
+              if (setupRes.statusCode != null) 'status': setupRes.statusCode!,
+            },
+          );
+          _showError('Account setup failed. Please contact support.');
           return;
         }
       }
 
-      if (meData['data'] != null) {
-        final userData = meData['data'];
-        final userId = userData['id'];
-        final patientId = userData['patientId'];
-        final authId = userData['authId'];
-        debugPrint('[LOGIN] userId=$userId, patientId=$patientId, authId=$authId');
-        storage.write('userId', patientId ?? userId);
-        storage.write('dbUserId', userId);
-        storage.write('supabaseUserId', authId ?? userId);
-        // Store patientId and bloodBankId for splash controller
-        if (patientId != null) {
-          storage.write('patientId', patientId);
-        }
-        if (userData['bloodBankId'] != null) {
-          storage.write('tenantId', userData['bloodBankId']);
-          storage.write('bloodBankId', userData['bloodBankId']);
-          debugPrint('[LOGIN] tenantId/bloodBankId=${userData['bloodBankId']}');
-        }
-      } else {
-        debugPrint('[LOGIN] WARNING: /auth/me returned no data');
+      if (!meRes.success) {
+        _showError(_messageFor(meRes, fallback: 'Failed to load your profile'));
+        return;
       }
 
-      // Send existing FCM token to backend
+      final meData = meRes.data!;
+      final userData = meData['data'] as Map<String, dynamic>?;
+      if (userData == null) {
+        await ErrorReportingService.recordError(
+          StateError('Missing data field in /auth/me response'),
+          StackTrace.current,
+          tag: 'login.shape',
+        );
+        _showError('Unexpected profile response. Please try again.');
+        return;
+      }
+
+      final userId = userData['id'];
+      final patientId = userData['patientId'];
+      final authId = userData['authId'];
+      storage.write('userId', patientId ?? userId);
+      storage.write('dbUserId', userId);
+      storage.write('supabaseUserId', authId ?? userId);
+      if (patientId != null) storage.write('patientId', patientId);
+      if (userData['bloodBankId'] != null) {
+        storage.write('tenantId', userData['bloodBankId']);
+        storage.write('bloodBankId', userData['bloodBankId']);
+      }
+
+      // Tag subsequent crash reports with the user.
+      if (userId != null) {
+        await ErrorReportingService.setUserId(userId.toString());
+      }
+
+      // FCM token sync is best-effort — never block login on it. ensureTokenSynced
+      // closes the cold-start race: if the cache is empty (e.g. fresh install or
+      // slow Firebase init) it will fetch a token directly with a short timeout
+      // before POSTing, so the patient row gets a valid token even on first run.
       try {
-        final fcmToken = storage.read<String>('fcmToken');
-        if (fcmToken != null && fcmToken.isNotEmpty) {
-          debugPrint('[LOGIN] Sending FCM token to backend...');
-          await ProfileUpdateService.updateFcmToken(fcmToken);
-          debugPrint('[LOGIN] FCM token sent successfully');
-        }
-      } catch (e) {
-        debugPrint('[LOGIN] Failed to send FCM token: $e');
+        await PushNotificationService.ensureTokenSynced();
+      } catch (e, s) {
+        await ErrorReportingService.recordError(e, s, tag: 'login.fcm');
       }
 
-      // ---------------- ROLE-BASED DATA FETCH ----------------
-      final userRole = meData['data']?['role']?['value'] ?? meData['data']?['role'];
+      // ---------------- ROLE-BASED FETCH ----------------
+      final userRole =
+          meData['data']?['role']?['value'] ?? meData['data']?['role'];
       final isPatient = userRole == 'patient';
       storage.write('userRole', userRole ?? 'patient');
-      debugPrint('[LOGIN] userRole=$userRole, isPatient=$isPatient');
 
       Map<String, dynamic>? profileData;
       Map<String, dynamic>? bloodBankData;
       TransfusionResponse? transfusionList;
 
       if (isPatient) {
-        // Fetch patient-specific data
-        debugPrint('[LOGIN] Fetching patient profile...');
-        profileData = await ProfileService.fetchProfile(accessToken);
-        debugPrint('[LOGIN] Profile response: ${profileData != null ? 'OK' : 'NULL'}');
+        try {
+          profileData = await ProfileService.fetchProfile(accessToken);
+        } catch (e, s) {
+          await ErrorReportingService.recordError(e, s, tag: 'login.profile');
+        }
 
         if (profileData == null) {
-          debugPrint('[LOGIN] Profile API failed - stopping login');
-          Get.snackbar('Error', 'Profile API failed', snackPosition: SnackPosition.BOTTOM);
-          isLoading.value = false;
+          _showError('Could not load your profile. Please try again.');
           return;
         }
 
@@ -190,41 +241,44 @@ class LoginController extends GetxController {
             profileData['data']?['bloodBank']?['id'] ??
             profileData['data']?['patient']?['bloodBankId'] ??
             profileData['data']?['patient']?['bloodbank_id'];
-        debugPrint('[LOGIN] bloodBankId from profile: $bloodBankId');
 
         if (bloodBankId != null) {
-          bloodBankData = await BloodBankService.fetchBloodBank(bloodBankId, accessToken);
-          debugPrint('[LOGIN] BloodBank API response: ${bloodBankData != null ? 'OK' : 'NULL'}');
+          try {
+            bloodBankData =
+                await BloodBankService.fetchBloodBank(bloodBankId, accessToken);
+          } catch (e, s) {
+            await ErrorReportingService.recordError(e, s,
+                tag: 'login.bloodbank');
+          }
         }
 
-        // Fallback: use bloodBank from profile response if separate fetch failed
+        // Fall back to embedded bloodBank from profile if separate fetch failed.
         if (bloodBankData == null) {
           final embeddedBank = profileData['data']?['bloodBank'];
           if (embeddedBank != null) {
             bloodBankData = {'success': true, 'data': embeddedBank};
-            debugPrint('[LOGIN] Using embedded bloodBank from profile response');
           }
         }
 
-        // Store bloodBankId from profile if not yet stored
         if (bloodBankId != null && storage.read('bloodBankId') == null) {
           storage.write('bloodBankId', bloodBankId);
         }
 
-        final patientId = storage.read('userId');
-        if (patientId != null && bloodBankId != null) {
-          debugPrint('[LOGIN] Fetching transfusions for patient=$patientId, bank=$bloodBankId');
-          transfusionList = await TransfusionListService().fetchTransfusions(
-            patientId: patientId,
-            bloodbankId: bloodBankId,
-          );
-          debugPrint('[LOGIN] Transfusions: ${transfusionList != null ? 'OK' : 'NULL'}');
+        final patientIdLocal = storage.read('userId');
+        if (patientIdLocal != null && bloodBankId != null) {
+          try {
+            transfusionList = await TransfusionListService().fetchTransfusions(
+              patientId: patientIdLocal,
+              bloodbankId: bloodBankId,
+            );
+          } catch (e, s) {
+            await ErrorReportingService.recordError(e, s,
+                tag: 'login.transfusions');
+          }
         }
-      } else {
-        debugPrint('[LOGIN] Non-patient role ($userRole) - skipping patient-specific fetches');
       }
 
-      // ---------------- SAVE IN GLOBAL CONTROLLER ----------------
+      // ---------------- SAVE ----------------
       if (profileData != null) {
         globalProfile.setProfileData(profileData);
         storage.write('profileData', profileData);
@@ -239,34 +293,33 @@ class LoginController extends GetxController {
       }
 
       // ---------------- NAVIGATE ----------------
-      isLoading.value = false;
-      debugPrint('[LOGIN] Initializing push notifications...');
-      await PushNotificationService.initializeCore();
+      try {
+        await PushNotificationService.initializeCore();
+      } catch (e, s) {
+        await ErrorReportingService.recordError(e, s, tag: 'login.push_init');
+      }
 
       if (userRole == 'doctor') {
-        debugPrint('[LOGIN] Doctor role - navigating to doctor dashboard');
         Get.put(DoctorDashboardController());
         Get.put(NotificationController());
         NavigationHelper.goToDoctorDashboard();
       } else {
         Get.put(DashboardController());
         Get.put(MedicalRecordsController());
-
-        debugPrint('[LOGIN] Fetching dashboard & medical records...');
-        await Get.find<DashboardController>().fetchRecords();
-        await Get.find<MedicalRecordsController>().fetchRecords();
-        debugPrint('[LOGIN] Login complete - navigating to dashboard');
+        try {
+          await Get.find<DashboardController>().fetchRecords();
+          await Get.find<MedicalRecordsController>().fetchRecords();
+        } catch (e, s) {
+          await ErrorReportingService.recordError(e, s,
+              tag: 'login.dashboard_prefetch');
+        }
         NavigationHelper.goToDashboard();
       }
     } catch (e, stackTrace) {
+      await ErrorReportingService.recordError(e, stackTrace, tag: 'login.unhandled');
+      _showError('Something went wrong. Please try again.');
+    } finally {
       isLoading.value = false;
-      debugPrint('[LOGIN] EXCEPTION: $e');
-      debugPrint('[LOGIN] STACKTRACE: $stackTrace');
-      Get.snackbar(
-        'Error',
-        'Something went wrong. Please try again.',
-        snackPosition: SnackPosition.BOTTOM,
-      );
     }
   }
 }

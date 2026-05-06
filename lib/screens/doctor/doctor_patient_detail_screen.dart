@@ -8,6 +8,9 @@ import 'package:rudhirakshapp/screens/doctor/widgets/transfusion_list_tab.dart';
 import 'package:rudhirakshapp/screens/doctor/widgets/growth_chart_tab.dart';
 import 'package:rudhirakshapp/screens/doctor/widgets/documents_tab.dart';
 import 'package:rudhirakshapp/screens/doctor/widgets/lab_requests_tab.dart';
+import 'package:rudhirakshapp/screens/doctor/widgets/ferritin_tab.dart';
+import 'package:rudhirakshapp/screens/doctor/widgets/chelation_tab.dart';
+import 'package:rudhirakshapp/screens/doctor/widgets/images_tab.dart';
 
 class DoctorPatientDetailScreen extends StatelessWidget {
   const DoctorPatientDetailScreen({super.key});
@@ -26,7 +29,7 @@ class DoctorPatientDetailScreen extends StatelessWidget {
     final colors = AppThemeColors.of(context);
 
     return DefaultTabController(
-      length: 4,
+      length: 7,
       child: Scaffold(
         backgroundColor: colors.backgroundColor,
         appBar: AppBar(
@@ -46,7 +49,7 @@ class DoctorPatientDetailScreen extends StatelessWidget {
               ),
               if (patient.bloodGroup != null && patient.bloodGroup!.isNotEmpty)
                 Text(
-                  '${patient.bloodGroup} \u2022 ${patient.age}',
+                  '${patient.bloodGroup} • ${patient.age}',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.white.withValues(alpha: 0.8),
@@ -55,6 +58,8 @@ class DoctorPatientDetailScreen extends StatelessWidget {
             ],
           ),
           bottom: TabBar(
+            isScrollable: true,
+            tabAlignment: TabAlignment.start,
             labelColor: Colors.white,
             unselectedLabelColor: Colors.white.withValues(alpha: 0.6),
             indicatorColor: Colors.white,
@@ -64,8 +69,11 @@ class DoctorPatientDetailScreen extends StatelessWidget {
             tabs: const [
               Tab(text: 'Transfusions'),
               Tab(text: 'Growth'),
+              Tab(text: 'Ferritin'),
+              Tab(text: 'Chelation'),
               Tab(text: 'Documents'),
-              Tab(text: 'Reports'),
+              Tab(text: 'Lab Requests'),
+              Tab(text: 'Images'),
             ],
           ),
         ),
@@ -81,8 +89,11 @@ class DoctorPatientDetailScreen extends StatelessWidget {
               children: [
                 TransfusionListTab(controller: controller),
                 GrowthChartTab(controller: controller),
+                FerritinTab(controller: controller),
+                ChelationTab(controller: controller),
                 DocumentsTab(controller: controller),
                 LabRequestsTab(controller: controller),
+                ImagesTab(controller: controller),
               ],
             );
           }),

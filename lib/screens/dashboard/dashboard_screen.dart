@@ -4,11 +4,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:rudhirakshapp/controllers/global_profile_controller.dart';
 import 'package:rudhirakshapp/controllers/splash_controller.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/enums/transfusion_status.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 import 'package:rudhirakshapp/core/utils/string_utils.dart';
+import 'package:rudhirakshapp/controllers/patient_lab_requests_controller.dart';
 import 'package:rudhirakshapp/data/helper%20function/navigation_helper.dart';
 import 'package:rudhirakshapp/data/services/push_notification_service.dart';
 import 'package:rudhirakshapp/screens/articles/articles_screen.dart';
@@ -157,22 +159,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     const SizedBox(width: 10),
                     // Profile avatar
-                    GestureDetector(
-                      onTap: () => controller.bottomNavIndex.value = 4,
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(14),
+                    Obx(() {
+                      // The getter reads profileData['data'], which triggers
+                      // Obx subscription so this rebuilds on photo updates.
+                      final photoUrl =
+                          Get.find<GlobalProfileController>().profilePhotoUrl;
+                      return GestureDetector(
+                        onTap: () => controller.bottomNavIndex.value = 4,
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(14),
+                            image: photoUrl != null
+                                ? DecorationImage(
+                                    image: CachedNetworkImageProvider(photoUrl),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
+                          ),
+                          child: photoUrl == null
+                              ? const Icon(
+                                  SolarLinearIcons.userRounded,
+                                  color: Colors.white,
+                                  size: 22,
+                                )
+                              : null,
                         ),
-                        child: const Icon(
-                          SolarLinearIcons.userRounded,
-                          color: Colors.white,
-                          size: 22,
-                        ),
-                      ),
-                    ),
+                      );
+                    }),
                   ],
                 ),
               ),
@@ -334,6 +350,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             }
                           }
                         }),
+
+                        SizedBox(height: screenHeight * 0.025),
+                        const _LabRequestsCard(),
 
                         SizedBox(height: screenHeight * 0.08),
                       ],
@@ -613,6 +632,98 @@ class _StatCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Lab Requests entry card on patient home — shows pending count badge,
+/// taps through to the full Lab Requests screen.
+class _LabRequestsCard extends StatelessWidget {
+  const _LabRequestsCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppThemeColors.of(context);
+    final controller = Get.put(PatientLabRequestsController(), permanent: true);
+
+    return GestureDetector(
+      onTap: NavigationHelper.goToPatientLabRequests,
+      child: Obx(() {
+        final pending = controller.pendingCount;
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colors.surfaceColor,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: colors.borderColor),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.brandCrimson.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(
+                  SolarLinearIcons.testTube,
+                  color: AppColors.brandCrimson,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Lab Requests',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: colors.textPrimary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      pending > 0
+                          ? '$pending pending'
+                          : 'No pending requests',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: colors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (pending > 0)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.brandCrimson,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '$pending',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              const SizedBox(width: 6),
+              Icon(SolarLinearIcons.altArrowRight,
+                  color: colors.textSecondary, size: 20),
+            ],
+          ),
+        );
+      }),
     );
   }
 }

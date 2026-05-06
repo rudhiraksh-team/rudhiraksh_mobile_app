@@ -6,6 +6,7 @@ import 'package:rudhirakshapp/data/services/articles_service.dart';
 class ArticlesController extends GetxController {
   var articles = <Article>[].obs;
   var isLoading = false.obs;
+  var error = RxnString();
   var selectedArticle = Rxn<Article>();
   final commentController = TextEditingController();
 
@@ -17,8 +18,10 @@ class ArticlesController extends GetxController {
 
   Future<void> fetchArticles() async {
     isLoading.value = true;
+    error.value = null;
     final result = await ArticlesService.fetchArticles();
-    articles.value = result;
+    articles.value = result.articles;
+    error.value = result.error;
     isLoading.value = false;
   }
 
@@ -30,14 +33,26 @@ class ArticlesController extends GetxController {
   }
 
   Future<void> toggleLike(int articleId) async {
+    final index = articles.indexWhere((a) => a.id == articleId);
+    if (index == -1) return;
+
+    // Optimistic toggle so the heart fills the moment the user taps.
+    final original = articles[index];
+    final liked = !original.isLikedByMe;
+    articles[index] = original.copyWith(
+      isLikedByMe: liked,
+      likesCount: original.likesCount + (liked ? 1 : -1),
+    );
+
     final success = await ArticlesService.toggleLike(articleId);
-    if (success) {
-      // Update local state
-      final index = articles.indexWhere((a) => a.id == articleId);
-      if (index != -1) {
-        await fetchArticles(); // Refresh to get updated counts
-      }
+    if (!success) {
+      // Roll back; the server didn't accept it.
+      articles[index] = original;
+      return;
     }
+    // Re-sync with the server so any other state (e.g., another user's
+    // concurrent like) is reflected accurately.
+    await fetchArticles();
   }
 
   Future<bool> addComment(int articleId, String content, {int? parentCommentId}) async {

@@ -33,6 +33,29 @@ class Article {
     this.updatedAt,
   });
 
+  Article copyWith({
+    int? likesCount,
+    bool? isLikedByMe,
+  }) {
+    return Article(
+      id: id,
+      title: title,
+      content: content,
+      imageUrl: imageUrl,
+      isPublished: isPublished,
+      isGlobal: isGlobal,
+      tenantId: tenantId,
+      createdById: createdById,
+      authorName: authorName,
+      likesCount: likesCount ?? this.likesCount,
+      commentsCount: commentsCount,
+      isLikedByMe: isLikedByMe ?? this.isLikedByMe,
+      comments: comments,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  }
+
   factory Article.fromJson(Map<String, dynamic> json) {
     return Article(
       id: json['id'],

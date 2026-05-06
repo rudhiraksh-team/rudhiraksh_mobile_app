@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:rudhirakshapp/core/theme/doctor_theme_wrapper.dart';
 import 'package:rudhirakshapp/screens/Login/login_screen.dart';
 import 'package:rudhirakshapp/screens/user%20profile/profile_review_screen.dart';
+import 'package:rudhirakshapp/screens/user%20profile/edit_address_screen.dart';
+import 'package:rudhirakshapp/screens/user%20profile/edit_emergency_contacts_screen.dart';
 import 'package:rudhirakshapp/screens/dashboard/dashboard_screen.dart';
 import 'package:rudhirakshapp/screens/transfusion%20details/next_transfusion_details_screen.dart';
 import 'package:rudhirakshapp/screens/medical%20history/medical_records_screen.dart';
@@ -14,6 +16,7 @@ import 'package:rudhirakshapp/screens/bloodbank_info/bloodbank_info_screen.dart'
 import 'package:rudhirakshapp/screens/doctor/doctor_dashboard_screen.dart';
 import 'package:rudhirakshapp/screens/doctor/doctor_patient_detail_screen.dart';
 import 'package:rudhirakshapp/screens/doctor/doctor_transfusion_detail_screen.dart';
+import 'package:rudhirakshapp/screens/patient_lab_requests/patient_lab_requests_screen.dart';
 
 class AppRoutes {
   // Route Names
@@ -22,6 +25,10 @@ class AppRoutes {
   // Login Flow
   static const String login = '/login';
   static const String profileReviewScreen = '/login/profile-review-screen';
+
+  // Profile editing
+  static const String editAddress = '/profile/edit-address';
+  static const String editEmergencyContacts = '/profile/edit-emergency-contacts';
 
   // Dashboard (Patient)
   static const String dashboard = '/dashboard';
@@ -39,6 +46,9 @@ class AppRoutes {
   static const String medicalRecords = '/dashboard/medical-records';
   static const String transfusionRecordDetail = '/dashboard/transfusion-record-detail';
 
+  // Lab Requests (Patient)
+  static const String patientLabRequests = '/dashboard/lab-requests';
+
   // Articles / Feed
   static const String articles = '/articles';
 
@@ -53,11 +63,14 @@ class AppRoutes {
     GetPage(name: splash, page: () => const SplashScreen()),
     GetPage(name: login, page: () => const LoginScreen()),
     GetPage(name: profileReviewScreen, page: () => const ProfileReviewScreen()),
+    GetPage(name: editAddress, page: () => const EditAddressScreen()),
+    GetPage(name: editEmergencyContacts, page: () => const EditEmergencyContactsScreen()),
     GetPage(name: dashboard, page: () => const DashboardScreen()),
     GetPage(name: nextTransfusionDetails, page: () => const NextTransfusionDetailsScreen()),
     GetPage(name: notification, page: () => const NotificationScreen()),
     GetPage(name: medicalRecords, page: () => const MedicalRecordsScreen()),
     GetPage(name: transfusionRecordDetail, page: () => const TransfusionRecordDetailScreen()),
+    GetPage(name: patientLabRequests, page: () => const PatientLabRequestsScreen()),
     GetPage(name: articles, page: () => const ArticlesScreen()),
     GetPage(name: terms, page: () => const TermsScreen()),
     GetPage(name: bloodBankInfo, page: () => const BloodBankInfoScreen()),

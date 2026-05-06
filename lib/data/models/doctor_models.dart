@@ -227,9 +227,13 @@ class LabRequest {
   final String status;
   final String? labName;
   final String? testDate;
+  final DateTime? dueDate;
   final String? notes;
   final String? requestedByName;
   final DateTime? createdAt;
+  // Linked document (set when patient uploads the report).
+  final String? documentFileUrl;
+  final String? documentFileName;
 
   LabRequest({
     required this.id,
@@ -237,28 +241,51 @@ class LabRequest {
     required this.status,
     this.labName,
     this.testDate,
+    this.dueDate,
     this.notes,
     this.requestedByName,
     this.createdAt,
+    this.documentFileUrl,
+    this.documentFileName,
   });
 
   factory LabRequest.fromJson(Map<String, dynamic> json) {
     final requestedBy = json['requestedBy'];
+    final document = json['document'];
     return LabRequest(
       id: json['id'] ?? 0,
       testName: json['testName'] ?? '',
       status: json['status'] ?? 'requested',
       labName: json['labName'],
       testDate: json['testDate'],
+      dueDate: json['dueDate'] != null ? DateTime.tryParse(json['dueDate']) : null,
       notes: json['notes'],
       requestedByName: requestedBy?['name'],
       createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt']) : null,
+      documentFileUrl: document?['fileUrl'],
+      documentFileName: document?['fileName'],
     );
   }
 
   String get formattedDate {
     if (createdAt == null) return '';
     return DateFormat('dd MMM yyyy').format(createdAt!);
+  }
+
+  String? get formattedDueDate {
+    if (dueDate == null) return null;
+    return DateFormat('dd MMM yyyy').format(dueDate!);
+  }
+
+  /// True when the patient has not yet uploaded a report and the due date
+  /// is strictly before today. Used by the UI to flag overdue items in
+  /// red.
+  bool get isOverdue {
+    if (dueDate == null) return false;
+    if (status != 'requested') return false;
+    final today = DateTime.now();
+    final startOfToday = DateTime(today.year, today.month, today.day);
+    return dueDate!.isBefore(startOfToday);
   }
 
   String get statusLabel {
@@ -273,4 +300,95 @@ class LabRequest {
         return status;
     }
   }
+}
+
+/// Ferritin history entry
+class FerritinEntry {
+  final int id;
+  final DateTime? date;
+  final double? ferritinValue;
+  final String? notes;
+
+  FerritinEntry({
+    required this.id,
+    this.date,
+    this.ferritinValue,
+    this.notes,
+  });
+
+  factory FerritinEntry.fromJson(Map<String, dynamic> json) {
+    double? toDouble(dynamic v) {
+      if (v == null) return null;
+      if (v is num) return v.toDouble();
+      return double.tryParse(v.toString());
+    }
+    return FerritinEntry(
+      id: json['id'] ?? 0,
+      date: json['date'] != null ? DateTime.tryParse(json['date'].toString()) : null,
+      ferritinValue: toDouble(json['ferritinValue'] ?? json['value']),
+      notes: json['notes'],
+    );
+  }
+
+  String get formattedDate => date == null ? '' : DateFormat('dd MMM yyyy').format(date!);
+}
+
+/// Chelation therapy history entry
+class ChelationEntry {
+  final int id;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final String? medication;
+  final String? dosage;
+  final String? notes;
+
+  ChelationEntry({
+    required this.id,
+    this.startDate,
+    this.endDate,
+    this.medication,
+    this.dosage,
+    this.notes,
+  });
+
+  factory ChelationEntry.fromJson(Map<String, dynamic> json) {
+    return ChelationEntry(
+      id: json['id'] ?? 0,
+      startDate: json['startDate'] != null ? DateTime.tryParse(json['startDate'].toString()) : null,
+      endDate: json['endDate'] != null ? DateTime.tryParse(json['endDate'].toString()) : null,
+      medication: json['medication']?.toString(),
+      dosage: json['dosage']?.toString(),
+      notes: json['notes']?.toString(),
+    );
+  }
+
+  String formatDate(DateTime? d) => d == null ? '—' : DateFormat('dd MMM yyyy').format(d);
+  String get startFormatted => formatDate(startDate);
+  String get endFormatted => formatDate(endDate);
+}
+
+/// Patient image (e.g. clinical photo, scan)
+class PatientImage {
+  final int id;
+  final String imageUrl;
+  final String? caption;
+  final DateTime? createdAt;
+
+  PatientImage({
+    required this.id,
+    required this.imageUrl,
+    this.caption,
+    this.createdAt,
+  });
+
+  factory PatientImage.fromJson(Map<String, dynamic> json) {
+    return PatientImage(
+      id: json['id'] ?? 0,
+      imageUrl: (json['imageUrl'] ?? json['fileUrl'] ?? '').toString(),
+      caption: json['caption']?.toString() ?? json['notes']?.toString(),
+      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'].toString()) : null,
+    );
+  }
+
+  String get formattedDate => createdAt == null ? '' : DateFormat('dd MMM yyyy').format(createdAt!);
 }

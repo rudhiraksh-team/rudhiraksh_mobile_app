@@ -38,6 +38,10 @@ class NavigationHelper {
     Get.toNamed(AppRoutes.medicalRecords);
   }
 
+  static void goToPatientLabRequests() {
+    Get.toNamed(AppRoutes.patientLabRequests);
+  }
+
   static void goToArticles() {
     Get.toNamed(AppRoutes.articles);
   }
@@ -48,6 +52,14 @@ class NavigationHelper {
 
   static void goToBloodBankInfo() {
     Get.toNamed(AppRoutes.bloodBankInfo);
+  }
+
+  static void goToEditAddress() {
+    Get.toNamed(AppRoutes.editAddress);
+  }
+
+  static void goToEditEmergencyContacts() {
+    Get.toNamed(AppRoutes.editEmergencyContacts);
   }
 
   // Doctor routes

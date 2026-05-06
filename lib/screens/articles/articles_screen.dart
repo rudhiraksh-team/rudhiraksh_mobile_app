@@ -36,28 +36,16 @@ class ArticlesScreen extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (controller.articles.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  SolarLinearIcons.notebook,
-                  size: 64,
-                  color: colors.textSecondary.withValues(alpha: 0.3),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'No articles yet',
-                  style: TextStyle(
-                    color: colors.textSecondary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
+        if (controller.error.value != null && controller.articles.isEmpty) {
+          return _ArticlesErrorState(
+            message: controller.error.value!,
+            colors: colors,
+            onRetry: controller.fetchArticles,
           );
+        }
+
+        if (controller.articles.isEmpty) {
+          return _ArticlesEmptyState(colors: colors);
         }
 
         return RefreshIndicator(
@@ -129,11 +117,11 @@ class _ArticleCard extends StatelessWidget {
                 child: CachedNetworkImage(
                   imageUrl: article.imageUrl!,
                   fit: BoxFit.cover,
-                  placeholder: (_, _a) => Container(
+                  placeholder: (_, _) => Container(
                     color: AppColors.brandRed.withValues(alpha: 0.05),
                     child: const Center(child: CircularProgressIndicator()),
                   ),
-                  errorWidget: (_, _a, _b) => Container(
+                  errorWidget: (_, _, _) => Container(
                     color: AppColors.brandRed.withValues(alpha: 0.05),
                     child: Icon(
                       SolarLinearIcons.gallery,
@@ -246,6 +234,104 @@ class _ArticleCard extends StatelessWidget {
                     ],
                   ),
                 ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ArticlesEmptyState extends StatelessWidget {
+  final AppThemeColors colors;
+  const _ArticlesEmptyState({required this.colors});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            SolarLinearIcons.notebook,
+            size: 64,
+            color: colors.textSecondary.withValues(alpha: 0.3),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No articles yet',
+            style: TextStyle(
+              color: colors.textSecondary,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ArticlesErrorState extends StatelessWidget {
+  final String message;
+  final AppThemeColors colors;
+  final VoidCallback onRetry;
+
+  const _ArticlesErrorState({
+    required this.message,
+    required this.colors,
+    required this.onRetry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              SolarLinearIcons.dangerCircle,
+              size: 64,
+              color: colors.errorColor.withValues(alpha: 0.5),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "Couldn't load articles",
+              style: TextStyle(
+                color: colors.textPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: colors.textSecondary,
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 20),
+            OutlinedButton.icon(
+              onPressed: onRetry,
+              icon: Icon(SolarLinearIcons.refresh, size: 18, color: colors.primaryColor),
+              label: Text(
+                'Retry',
+                style: TextStyle(
+                  color: colors.primaryColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: colors.primaryColor.withValues(alpha: 0.3)),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ],

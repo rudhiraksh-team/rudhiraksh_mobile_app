@@ -1,12 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rudhirakshapp/core/constants/app_strings.dart';
+import 'package:rudhirakshapp/data/services/push_notification_service.dart';
 import 'core/theme/app_theme.dart';
 import 'controllers/theme_controller.dart';
 import 'routes/app_routes.dart';
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // On every foreground, reconcile the FCM token with the backend.
+    // Catches: permission toggled on in Settings while backgrounded, token
+    // rotation that fired while the app was killed, fresh install where
+    // login already happened but the first sync raced.
+    if (state == AppLifecycleState.resumed) {
+      // Fire-and-forget — never block UI on a network call here.
+      // ignore: discarded_futures
+      PushNotificationService.ensureTokenSynced();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -17,8 +17,10 @@ class Patient {
   final String bloodGroup;
   final String thalassemiaType;
   final String emergencyContactName;
+  final String emergencyContactRelationship;
   final String emergencyContactPhone;
   final String? emergencyContactName2;
+  final String? emergencyContactRelationship2;
   final String? emergencyContactPhone2;
   // New SaaS fields
   final String? abhaId;
@@ -57,8 +59,10 @@ class Patient {
     required this.bloodGroup,
     required this.thalassemiaType,
     required this.emergencyContactName,
+    this.emergencyContactRelationship = '',
     required this.emergencyContactPhone,
     this.emergencyContactName2,
+    this.emergencyContactRelationship2,
     this.emergencyContactPhone2,
     this.abhaId,
     this.thalassemiaPatientId,
@@ -119,8 +123,10 @@ class Patient {
       bloodGroup: enumLabel(patient['blood_group'] ?? patient['bloodGroup']),
       thalassemiaType: enumLabel(patient['thalassemia_type'] ?? patient['thalassemiaType']),
       emergencyContactName: patient['emergencyContactName'] ?? patient['emergency_contact_name'] ?? '',
+      emergencyContactRelationship: patient['emergencyContactRelationship'] ?? patient['emergency_contact_relationship'] ?? '',
       emergencyContactPhone: patient['emergencyContactPhone'] ?? patient['emergency_contact_phone'] ?? '',
       emergencyContactName2: patient['emergencyContactName2'] ?? patient['emergency_contact_name_2'],
+      emergencyContactRelationship2: patient['emergencyContactRelationship2'] ?? patient['emergency_contact_relationship_2'],
       emergencyContactPhone2: patient['emergencyContactPhone2'] ?? patient['emergency_contact_phone_2'],
       abhaId: patient['abha_id'] ?? patient['abhaId'],
       thalassemiaPatientId: patient['thalassemia_patient_id'] ?? patient['thalassemiaPatientId'] ?? patient['thalassemia_user_id'] ?? patient['thalassemiaUserId'],
@@ -136,7 +142,7 @@ class Patient {
       endocrineDisorder: patient['endocrine_disorder'] ?? patient['endocrineDisorder'],
       alloantibodyPresent: patient['alloantibody_present'] ?? patient['alloantibodyPresent'],
       recurrentReactionFlag: patient['recurrent_reaction_flag'] ?? patient['recurrentReactionFlag'],
-      profilePhotoUrl: patient['profile_photo_url'] ?? patient['profilePhotoUrl'] ?? patient['profileImageUrl'],
+      profilePhotoUrl: patient['profileImageUrl'] ?? patient['profile_image_url'],
       userId: patient['user_id'] ?? patient['userId'],
     );
   }

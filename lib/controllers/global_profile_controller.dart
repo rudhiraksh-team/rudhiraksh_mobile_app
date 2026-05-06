@@ -13,6 +13,38 @@ class GlobalProfileController extends GetxController {
 
   final box = GetStorage();
 
+  /// Public URL of the patient's profile photo, or null if not set.
+  /// Computed from profileData so it stays in sync without manual wiring.
+  String? get profilePhotoUrl {
+    final data = profileData['data'];
+    final patient = (data is Map) ? (data['patient'] ?? data) : null;
+    if (patient is! Map) return null;
+    final url = patient['profileImageUrl'] ?? patient['profile_image_url'];
+    if (url is String && url.isNotEmpty) return url;
+    return null;
+  }
+
+  /// Patch the cached profile with a new photo URL after a successful upload.
+  /// Mutates both the patient sub-object and the legacy top-level field so
+  /// any code path reading either will see the new value.
+  void setProfilePhotoUrl(String url) {
+    final current = Map<String, dynamic>.from(profileData);
+    final data = current['data'];
+    if (data is Map) {
+      final dataCopy = Map<String, dynamic>.from(data);
+      final patient = dataCopy['patient'];
+      if (patient is Map) {
+        final patientCopy = Map<String, dynamic>.from(patient);
+        patientCopy['profileImageUrl'] = url;
+        dataCopy['patient'] = patientCopy;
+      } else {
+        dataCopy['profileImageUrl'] = url;
+      }
+      current['data'] = dataCopy;
+    }
+    setProfileData(current);
+  }
+
   // Setters profile with local storage
   void setProfileData(Map<String, dynamic> data) {
     profileData.value = data;

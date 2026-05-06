@@ -11,6 +11,7 @@ import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 import 'package:rudhirakshapp/data/helper%20function/navigation_helper.dart';
 
 import '../../controllers/profile_review_controller.dart';
+import 'widgets/profile_avatar_picker.dart';
 import 'widgets/profile_glass_card.dart';
 
 class ProfileReviewScreen extends StatelessWidget {
@@ -125,17 +126,10 @@ class ProfileReviewScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            child: CircleAvatar(
+                            child: ProfileAvatarPicker(
                               radius: 50,
-                              backgroundColor: colors.primaryColor,
-                              child: Text(
-                                _getInitials(controller.nameController.text),
-                                style: const TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                ),
-                              ),
+                              initials:
+                                  _getInitials(controller.nameController.text),
                             ),
                           ),
                         ),
@@ -182,10 +176,7 @@ class ProfileReviewScreen extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          ProfileGlassCard(
-                            controller: controller,
-                            colors: colors,
-                          ),
+                          ProfileGlassCard(controller: controller),
                           const SizedBox(height: 20),
 
                           // Blood Bank Info button

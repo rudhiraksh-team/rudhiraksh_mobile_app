@@ -19,37 +19,47 @@ class NotificationList extends StatelessWidget {
 
     return Obx(() {
       if (controller.notifications.isEmpty) {
-        return Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+        return RefreshIndicator(
+          color: AppColors.notifAccent,
+          onRefresh: controller.refreshFromServer,
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
             children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.notifAccent.withValues(alpha: 0.08),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  SolarLinearIcons.bellOff,
-                  color: AppColors.notifAccent.withValues(alpha: 0.5),
-                  size: 40,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                "No notifications yet",
-                style: TextStyle(
-                  color: colors.textSecondary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                "We'll notify you about your transfusions",
-                style: TextStyle(
-                  color: colors.textSecondary.withValues(alpha: 0.7),
-                  fontSize: 13,
+              SizedBox(height: screenHeight * 0.2),
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: AppColors.notifAccent.withValues(alpha: 0.08),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        SolarLinearIcons.bellOff,
+                        color: AppColors.notifAccent.withValues(alpha: 0.5),
+                        size: 40,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      "No notifications yet",
+                      style: TextStyle(
+                        color: colors.textSecondary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      "We'll notify you about your transfusions",
+                      style: TextStyle(
+                        color: colors.textSecondary.withValues(alpha: 0.7),
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -60,13 +70,17 @@ class NotificationList extends StatelessWidget {
       final sortedNotifications = controller.notifications.toList()
         ..sort((a, b) => b.date.compareTo(a.date));
 
-      return ListView.builder(
+      return RefreshIndicator(
+        color: AppColors.notifAccent,
+        onRefresh: controller.refreshFromServer,
+        child: ListView.builder(
         padding: EdgeInsets.fromLTRB(
           screenWidth * 0.04,
           screenHeight * 0.01,
           screenWidth * 0.04,
           screenHeight * 0.01 + MediaQuery.of(context).padding.bottom,
         ),
+        physics: const AlwaysScrollableScrollPhysics(),
         itemCount: sortedNotifications.length,
         itemBuilder: (context, index) {
           final item = sortedNotifications[index];
@@ -176,6 +190,7 @@ class NotificationList extends StatelessWidget {
             ),
           );
         },
+        ),
       );
     });
   }

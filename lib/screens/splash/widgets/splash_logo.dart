@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 
 class SplashLogo extends StatelessWidget {
@@ -29,10 +29,12 @@ class SplashLogo extends StatelessWidget {
           ),
         ],
       ),
-      child: Icon(
-        SolarBoldIcons.waterdrop,
-        size: logoSize * 0.5,
-        color: Colors.white,
+      child: Center(
+        child: SvgPicture.asset(
+          'assets/logo/svg/rudhiraksh-logo-icon-mono.svg',
+          width: logoSize * 0.55,
+          height: logoSize * 0.55,
+        ),
       ),
     );
   }

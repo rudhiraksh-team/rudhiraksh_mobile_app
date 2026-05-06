@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:solar_icon_pack/solar_icon_pack.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
@@ -105,10 +106,9 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                             ],
                           ),
-                          child: const Icon(
-                            SolarBoldIcons.heartPulse,
-                            color: Colors.white,
-                            size: 28,
+                          padding: const EdgeInsets.all(12),
+                          child: SvgPicture.asset(
+                            'assets/logo/svg/rudhiraksh-logo-icon-mono.svg',
                           ),
                         ),
 

@@ -5,28 +5,38 @@ import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 import 'package:rudhirakshapp/controllers/doctor_patient_detail_controller.dart';
 import 'package:rudhirakshapp/routes/app_routes.dart';
+import 'package:rudhirakshapp/screens/doctor/create_transfusion_screen.dart';
 
 class TransfusionListTab extends StatelessWidget {
   final DoctorPatientDetailController controller;
 
   const TransfusionListTab({super.key, required this.controller});
 
+  void _openCreate(BuildContext context) {
+    Get.to(() => CreateTransfusionScreen(
+          patientId: controller.patientId,
+          patientTag: 'patient_${controller.patientId}',
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
 
-    return Obx(() {
-      if (controller.transfusions.isEmpty) {
-        return _EmptyState(
-          icon: SolarLinearIcons.waterdrop,
-          message: 'No transfusion records found',
-          colors: colors,
-        );
-      }
+    return Stack(
+      children: [
+        Obx(() {
+          if (controller.transfusions.isEmpty) {
+            return _EmptyState(
+              icon: SolarLinearIcons.waterdrop,
+              message: 'No transfusion records found',
+              colors: colors,
+            );
+          }
 
-      return ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: controller.transfusions.length,
+          return ListView.builder(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 88),
+            itemCount: controller.transfusions.length,
         itemBuilder: (context, index) {
           final t = controller.transfusions[index];
           return GestureDetector(
@@ -157,7 +167,21 @@ class TransfusionListTab extends StatelessWidget {
           );
         },
       );
-    });
+    }),
+        Positioned(
+          right: 16,
+          bottom: 16,
+          child: FloatingActionButton.extended(
+            heroTag: 'doctor-transfusion-create',
+            onPressed: () => _openCreate(context),
+            backgroundColor: AppColors.doctorGreen,
+            foregroundColor: Colors.white,
+            icon: const Icon(Icons.add),
+            label: const Text('New Report'),
+          ),
+        ),
+      ],
+    );
   }
 }
 

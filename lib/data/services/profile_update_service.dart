@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:rudhirakshapp/core/utils/api_constant.dart';
@@ -53,11 +56,15 @@ class ProfileUpdateService {
     }
   }
 
-  /// Update FCM token for any user role via PUT /api/users/:id
+  // Single-call timeout; retry-once doubles the worst-case wait if needed.
+  static const _fcmTimeout = Duration(seconds: 15);
+
+  /// Update FCM token. Single-shot timeout, one retry on transient failures
+  /// (timeout / 5xx / connection drop). Returns a structured result; never
+  /// throws on network conditions so callers can treat it as best-effort.
   static Future<Map<String, dynamic>> updateFcmToken(String fcmToken) async {
     final box = GetStorage();
     final token = box.read('token') ?? '';
-    final meData = box.read('supabaseUserId');
 
     if (token.isEmpty) {
       throw Exception('No auth token found in local storage.');
@@ -81,28 +88,57 @@ class ProfileUpdateService {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
     };
+    final body = json.encode({'fcmToken': fcmToken});
 
+    final first = await _putFcmToken(uri, headers, body);
+    if (first['success'] == true) return first;
+
+    final retryable = first['transient'] == true;
+    if (!retryable) return first;
+
+    await Future.delayed(const Duration(seconds: 1));
+    return _putFcmToken(uri, headers, body);
+  }
+
+  static Future<Map<String, dynamic>> _putFcmToken(
+    Uri uri,
+    Map<String, String> headers,
+    String body,
+  ) async {
     try {
-      final resp = await http.put(
-        uri,
-        headers: headers,
-        body: json.encode({'fcmToken': fcmToken}),
-      );
+      final resp = await http.put(uri, headers: headers, body: body)
+          .timeout(_fcmTimeout);
 
-      final respBody = resp.body.isNotEmpty ? json.decode(resp.body) : {};
+      final respBody = resp.body.isNotEmpty
+          ? (jsonDecodeOrNull(resp.body) ?? <String, dynamic>{})
+          : <String, dynamic>{};
 
       if (resp.statusCode == 200 || resp.statusCode == 201) {
         return {'success': true, 'data': respBody};
-      } else {
-        return {
-          'success': false,
-          'statusCode': resp.statusCode,
-          'message':
-              respBody['message'] ?? resp.reasonPhrase ?? 'Unknown error',
-        };
       }
+      return {
+        'success': false,
+        'statusCode': resp.statusCode,
+        'message':
+            (respBody is Map ? respBody['message'] : null) ?? resp.reasonPhrase ?? 'Unknown error',
+        'transient': resp.statusCode >= 500,
+      };
+    } on TimeoutException {
+      return {'success': false, 'message': 'timeout', 'transient': true};
+    } on SocketException {
+      return {'success': false, 'message': 'no_internet', 'transient': false};
+    } on http.ClientException {
+      return {'success': false, 'message': 'connection_lost', 'transient': true};
     } catch (e) {
-      throw Exception('FCM token update failed: $e');
+      return {'success': false, 'message': e.toString(), 'transient': false};
+    }
+  }
+
+  static dynamic jsonDecodeOrNull(String body) {
+    try {
+      return json.decode(body);
+    } on FormatException {
+      return null;
     }
   }
 }

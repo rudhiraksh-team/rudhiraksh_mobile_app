@@ -1,9 +1,13 @@
+import 'dart:ui';
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:rudhirakshapp/controllers/dashboard_controller.dart';
 import 'package:rudhirakshapp/controllers/global_profile_controller.dart';
 import 'package:rudhirakshapp/controllers/theme_controller.dart';
+import 'package:rudhirakshapp/data/services/error_reporting_service.dart';
 import 'package:rudhirakshapp/data/services/push_notification_service.dart';
 import 'app.dart';
 // For locking orientation
@@ -11,6 +15,33 @@ import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Firebase + Crashlytics must come up before anything that may throw,
+  // so global error handlers can capture early failures.
+  try {
+    await Firebase.initializeApp();
+    await ErrorReportingService.init();
+    FlutterError.onError = (details) {
+      FlutterError.presentError(details);
+      ErrorReportingService.recordError(
+        details.exception,
+        details.stack,
+        tag: 'flutter.framework',
+        reason: details.context?.toDescription(),
+      );
+    };
+    PlatformDispatcher.instance.onError = (error, stack) {
+      ErrorReportingService.recordError(
+        error,
+        stack,
+        tag: 'platform.async',
+        fatal: true,
+      );
+      return true;
+    };
+  } catch (e, s) {
+    debugPrint('Firebase/Crashlytics init failed: $e\n$s');
+  }
 
   // Lock orientation to portrait only
   await SystemChrome.setPreferredOrientations([

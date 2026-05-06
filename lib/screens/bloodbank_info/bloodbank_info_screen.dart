@@ -54,7 +54,7 @@ class BloodBankInfoScreen extends StatelessWidget {
                             width: 80,
                             height: 80,
                             fit: BoxFit.cover,
-                            errorWidget: (_, _a, _b) => _logoPlaceholder(),
+                            errorWidget: (_, _, _) => _logoPlaceholder(),
                           ),
                         )
                       else

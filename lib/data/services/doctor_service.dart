@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -200,6 +201,232 @@ class DoctorService {
       };
     } catch (e) {
       return {'success': false, 'message': 'Network error: $e'};
+    }
+  }
+
+  /// POST /api/doctor/patients/:patientId/transfusions
+  static Future<Map<String, dynamic>> createTransfusion(
+    int patientId,
+    Map<String, dynamic> body,
+  ) async {
+    final token = _getToken();
+    if (token == null || token.isEmpty) {
+      return {'success': false, 'message': 'Not authenticated'};
+    }
+    final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/patients/$patientId/transfusions');
+    try {
+      final response = await http.post(uri, headers: _headers(), body: json.encode(body));
+      final respBody = json.decode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return {'success': true, 'data': respBody};
+      }
+      return {'success': false, 'message': respBody['message'] ?? 'Failed to create transfusion'};
+    } catch (e) {
+      return {'success': false, 'message': 'Network error: $e'};
+    }
+  }
+
+  /// PATCH /api/doctor/lab-requests/:id/review
+  static Future<Map<String, dynamic>> reviewLabRequest(int id) async {
+    final token = _getToken();
+    if (token == null || token.isEmpty) {
+      return {'success': false, 'message': 'Not authenticated'};
+    }
+    final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/lab-requests/$id/review');
+    try {
+      final response = await http.patch(uri, headers: _headers());
+      final body = json.decode(response.body);
+      if (response.statusCode == 200) return {'success': true, 'data': body};
+      return {'success': false, 'message': body['message'] ?? 'Failed to mark reviewed'};
+    } catch (e) {
+      return {'success': false, 'message': 'Network error: $e'};
+    }
+  }
+
+  /// PATCH /api/doctor/lab-requests/:id
+  static Future<Map<String, dynamic>> updateLabRequest(int id, Map<String, dynamic> body) async {
+    final token = _getToken();
+    if (token == null || token.isEmpty) {
+      return {'success': false, 'message': 'Not authenticated'};
+    }
+    final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/lab-requests/$id');
+    try {
+      final response = await http.patch(uri, headers: _headers(), body: json.encode(body));
+      final respBody = json.decode(response.body);
+      if (response.statusCode == 200) return {'success': true, 'data': respBody};
+      return {'success': false, 'message': respBody['message'] ?? 'Update failed'};
+    } catch (e) {
+      return {'success': false, 'message': 'Network error: $e'};
+    }
+  }
+
+  /// DELETE /api/doctor/lab-requests/:id
+  static Future<Map<String, dynamic>> deleteLabRequest(int id) async {
+    final token = _getToken();
+    if (token == null || token.isEmpty) {
+      return {'success': false, 'message': 'Not authenticated'};
+    }
+    final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/lab-requests/$id');
+    try {
+      final response = await http.delete(uri, headers: _headers());
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return {'success': true};
+      }
+      final body = response.body.isNotEmpty ? json.decode(response.body) : {};
+      return {'success': false, 'message': body['message'] ?? 'Delete failed'};
+    } catch (e) {
+      return {'success': false, 'message': 'Network error: $e'};
+    }
+  }
+
+  /// Upload a file to Supabase storage via the API. Returns publicUrl + fileName.
+  /// Used as the first step before creating a Document or attaching a lab report.
+  static Future<Map<String, dynamic>?> uploadFile(File file, {String bucket = 'documents'}) async {
+    final token = _getToken();
+    if (token == null || token.isEmpty) return null;
+    try {
+      final uri = Uri.parse('${ApiConstants.baseUrl}/uploads/single?bucket=$bucket');
+      final request = http.MultipartRequest('POST', uri);
+      request.headers['Authorization'] = 'Bearer $token';
+      request.files.add(await http.MultipartFile.fromPath('file', file.path));
+      final streamed = await request.send();
+      final body = await streamed.stream.bytesToString();
+      if (streamed.statusCode != 200 && streamed.statusCode != 201) {
+        debugPrint('uploadFile failed: ${streamed.statusCode} $body');
+        return null;
+      }
+      final decoded = json.decode(body);
+      final data = decoded['data'] ?? decoded;
+      if (data['publicUrl'] == null) return null;
+      return {'fileUrl': data['publicUrl'], 'fileName': data['fileName']};
+    } catch (e) {
+      debugPrint('uploadFile error: $e');
+      return null;
+    }
+  }
+
+  /// POST /api/doctor/patients/:patientId/documents
+  static Future<Map<String, dynamic>> createDocument(
+    int patientId, {
+    required String fileUrl,
+    String? fileName,
+    String? documentType,
+    String? notes,
+  }) async {
+    final token = _getToken();
+    if (token == null || token.isEmpty) {
+      return {'success': false, 'message': 'Not authenticated'};
+    }
+    final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/patients/$patientId/documents');
+    final body = <String, dynamic>{'fileUrl': fileUrl};
+    if (fileName != null) body['fileName'] = fileName;
+    if (documentType != null) body['documentType'] = documentType;
+    if (notes != null) body['notes'] = notes;
+    try {
+      final response = await http.post(uri, headers: _headers(), body: json.encode(body));
+      final respBody = json.decode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return {'success': true, 'data': respBody};
+      }
+      return {'success': false, 'message': respBody['message'] ?? 'Failed to create document'};
+    } catch (e) {
+      return {'success': false, 'message': 'Network error: $e'};
+    }
+  }
+
+  /// PATCH /api/doctor/documents/:id
+  static Future<Map<String, dynamic>> updateDocument(int id, Map<String, dynamic> body) async {
+    final token = _getToken();
+    if (token == null || token.isEmpty) {
+      return {'success': false, 'message': 'Not authenticated'};
+    }
+    final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/documents/$id');
+    try {
+      final response = await http.patch(uri, headers: _headers(), body: json.encode(body));
+      final respBody = json.decode(response.body);
+      if (response.statusCode == 200) return {'success': true, 'data': respBody};
+      return {'success': false, 'message': respBody['message'] ?? 'Update failed'};
+    } catch (e) {
+      return {'success': false, 'message': 'Network error: $e'};
+    }
+  }
+
+  /// DELETE /api/doctor/documents/:id
+  static Future<Map<String, dynamic>> deleteDocument(int id) async {
+    final token = _getToken();
+    if (token == null || token.isEmpty) {
+      return {'success': false, 'message': 'Not authenticated'};
+    }
+    final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/documents/$id');
+    try {
+      final response = await http.delete(uri, headers: _headers());
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return {'success': true};
+      }
+      final body = response.body.isNotEmpty ? json.decode(response.body) : {};
+      return {'success': false, 'message': body['message'] ?? 'Delete failed'};
+    } catch (e) {
+      return {'success': false, 'message': 'Network error: $e'};
+    }
+  }
+
+  /// GET /api/doctor/patients/:patientId/ferritin-history
+  static Future<Map<String, dynamic>?> fetchPatientFerritinHistory(
+    int patientId, {
+    int page = 1,
+    int limit = 100,
+  }) async {
+    final token = _getToken();
+    if (token == null || token.isEmpty) return null;
+    final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/patients/$patientId/ferritin-history')
+        .replace(queryParameters: {'page': page.toString(), 'limit': limit.toString()});
+    try {
+      final response = await http.get(uri, headers: _headers());
+      if (response.statusCode == 200) return json.decode(response.body) as Map<String, dynamic>;
+      return null;
+    } catch (e) {
+      debugPrint('fetchPatientFerritinHistory error: $e');
+      return null;
+    }
+  }
+
+  /// GET /api/doctor/patients/:patientId/chelation-history
+  static Future<Map<String, dynamic>?> fetchPatientChelationHistory(
+    int patientId, {
+    int page = 1,
+    int limit = 100,
+  }) async {
+    final token = _getToken();
+    if (token == null || token.isEmpty) return null;
+    final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/patients/$patientId/chelation-history')
+        .replace(queryParameters: {'page': page.toString(), 'limit': limit.toString()});
+    try {
+      final response = await http.get(uri, headers: _headers());
+      if (response.statusCode == 200) return json.decode(response.body) as Map<String, dynamic>;
+      return null;
+    } catch (e) {
+      debugPrint('fetchPatientChelationHistory error: $e');
+      return null;
+    }
+  }
+
+  /// GET /api/doctor/patients/:patientId/images
+  static Future<Map<String, dynamic>?> fetchPatientImages(
+    int patientId, {
+    int page = 1,
+    int limit = 100,
+  }) async {
+    final token = _getToken();
+    if (token == null || token.isEmpty) return null;
+    final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/patients/$patientId/images')
+        .replace(queryParameters: {'page': page.toString(), 'limit': limit.toString()});
+    try {
+      final response = await http.get(uri, headers: _headers());
+      if (response.statusCode == 200) return json.decode(response.body) as Map<String, dynamic>;
+      return null;
+    } catch (e) {
+      debugPrint('fetchPatientImages error: $e');
+      return null;
     }
   }
 

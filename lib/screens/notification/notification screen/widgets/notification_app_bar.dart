@@ -63,28 +63,57 @@ class NotificationAppBar extends StatelessWidget
         ),
       ),
       actions: [
-        Obx(
-          () => controller.isSelectionMode.value
-              ? Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: GestureDetector(
-                    onTap: () => controller.deleteSelected(),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: colors.errorColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        SolarLinearIcons.trashBinMinimalistic,
-                        color: colors.errorColor,
-                        size: 20,
-                      ),
-                    ),
+        Obx(() {
+          if (controller.isSelectionMode.value) {
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: GestureDetector(
+                onTap: () => controller.deleteSelected(),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: colors.errorColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                )
-              : const SizedBox(),
-        ),
+                  child: Icon(
+                    SolarLinearIcons.trashBinMinimalistic,
+                    color: colors.errorColor,
+                    size: 20,
+                  ),
+                ),
+              ),
+            );
+          }
+
+          final hasUnread = controller.notifications.any((n) => !n.isRead);
+          if (!hasUnread) return const SizedBox();
+
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: GestureDetector(
+              onTap: () {
+                controller.markAllAsRead();
+                Get.snackbar(
+                  'Notifications',
+                  'All marked as read',
+                  duration: const Duration(seconds: 2),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.notifAccent.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  SolarLinearIcons.checkRead,
+                  color: AppColors.notifAccent,
+                  size: 20,
+                ),
+              ),
+            ),
+          );
+        }),
       ],
     );
   }
