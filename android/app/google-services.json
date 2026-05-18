@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "168218307114",
+    "project_id": "rudhiraksh-fcm",
+    "storage_bucket": "rudhiraksh-fcm.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:168218307114:android:ff752f478c0d59c93bb153",
+        "android_client_info": {
+          "package_name": "com.rudhiraksh.rudhirakshapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnv-FhL1RfZtIpNgLxIphieoeQMa1YHWQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
