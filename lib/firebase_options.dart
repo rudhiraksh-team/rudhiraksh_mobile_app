@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -49,20 +50,32 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAnv-FhL1RfZtIpNgLxIphieoeQMa1YHWQ',
-    appId: '1:168218307114:android:ff752f478c0d59c93bb153',
-    messagingSenderId: '168218307114',
-    projectId: 'rudhiraksh-fcm',
-    storageBucket: 'rudhiraksh-fcm.firebasestorage.app',
-  );
+  static String _env(String key, String fallback) =>
+      dotenv.maybeGet(key) ?? fallback;
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyARaRV-Z3JtoreHdvEX8PQnNnKgNGH6K9U',
-    appId: '1:168218307114:ios:08224f4a66ef00f03bb153',
-    messagingSenderId: '168218307114',
-    projectId: 'rudhiraksh-fcm',
-    storageBucket: 'rudhiraksh-fcm.firebasestorage.app',
-    iosBundleId: 'com.rudhiraksh.rudhirakshapp',
-  );
+  static FirebaseOptions get android => FirebaseOptions(
+        apiKey: _env('FIREBASE_ANDROID_API_KEY',
+            'AIzaSyAnv-FhL1RfZtIpNgLxIphieoeQMa1YHWQ'),
+        appId: _env('FIREBASE_ANDROID_APP_ID',
+            '1:168218307114:android:ff752f478c0d59c93bb153'),
+        messagingSenderId:
+            _env('FIREBASE_ANDROID_MESSAGING_SENDER_ID', '168218307114'),
+        projectId: _env('FIREBASE_ANDROID_PROJECT_ID', 'rudhiraksh-fcm'),
+        storageBucket: _env('FIREBASE_ANDROID_STORAGE_BUCKET',
+            'rudhiraksh-fcm.firebasestorage.app'),
+      );
+
+  static FirebaseOptions get ios => FirebaseOptions(
+        apiKey: _env('FIREBASE_IOS_API_KEY',
+            'AIzaSyARaRV-Z3JtoreHdvEX8PQnNnKgNGH6K9U'),
+        appId: _env(
+            'FIREBASE_IOS_APP_ID', '1:168218307114:ios:08224f4a66ef00f03bb153'),
+        messagingSenderId:
+            _env('FIREBASE_IOS_MESSAGING_SENDER_ID', '168218307114'),
+        projectId: _env('FIREBASE_IOS_PROJECT_ID', 'rudhiraksh-fcm'),
+        storageBucket: _env('FIREBASE_IOS_STORAGE_BUCKET',
+            'rudhiraksh-fcm.firebasestorage.app'),
+        iosBundleId:
+            _env('FIREBASE_IOS_BUNDLE_ID', 'com.rudhiraksh.rudhirakshapp'),
+      );
 }

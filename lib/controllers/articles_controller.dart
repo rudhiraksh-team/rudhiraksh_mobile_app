@@ -34,25 +34,48 @@ class ArticlesController extends GetxController {
 
   Future<void> toggleLike(int articleId) async {
     final index = articles.indexWhere((a) => a.id == articleId);
-    if (index == -1) return;
+    final originalListItem = index == -1 ? null : articles[index];
+    final originalSelected = selectedArticle.value?.id == articleId
+        ? selectedArticle.value
+        : null;
 
-    // Optimistic toggle so the heart fills the moment the user taps.
-    final original = articles[index];
-    final liked = !original.isLikedByMe;
-    articles[index] = original.copyWith(
-      isLikedByMe: liked,
-      likesCount: original.likesCount + (liked ? 1 : -1),
-    );
+    // Need at least one source of truth to flip from. The detail screen
+    // can be opened deep-linked before the list has loaded, in which case
+    // `selectedArticle` is the only thing we have.
+    final source = originalSelected ?? originalListItem;
+    if (source == null) return;
+
+    final liked = !source.isLikedByMe;
+    final newCount = source.likesCount + (liked ? 1 : -1);
+
+    // Optimistic toggle on every view bound to this article so the heart
+    // fills the moment the user taps — list card, detail screen, both.
+    if (originalListItem != null) {
+      articles[index] = originalListItem.copyWith(
+        isLikedByMe: liked,
+        likesCount: originalListItem.likesCount + (liked ? 1 : -1),
+      );
+    }
+    if (originalSelected != null) {
+      selectedArticle.value = originalSelected.copyWith(
+        isLikedByMe: liked,
+        likesCount: newCount,
+      );
+    }
 
     final success = await ArticlesService.toggleLike(articleId);
     if (!success) {
       // Roll back; the server didn't accept it.
-      articles[index] = original;
+      if (originalListItem != null) articles[index] = originalListItem;
+      if (originalSelected != null) selectedArticle.value = originalSelected;
       return;
     }
     // Re-sync with the server so any other state (e.g., another user's
     // concurrent like) is reflected accurately.
     await fetchArticles();
+    if (originalSelected != null) {
+      await fetchArticleDetail(articleId);
+    }
   }
 
   Future<bool> addComment(int articleId, String content, {int? parentCommentId}) async {

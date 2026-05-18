@@ -116,7 +116,13 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                         const SizedBox(width: 20),
                         Icon(SolarLinearIcons.chatRound, size: 20, color: colors.textSecondary),
                         const SizedBox(width: 4),
-                        Text('${article.comments.length}', style: TextStyle(color: colors.textSecondary)),
+                        // Use the server-side total (commentsCount) instead of the
+                        // loaded array length. The detail endpoint caps `comments`
+                        // at the most-recent 50 for payload bounds, so for very
+                        // active threads `comments.length` would be 50 while the
+                        // true total is higher. `commentsCount` is the authoritative
+                        // total returned by the API alongside the bounded list.
+                        Text('${article.commentsCount}', style: TextStyle(color: colors.textSecondary)),
                       ],
                     ),
 

@@ -108,12 +108,17 @@ class _CreateTransfusionScreenState extends State<CreateTransfusionScreen> {
   String? _emptyToNull(String s) => s.trim().isEmpty ? null : s.trim();
   int? _intOrNull(String s) => int.tryParse(s.trim());
 
-  Future<void> _pickDate(BuildContext context, {required DateTime initial, required ValueChanged<DateTime> onPick}) async {
+  Future<void> _pickDate(
+    BuildContext context, {
+    required DateTime initial,
+    required ValueChanged<DateTime> onPick,
+    DateTime? lastDate,
+  }) async {
     final picked = await showDatePicker(
       context: context,
       initialDate: initial,
       firstDate: DateTime.now().subtract(const Duration(days: 365 * 5)),
-      lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
+      lastDate: lastDate ?? DateTime.now().add(const Duration(days: 365 * 2)),
     );
     if (picked != null) onPick(picked);
   }
@@ -216,6 +221,7 @@ class _CreateTransfusionScreenState extends State<CreateTransfusionScreen> {
                 onTap: () => _pickDate(
                   context,
                   initial: _transfusionDate,
+                  lastDate: DateTime.now(),
                   onPick: (d) => setState(() => _transfusionDate = d),
                 ),
               ),

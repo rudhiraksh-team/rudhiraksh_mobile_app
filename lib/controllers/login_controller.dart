@@ -204,21 +204,25 @@ class LoginController extends GetxController {
         await ErrorReportingService.setUserId(userId.toString());
       }
 
+      // ---------------- ROLE-BASED FETCH ----------------
+      // Persist userRole BEFORE FCM sync — ensureTokenSynced reads it from
+      // storage to pick the correct profile endpoint, and a missing role
+      // silently routes doctors to /patients/profile (so users.fcmToken stays
+      // NULL and doctor pushes never deliver).
+      final userRole =
+          meData['data']?['role']?['value'] ?? meData['data']?['role'];
+      final isPatient = userRole == 'patient';
+      storage.write('userRole', userRole ?? 'patient');
+
       // FCM token sync is best-effort — never block login on it. ensureTokenSynced
       // closes the cold-start race: if the cache is empty (e.g. fresh install or
       // slow Firebase init) it will fetch a token directly with a short timeout
-      // before POSTing, so the patient row gets a valid token even on first run.
+      // before POSTing, so the user's row gets a valid token even on first run.
       try {
         await PushNotificationService.ensureTokenSynced();
       } catch (e, s) {
         await ErrorReportingService.recordError(e, s, tag: 'login.fcm');
       }
-
-      // ---------------- ROLE-BASED FETCH ----------------
-      final userRole =
-          meData['data']?['role']?['value'] ?? meData['data']?['role'];
-      final isPatient = userRole == 'patient';
-      storage.write('userRole', userRole ?? 'patient');
 
       Map<String, dynamic>? profileData;
       Map<String, dynamic>? bloodBankData;

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:rudhirakshapp/controllers/dashboard_controller.dart';
@@ -10,16 +11,25 @@ import 'package:rudhirakshapp/controllers/theme_controller.dart';
 import 'package:rudhirakshapp/data/services/error_reporting_service.dart';
 import 'package:rudhirakshapp/data/services/push_notification_service.dart';
 import 'app.dart';
+import 'firebase_options.dart';
 // For locking orientation
 import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  try {
+    await dotenv.load(fileName: '.env');
+  } catch (e) {
+    debugPrint('.env load failed: $e');
+  }
+
   // Firebase + Crashlytics must come up before anything that may throw,
   // so global error handlers can capture early failures.
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     await ErrorReportingService.init();
     FlutterError.onError = (details) {
       FlutterError.presentError(details);

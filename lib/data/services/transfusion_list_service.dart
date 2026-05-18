@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:rudhirakshapp/core/utils/api_constant.dart';
+import 'package:rudhirakshapp/core/utils/api_logger.dart';
 import 'package:rudhirakshapp/data/models/transfusion_list_model.dart';
 
 class TransfusionListService {
@@ -37,12 +38,14 @@ class TransfusionListService {
       'Content-Type': 'application/json',
     };
 
+    ApiLogger.req('GET', uri);
     try {
       final request = http.Request('GET', uri);
       request.headers.addAll(headers);
 
       final streamedResponse = await request.send();
       final bodyString = await streamedResponse.stream.bytesToString();
+      ApiLogger.res('GET', uri, streamedResponse.statusCode, bodyString);
 
       if (streamedResponse.statusCode == 200) {
         final Map<String, dynamic> decoded = json.decode(bodyString);
@@ -59,7 +62,8 @@ class TransfusionListService {
         }
         return null;
       }
-    } catch (_) {
+    } catch (e, s) {
+      ApiLogger.err('GET', uri, e, s);
       // Load cached data on exception
       final cached = storage.read<String>('transfusions_json');
       if (cached != null) {

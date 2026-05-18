@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:rudhirakshapp/core/utils/api_constant.dart';
+import 'package:rudhirakshapp/core/utils/api_logger.dart';
 
 class ProfileUpdateService {
   /// Update patient profile via PUT /api/patients/profile
@@ -27,12 +28,14 @@ class ProfileUpdateService {
       'Content-Type': 'application/json',
     };
 
+    ApiLogger.req('PUT', uri, body: body);
     try {
       final resp = await http.put(
         uri,
         headers: headers,
         body: json.encode(body),
       );
+      ApiLogger.res('PUT', uri, resp.statusCode, resp.body);
 
       final respBody = resp.body.isNotEmpty ? json.decode(resp.body) : {};
 
@@ -51,7 +54,8 @@ class ProfileUpdateService {
           'data': respBody,
         };
       }
-    } catch (e) {
+    } catch (e, s) {
+      ApiLogger.err('PUT', uri, e, s);
       throw Exception('Profile update failed: $e');
     }
   }
@@ -70,13 +74,16 @@ class ProfileUpdateService {
       throw Exception('No auth token found in local storage.');
     }
 
-    // For patients, use the patient profile endpoint
+    // Each role has its own profile endpoint that writes the fcmToken column
+    // the backend reads when fanning out pushes. Hitting the wrong path here
+    // silently leaves the column NULL and the user never receives notifications.
     final userRole = box.read('userRole') ?? 'patient';
     final Uri uri;
     if (userRole == 'patient') {
       uri = Uri.parse('${ApiConstants.baseUrl}/patients/profile');
+    } else if (userRole == 'doctor') {
+      uri = Uri.parse('${ApiConstants.baseUrl}/doctor/profile');
     } else {
-      // For doctors/staff, use the users endpoint
       final userId = box.read('dbUserId');
       if (userId == null) {
         throw Exception('No user ID found in local storage.');
@@ -105,9 +112,11 @@ class ProfileUpdateService {
     Map<String, String> headers,
     String body,
   ) async {
+    ApiLogger.req('PUT', uri, body: 'fcmToken update');
     try {
       final resp = await http.put(uri, headers: headers, body: body)
           .timeout(_fcmTimeout);
+      ApiLogger.res('PUT', uri, resp.statusCode, resp.body);
 
       final respBody = resp.body.isNotEmpty
           ? (jsonDecodeOrNull(resp.body) ?? <String, dynamic>{})
@@ -123,13 +132,17 @@ class ProfileUpdateService {
             (respBody is Map ? respBody['message'] : null) ?? resp.reasonPhrase ?? 'Unknown error',
         'transient': resp.statusCode >= 500,
       };
-    } on TimeoutException {
+    } on TimeoutException catch (e, s) {
+      ApiLogger.err('PUT', uri, e, s);
       return {'success': false, 'message': 'timeout', 'transient': true};
-    } on SocketException {
+    } on SocketException catch (e, s) {
+      ApiLogger.err('PUT', uri, e, s);
       return {'success': false, 'message': 'no_internet', 'transient': false};
-    } on http.ClientException {
+    } on http.ClientException catch (e, s) {
+      ApiLogger.err('PUT', uri, e, s);
       return {'success': false, 'message': 'connection_lost', 'transient': true};
-    } catch (e) {
+    } catch (e, s) {
+      ApiLogger.err('PUT', uri, e, s);
       return {'success': false, 'message': e.toString(), 'transient': false};
     }
   }

@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:rudhirakshapp/core/utils/api_constant.dart';
+import 'package:rudhirakshapp/core/utils/api_logger.dart';
 import 'package:rudhirakshapp/data/services/error_reporting_service.dart';
 
 /// Stable error codes the UI uses to pick a user-facing message.
@@ -62,7 +62,7 @@ class LoginService {
 
   static Future<LoginResult> _doLogin(String email, String password) async {
     final url = '${ApiConstants.baseUrl}/auth/login';
-    debugPrint('[LoginService] POST $url');
+    ApiLogger.req('POST', url, body: {'email': email, 'password': '***'});
 
     try {
       final response = await http
@@ -73,7 +73,7 @@ class LoginService {
           )
           .timeout(_authTimeout);
 
-      debugPrint('[LoginService] Status: ${response.statusCode}');
+      ApiLogger.res('POST', url, response.statusCode, response.body);
 
       final body = _safeDecode(response.body);
       if (body is! Map<String, dynamic>) {
@@ -117,17 +117,20 @@ class LoginService {
         serverMsg ?? 'Login failed (${response.statusCode})',
         statusCode: response.statusCode,
       );
-    } on TimeoutException {
+    } on TimeoutException catch (e, s) {
+      ApiLogger.err('POST', url, e, s);
       return LoginResult.fail(
         LoginErrorCodes.timeout,
         'Connection timed out. Please check your network and try again.',
       );
-    } on SocketException {
+    } on SocketException catch (e, s) {
+      ApiLogger.err('POST', url, e, s);
       return LoginResult.fail(
         LoginErrorCodes.noInternet,
         'No internet connection',
       );
     } on HandshakeException catch (e, s) {
+      ApiLogger.err('POST', url, e, s);
       await ErrorReportingService.recordError(e, s, tag: 'login.auth.tls');
       return LoginResult.fail(
         LoginErrorCodes.noInternet,
@@ -135,12 +138,14 @@ class LoginService {
       );
     } on http.ClientException catch (e, s) {
       // ClientException covers connection drops mid-request.
+      ApiLogger.err('POST', url, e, s);
       await ErrorReportingService.recordError(e, s, tag: 'login.auth.client');
       return LoginResult.fail(
         LoginErrorCodes.timeout,
         'Network connection lost. Please try again.',
       );
     } catch (e, s) {
+      ApiLogger.err('POST', url, e, s);
       await ErrorReportingService.recordError(e, s, tag: 'login.auth');
       return LoginResult.fail(
         LoginErrorCodes.unknown,
@@ -159,7 +164,7 @@ class LoginService {
 
   static Future<LoginResult> _doFetchMe(String token) async {
     final url = '${ApiConstants.baseUrl}/auth/me';
-    debugPrint('[LoginService] GET $url');
+    ApiLogger.req('GET', url);
 
     try {
       final response = await http.get(
@@ -170,7 +175,7 @@ class LoginService {
         },
       ).timeout(_meTimeout);
 
-      debugPrint('[LoginService] /auth/me status: ${response.statusCode}');
+      ApiLogger.res('GET', url, response.statusCode, response.body);
 
       if (response.statusCode == 404) {
         // Caller will trigger setup-patient-profile.
@@ -205,23 +210,27 @@ class LoginService {
         body['error']?.toString() ?? 'Failed to load profile',
         statusCode: response.statusCode,
       );
-    } on TimeoutException {
+    } on TimeoutException catch (e, s) {
+      ApiLogger.err('GET', url, e, s);
       return LoginResult.fail(
         LoginErrorCodes.timeout,
         'Connection timed out',
       );
-    } on SocketException {
+    } on SocketException catch (e, s) {
+      ApiLogger.err('GET', url, e, s);
       return LoginResult.fail(
         LoginErrorCodes.noInternet,
         'No internet connection',
       );
     } on http.ClientException catch (e, s) {
+      ApiLogger.err('GET', url, e, s);
       await ErrorReportingService.recordError(e, s, tag: 'login.me.client');
       return LoginResult.fail(
         LoginErrorCodes.timeout,
         'Network connection lost',
       );
     } catch (e, s) {
+      ApiLogger.err('GET', url, e, s);
       await ErrorReportingService.recordError(e, s, tag: 'login.me');
       return LoginResult.fail(
         LoginErrorCodes.unknown,
@@ -238,12 +247,12 @@ class LoginService {
     int? bloodBankId,
   }) async {
     final url = '${ApiConstants.baseUrl}/auth/setup-patient-profile';
-    debugPrint('[LoginService] POST $url');
 
     final body = <String, dynamic>{'name': name};
     if (phone != null && phone.isNotEmpty) body['phone'] = phone;
     if (bloodBankId != null) body['bloodBankId'] = bloodBankId;
 
+    ApiLogger.req('POST', url, body: body);
     try {
       final response = await http
           .post(
@@ -257,7 +266,7 @@ class LoginService {
           )
           .timeout(_authTimeout);
 
-      debugPrint('[LoginService] setup-patient-profile status: ${response.statusCode}');
+      ApiLogger.res('POST', url, response.statusCode, response.body);
 
       final decoded = _safeDecode(response.body);
       if (decoded is! Map<String, dynamic>) {
@@ -275,11 +284,14 @@ class LoginService {
         decoded['error']?.toString() ?? 'Profile setup failed',
         statusCode: response.statusCode,
       );
-    } on TimeoutException {
+    } on TimeoutException catch (e, s) {
+      ApiLogger.err('POST', url, e, s);
       return LoginResult.fail(LoginErrorCodes.timeout, 'Connection timed out');
-    } on SocketException {
+    } on SocketException catch (e, s) {
+      ApiLogger.err('POST', url, e, s);
       return LoginResult.fail(LoginErrorCodes.noInternet, 'No internet connection');
     } catch (e, s) {
+      ApiLogger.err('POST', url, e, s);
       await ErrorReportingService.recordError(e, s, tag: 'login.setup');
       return LoginResult.fail(LoginErrorCodes.unknown, 'Profile setup failed');
     }
@@ -313,7 +325,7 @@ class LoginService {
         first.errorCode == LoginErrorCodes.serverError;
     if (!retryable) return first;
 
-    debugPrint('[LoginService] $tag: retrying after ${first.errorCode}');
+    ApiLogger.info('[$tag] retrying after ${first.errorCode}');
     await Future.delayed(const Duration(milliseconds: 800));
     final second = await attempt();
     if (!second.success) {

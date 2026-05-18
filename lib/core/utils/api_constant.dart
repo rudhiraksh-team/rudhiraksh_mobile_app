@@ -1,5 +1,7 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// API Constants Base URL and Endpoints
 class ApiConstants {
-  static const String baseUrl = 'https://rudhiraksh-api-production.up.railway.app/api';
+  static String get baseUrl =>
+      dotenv.maybeGet('BASE_URL') ?? 'https://admin.rudhiraksh.com/api';
 }

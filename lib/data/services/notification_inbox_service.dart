@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:rudhirakshapp/core/utils/api_constant.dart';
+import 'package:rudhirakshapp/core/utils/api_logger.dart';
 import 'package:rudhirakshapp/data/models/notification_model.dart';
 
 /// Talks to the server-side notification inbox at `/api/notifications/me`.
@@ -28,16 +28,18 @@ class NotificationInboxService {
     final token = _getToken();
     if (token == null || token.isEmpty) return [];
 
+    final uri = Uri.parse('${ApiConstants.baseUrl}/notifications/me?limit=$limit');
+    ApiLogger.req('GET', uri);
     try {
       final response = await http.get(
-        Uri.parse('${ApiConstants.baseUrl}/notifications/me?limit=$limit'),
+        uri,
         headers: {
           'Authorization': 'Bearer $token',
           'Accept': 'application/json',
         },
       );
+      ApiLogger.res('GET', uri, response.statusCode, response.body);
       if (response.statusCode != 200) {
-        debugPrint('[notif-inbox] GET failed ${response.statusCode}: ${response.body}');
         return [];
       }
       final body = json.decode(response.body) as Map<String, dynamic>;
@@ -46,8 +48,8 @@ class NotificationInboxService {
           .whereType<Map>()
           .map((m) => _itemFromInboxRow(Map<String, dynamic>.from(m)))
           .toList();
-    } catch (e) {
-      debugPrint('[notif-inbox] fetch error: $e');
+    } catch (e, s) {
+      ApiLogger.err('GET', uri, e, s);
       return [];
     }
   }
@@ -58,17 +60,20 @@ class NotificationInboxService {
     final token = _getToken();
     if (token == null || token.isEmpty) return false;
 
+    final uri = Uri.parse('${ApiConstants.baseUrl}/notifications/me/$inboxRowId/read');
+    ApiLogger.req('PATCH', uri);
     try {
       final response = await http.patch(
-        Uri.parse('${ApiConstants.baseUrl}/notifications/me/$inboxRowId/read'),
+        uri,
         headers: {
           'Authorization': 'Bearer $token',
           'Accept': 'application/json',
         },
       );
+      ApiLogger.res('PATCH', uri, response.statusCode, response.body);
       return response.statusCode == 200;
-    } catch (e) {
-      debugPrint('[notif-inbox] markRead error: $e');
+    } catch (e, s) {
+      ApiLogger.err('PATCH', uri, e, s);
       return false;
     }
   }
@@ -78,17 +83,20 @@ class NotificationInboxService {
     final token = _getToken();
     if (token == null || token.isEmpty) return false;
 
+    final uri = Uri.parse('${ApiConstants.baseUrl}/notifications/me/read-all');
+    ApiLogger.req('POST', uri);
     try {
       final response = await http.post(
-        Uri.parse('${ApiConstants.baseUrl}/notifications/me/read-all'),
+        uri,
         headers: {
           'Authorization': 'Bearer $token',
           'Accept': 'application/json',
         },
       );
+      ApiLogger.res('POST', uri, response.statusCode, response.body);
       return response.statusCode == 200;
-    } catch (e) {
-      debugPrint('[notif-inbox] markAllRead error: $e');
+    } catch (e, s) {
+      ApiLogger.err('POST', uri, e, s);
       return false;
     }
   }

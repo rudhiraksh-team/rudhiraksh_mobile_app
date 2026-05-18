@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rudhirakshapp/core/constants/app_strings.dart';
+import 'package:rudhirakshapp/data/services/app_update_service.dart';
 import 'package:rudhirakshapp/data/services/push_notification_service.dart';
 import 'core/theme/app_theme.dart';
 import 'controllers/theme_controller.dart';
@@ -18,6 +19,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // Run after the first frame so we never block startup paint.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // ignore: discarded_futures
+      AppUpdateService.checkForUpdate();
+    });
   }
 
   @override
@@ -37,6 +43,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       // Fire-and-forget — never block UI on a network call here.
       // ignore: discarded_futures
       PushNotificationService.ensureTokenSynced();
+      // Catch users who backgrounded for hours — debounce inside the service
+      // keeps this from re-running on every quick foreground.
+      // ignore: discarded_futures
+      AppUpdateService.checkForUpdate();
     }
   }
 

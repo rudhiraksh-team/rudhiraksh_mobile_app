@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:rudhirakshapp/core/utils/api_constant.dart';
+import 'package:rudhirakshapp/core/utils/api_logger.dart';
 
 class DocumentUploadService {
   static final GetStorage _storage = GetStorage();
@@ -24,8 +25,9 @@ class DocumentUploadService {
       return {'success': false, 'message': 'File size exceeds 2MB limit'};
     }
 
+    final uri = Uri.parse('${ApiConstants.baseUrl}/patient-portal/documents');
+    ApiLogger.req('POST', uri, body: 'file=${file.path} type=$documentType');
     try {
-      final uri = Uri.parse('${ApiConstants.baseUrl}/patient-portal/documents');
       final request = http.MultipartRequest('POST', uri);
       request.headers['Authorization'] = 'Bearer $token';
 
@@ -36,14 +38,16 @@ class DocumentUploadService {
       }
 
       final streamedResponse = await request.send();
-      await streamedResponse.stream.bytesToString();
+      final body = await streamedResponse.stream.bytesToString();
+      ApiLogger.res('POST', uri, streamedResponse.statusCode, body);
 
       if (streamedResponse.statusCode == 200 || streamedResponse.statusCode == 201) {
         return {'success': true, 'message': 'Document uploaded successfully'};
       } else {
         return {'success': false, 'message': 'Upload failed (${streamedResponse.statusCode})'};
       }
-    } catch (e) {
+    } catch (e, s) {
+      ApiLogger.err('POST', uri, e, s);
       return {'success': false, 'message': 'Upload failed: $e'};
     }
   }

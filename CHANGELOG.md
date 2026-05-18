@@ -2,6 +2,64 @@
 
 All notable changes to the Rudhiraksh app will be documented in this file.
 
+## [1.2.3+10] - 2026-05-14
+
+### Customer release notes
+
+**For doctors**
+- Push notifications now deliver reliably right after a fresh login — previously the very first sign-in on a device could miss pushes until the next app launch.
+
+**Under the hood**
+- The app now talks to the production Rudhiraksh API host. No action needed from you; everything you see is now backed by the live system instead of the staging server.
+
+### Dev release notes
+
+**Production API cut-over + .env-driven config**
+- `lib/core/utils/api_constant.dart`: `baseUrl` is now `dotenv.maybeGet('BASE_URL') ?? 'https://admin.rudhiraksh.com/api'`. Old hard-coded fallback was the Railway staging host (`rudhiraksh-api-production.up.railway.app`).
+- `lib/firebase_options.dart`: every field on `android` / `ios` `FirebaseOptions` reads from `.env` with the previous hard-coded value as fallback (`FIREBASE_ANDROID_API_KEY`, `FIREBASE_IOS_APP_ID`, etc.). Lets us swap Firebase projects per environment without touching code.
+- `lib/main.dart`: `dotenv.load(fileName: '.env')` runs before `Firebase.initializeApp()`. `Firebase.initializeApp` now passes `options: DefaultFirebaseOptions.currentPlatform` so the dotenv-resolved options are actually used.
+- `pubspec.yaml`: added `flutter_dotenv: ^5.1.0` and registered `.env` under flutter assets so it's bundled into the build.
+
+**Bug: doctor push notifications dropped on first login**
+- Root cause: `LoginController._postLogin` called `PushNotificationService.ensureTokenSynced()` **before** writing `userRole` to storage. `ensureTokenSynced` reads `userRole` to choose the profile endpoint to POST the FCM token to — with an empty role it defaulted to `/patients/profile`, so a doctor's `users.fcmToken` row was never populated and server-side push delivery silently no-op'd until the next login (when the role was already in storage).
+- Fix: persist `userRole` immediately after the `/auth/me` response and *before* the FCM sync block.
+- Files: `lib/controllers/login_controller.dart:204`.
+
+**Central API logger**
+- New `lib/core/utils/api_logger.dart` — `ApiLogger.req / res / err / info`. Tags lines with `[API]`, emits via both `dart:developer.log` (DevTools / IDE) and `print` (`flutter run` / `adb logcat`), silent in release (`kDebugMode` gated), truncates large bodies. Replaces the ad-hoc `debugPrint` / `dart:developer.log` calls that were scattered across every service.
+- Migrated to `ApiLogger`: `articles_service.dart`, `bloodbank_service.dart`, `doctor_service.dart`, `document_upload_service.dart`, `login_service.dart`, `notification_inbox_service.dart`, `patient_lab_request_service.dart`, `patient_portal_service.dart`, `profile_photo_service.dart`, `profile_service.dart`, `profile_update_service.dart`, `transfusion_list_service.dart`. Net effect: every outbound request/response/error now has a uniform `→ METHOD url`, `← METHOD url status=… body=…`, `✕ METHOD url error=…` line, and the inline `_log()` helper inside `articles_service.dart` is gone.
+- `login_service.dart`: also masks the password field in the request log (`body: {'email': ..., 'password': '***'}`).
+
+**Articles — like button on detail screen, follow-up hardening**
+- `ArticlesController.toggleLike` now derives its "source of truth" from whichever of `articles[index]` / `selectedArticle.value` is present instead of bailing out when the list is empty. Covers the deep-link-into-detail-without-list case that the 1.2.2+9 fix still missed if the user toggled twice before `fetchArticles` returned.
+- Files: `lib/controllers/articles_controller.dart:35`.
+
+## [1.2.2+9] - 2026-05-08
+
+### Customer release notes
+
+**For patients and doctors**
+- The **like button on the article detail page** now actually fills the heart and updates the count when you tap it.
+- The app will now **prompt you to update** the moment a new version is available on the Play Store — no more checking manually. Critical updates apply automatically; routine updates download in the background and ask you to restart when ready.
+
+### Dev release notes
+
+**Articles — like button on detail page was a no-op**
+- Root cause: `ArticlesController.toggleLike` only mutated the `articles` list, but `ArticleDetailScreen` binds to `selectedArticle.value`. Tapping the heart on the detail page silently updated the (off-screen) list entry while the on-screen heart never changed. Worse, deep-linking into the detail page (or hot-restarting on it) meant the article wasn't in the list at all, so the early `if (index == -1) return;` made the tap a complete no-op.
+- Fix: `toggleLike` now optimistically updates whichever sources are present — `articles[index]` and/or `selectedArticle.value` — rolls both back on server failure, and refetches detail (in addition to the list) on success.
+- Files: `lib/controllers/articles_controller.dart:35`.
+
+**In-app updates via Google Play (Android)**
+- Added `in_app_update: ^4.2.3` (resolves to 4.2.5).
+- New `lib/data/services/app_update_service.dart`:
+  - Single entry point `AppUpdateService.checkForUpdate()`. Fire-and-forget; never throws (non-Play installs throw inside the plugin and we swallow + report to Crashlytics).
+  - 30-minute debounce so quick foreground/background toggles don't hammer the Play update API.
+  - Branches on Play Console **in-app update priority**: `>= 4` → `performImmediateUpdate()` (full-screen blocking force-update sheet); `< 4` and `flexibleUpdateAllowed` → `startFlexibleUpdate()` (background download), then a `Get.snackbar` with a **RESTART** action wired to `completeFlexibleUpdate()`.
+- Hooks in `lib/app.dart`:
+  - `initState` schedules a check via `addPostFrameCallback` so it never blocks startup paint.
+  - `didChangeAppLifecycleState` re-checks on `resumed` (alongside the existing FCM token sync).
+- Operational: Force-update is controlled per-release in Play Console under **In-app update priority** on the release page. Set 4 or 5 for breaking releases. The plugin is a no-op on debug, sideloaded, and emulator builds — verify on Internal Testing track.
+
 ## [1.2.0+7] - 2026-05-07
 
 ### Customer release notes

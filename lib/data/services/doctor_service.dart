@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:rudhirakshapp/core/utils/api_constant.dart';
+import 'package:rudhirakshapp/core/utils/api_logger.dart';
 
 class DoctorService {
   static final GetStorage _storage = GetStorage();
@@ -34,8 +34,10 @@ class DoctorService {
       },
     );
 
+    ApiLogger.req('GET', uri);
     try {
       final response = await http.get(uri, headers: _headers());
+      ApiLogger.res('GET', uri, response.statusCode, response.body);
 
       if (response.statusCode == 200) {
         _storage.write('doctor_patients_json', response.body);
@@ -45,8 +47,8 @@ class DoctorService {
         if (cached != null) return json.decode(cached) as Map<String, dynamic>;
         return null;
       }
-    } catch (e) {
-      debugPrint('fetchAssignedPatients error: $e');
+    } catch (e, s) {
+      ApiLogger.err('GET', uri, e, s);
       final cached = _storage.read<String>('doctor_patients_json');
       if (cached != null) return json.decode(cached) as Map<String, dynamic>;
       return null;
@@ -69,14 +71,16 @@ class DoctorService {
       'limit': limit.toString(),
     });
 
+    ApiLogger.req('GET', uri);
     try {
       final response = await http.get(uri, headers: _headers());
+      ApiLogger.res('GET', uri, response.statusCode, response.body);
       if (response.statusCode == 200) {
         return json.decode(response.body) as Map<String, dynamic>;
       }
       return null;
-    } catch (e) {
-      debugPrint('fetchPatientTransfusions error: $e');
+    } catch (e, s) {
+      ApiLogger.err('GET', uri, e, s);
       return null;
     }
   }
@@ -97,14 +101,16 @@ class DoctorService {
       'limit': limit.toString(),
     });
 
+    ApiLogger.req('GET', uri);
     try {
       final response = await http.get(uri, headers: _headers());
+      ApiLogger.res('GET', uri, response.statusCode, response.body);
       if (response.statusCode == 200) {
         return json.decode(response.body) as Map<String, dynamic>;
       }
       return null;
-    } catch (e) {
-      debugPrint('fetchPatientGrowthEntries error: $e');
+    } catch (e, s) {
+      ApiLogger.err('GET', uri, e, s);
       return null;
     }
   }
@@ -125,14 +131,16 @@ class DoctorService {
       'limit': limit.toString(),
     });
 
+    ApiLogger.req('GET', uri);
     try {
       final response = await http.get(uri, headers: _headers());
+      ApiLogger.res('GET', uri, response.statusCode, response.body);
       if (response.statusCode == 200) {
         return json.decode(response.body) as Map<String, dynamic>;
       }
       return null;
-    } catch (e) {
-      debugPrint('fetchPatientDocuments error: $e');
+    } catch (e, s) {
+      ApiLogger.err('GET', uri, e, s);
       return null;
     }
   }
@@ -153,14 +161,16 @@ class DoctorService {
       'limit': limit.toString(),
     });
 
+    ApiLogger.req('GET', uri);
     try {
       final response = await http.get(uri, headers: _headers());
+      ApiLogger.res('GET', uri, response.statusCode, response.body);
       if (response.statusCode == 200) {
         return json.decode(response.body) as Map<String, dynamic>;
       }
       return null;
-    } catch (e) {
-      debugPrint('fetchPatientLabRequests error: $e');
+    } catch (e, s) {
+      ApiLogger.err('GET', uri, e, s);
       return null;
     }
   }
@@ -185,12 +195,14 @@ class DoctorService {
     if (labName != null) body['labName'] = labName;
     if (notes != null) body['notes'] = notes;
 
+    ApiLogger.req('POST', uri, body: body);
     try {
       final response = await http.post(
         uri,
         headers: _headers(),
         body: json.encode(body),
       );
+      ApiLogger.res('POST', uri, response.statusCode, response.body);
       final respBody = json.decode(response.body);
       if (response.statusCode == 201 || response.statusCode == 200) {
         return {'success': true, 'data': respBody};
@@ -199,7 +211,8 @@ class DoctorService {
         'success': false,
         'message': respBody['message'] ?? 'Failed to create request',
       };
-    } catch (e) {
+    } catch (e, s) {
+      ApiLogger.err('POST', uri, e, s);
       return {'success': false, 'message': 'Network error: $e'};
     }
   }
@@ -214,14 +227,17 @@ class DoctorService {
       return {'success': false, 'message': 'Not authenticated'};
     }
     final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/patients/$patientId/transfusions');
+    ApiLogger.req('POST', uri, body: body);
     try {
       final response = await http.post(uri, headers: _headers(), body: json.encode(body));
+      ApiLogger.res('POST', uri, response.statusCode, response.body);
       final respBody = json.decode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         return {'success': true, 'data': respBody};
       }
       return {'success': false, 'message': respBody['message'] ?? 'Failed to create transfusion'};
-    } catch (e) {
+    } catch (e, s) {
+      ApiLogger.err('POST', uri, e, s);
       return {'success': false, 'message': 'Network error: $e'};
     }
   }
@@ -233,12 +249,15 @@ class DoctorService {
       return {'success': false, 'message': 'Not authenticated'};
     }
     final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/lab-requests/$id/review');
+    ApiLogger.req('PATCH', uri);
     try {
       final response = await http.patch(uri, headers: _headers());
+      ApiLogger.res('PATCH', uri, response.statusCode, response.body);
       final body = json.decode(response.body);
       if (response.statusCode == 200) return {'success': true, 'data': body};
       return {'success': false, 'message': body['message'] ?? 'Failed to mark reviewed'};
-    } catch (e) {
+    } catch (e, s) {
+      ApiLogger.err('PATCH', uri, e, s);
       return {'success': false, 'message': 'Network error: $e'};
     }
   }
@@ -250,12 +269,15 @@ class DoctorService {
       return {'success': false, 'message': 'Not authenticated'};
     }
     final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/lab-requests/$id');
+    ApiLogger.req('PATCH', uri, body: body);
     try {
       final response = await http.patch(uri, headers: _headers(), body: json.encode(body));
+      ApiLogger.res('PATCH', uri, response.statusCode, response.body);
       final respBody = json.decode(response.body);
       if (response.statusCode == 200) return {'success': true, 'data': respBody};
       return {'success': false, 'message': respBody['message'] ?? 'Update failed'};
-    } catch (e) {
+    } catch (e, s) {
+      ApiLogger.err('PATCH', uri, e, s);
       return {'success': false, 'message': 'Network error: $e'};
     }
   }
@@ -267,14 +289,17 @@ class DoctorService {
       return {'success': false, 'message': 'Not authenticated'};
     }
     final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/lab-requests/$id');
+    ApiLogger.req('DELETE', uri);
     try {
       final response = await http.delete(uri, headers: _headers());
+      ApiLogger.res('DELETE', uri, response.statusCode, response.body);
       if (response.statusCode == 200 || response.statusCode == 204) {
         return {'success': true};
       }
       final body = response.body.isNotEmpty ? json.decode(response.body) : {};
       return {'success': false, 'message': body['message'] ?? 'Delete failed'};
-    } catch (e) {
+    } catch (e, s) {
+      ApiLogger.err('DELETE', uri, e, s);
       return {'success': false, 'message': 'Network error: $e'};
     }
   }
@@ -284,23 +309,24 @@ class DoctorService {
   static Future<Map<String, dynamic>?> uploadFile(File file, {String bucket = 'documents'}) async {
     final token = _getToken();
     if (token == null || token.isEmpty) return null;
+    final uri = Uri.parse('${ApiConstants.baseUrl}/uploads/single?bucket=$bucket');
+    ApiLogger.req('POST', uri, body: 'file=${file.path}');
     try {
-      final uri = Uri.parse('${ApiConstants.baseUrl}/uploads/single?bucket=$bucket');
       final request = http.MultipartRequest('POST', uri);
       request.headers['Authorization'] = 'Bearer $token';
       request.files.add(await http.MultipartFile.fromPath('file', file.path));
       final streamed = await request.send();
       final body = await streamed.stream.bytesToString();
+      ApiLogger.res('POST', uri, streamed.statusCode, body);
       if (streamed.statusCode != 200 && streamed.statusCode != 201) {
-        debugPrint('uploadFile failed: ${streamed.statusCode} $body');
         return null;
       }
       final decoded = json.decode(body);
       final data = decoded['data'] ?? decoded;
       if (data['publicUrl'] == null) return null;
       return {'fileUrl': data['publicUrl'], 'fileName': data['fileName']};
-    } catch (e) {
-      debugPrint('uploadFile error: $e');
+    } catch (e, s) {
+      ApiLogger.err('POST', uri, e, s);
       return null;
     }
   }
@@ -322,14 +348,17 @@ class DoctorService {
     if (fileName != null) body['fileName'] = fileName;
     if (documentType != null) body['documentType'] = documentType;
     if (notes != null) body['notes'] = notes;
+    ApiLogger.req('POST', uri, body: body);
     try {
       final response = await http.post(uri, headers: _headers(), body: json.encode(body));
+      ApiLogger.res('POST', uri, response.statusCode, response.body);
       final respBody = json.decode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         return {'success': true, 'data': respBody};
       }
       return {'success': false, 'message': respBody['message'] ?? 'Failed to create document'};
-    } catch (e) {
+    } catch (e, s) {
+      ApiLogger.err('POST', uri, e, s);
       return {'success': false, 'message': 'Network error: $e'};
     }
   }
@@ -341,12 +370,15 @@ class DoctorService {
       return {'success': false, 'message': 'Not authenticated'};
     }
     final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/documents/$id');
+    ApiLogger.req('PATCH', uri, body: body);
     try {
       final response = await http.patch(uri, headers: _headers(), body: json.encode(body));
+      ApiLogger.res('PATCH', uri, response.statusCode, response.body);
       final respBody = json.decode(response.body);
       if (response.statusCode == 200) return {'success': true, 'data': respBody};
       return {'success': false, 'message': respBody['message'] ?? 'Update failed'};
-    } catch (e) {
+    } catch (e, s) {
+      ApiLogger.err('PATCH', uri, e, s);
       return {'success': false, 'message': 'Network error: $e'};
     }
   }
@@ -358,14 +390,17 @@ class DoctorService {
       return {'success': false, 'message': 'Not authenticated'};
     }
     final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/documents/$id');
+    ApiLogger.req('DELETE', uri);
     try {
       final response = await http.delete(uri, headers: _headers());
+      ApiLogger.res('DELETE', uri, response.statusCode, response.body);
       if (response.statusCode == 200 || response.statusCode == 204) {
         return {'success': true};
       }
       final body = response.body.isNotEmpty ? json.decode(response.body) : {};
       return {'success': false, 'message': body['message'] ?? 'Delete failed'};
-    } catch (e) {
+    } catch (e, s) {
+      ApiLogger.err('DELETE', uri, e, s);
       return {'success': false, 'message': 'Network error: $e'};
     }
   }
@@ -380,12 +415,14 @@ class DoctorService {
     if (token == null || token.isEmpty) return null;
     final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/patients/$patientId/ferritin-history')
         .replace(queryParameters: {'page': page.toString(), 'limit': limit.toString()});
+    ApiLogger.req('GET', uri);
     try {
       final response = await http.get(uri, headers: _headers());
+      ApiLogger.res('GET', uri, response.statusCode, response.body);
       if (response.statusCode == 200) return json.decode(response.body) as Map<String, dynamic>;
       return null;
-    } catch (e) {
-      debugPrint('fetchPatientFerritinHistory error: $e');
+    } catch (e, s) {
+      ApiLogger.err('GET', uri, e, s);
       return null;
     }
   }
@@ -400,12 +437,14 @@ class DoctorService {
     if (token == null || token.isEmpty) return null;
     final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/patients/$patientId/chelation-history')
         .replace(queryParameters: {'page': page.toString(), 'limit': limit.toString()});
+    ApiLogger.req('GET', uri);
     try {
       final response = await http.get(uri, headers: _headers());
+      ApiLogger.res('GET', uri, response.statusCode, response.body);
       if (response.statusCode == 200) return json.decode(response.body) as Map<String, dynamic>;
       return null;
-    } catch (e) {
-      debugPrint('fetchPatientChelationHistory error: $e');
+    } catch (e, s) {
+      ApiLogger.err('GET', uri, e, s);
       return null;
     }
   }
@@ -420,12 +459,14 @@ class DoctorService {
     if (token == null || token.isEmpty) return null;
     final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/patients/$patientId/images')
         .replace(queryParameters: {'page': page.toString(), 'limit': limit.toString()});
+    ApiLogger.req('GET', uri);
     try {
       final response = await http.get(uri, headers: _headers());
+      ApiLogger.res('GET', uri, response.statusCode, response.body);
       if (response.statusCode == 200) return json.decode(response.body) as Map<String, dynamic>;
       return null;
-    } catch (e) {
-      debugPrint('fetchPatientImages error: $e');
+    } catch (e, s) {
+      ApiLogger.err('GET', uri, e, s);
       return null;
     }
   }
@@ -437,8 +478,10 @@ class DoctorService {
 
     final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/profile');
 
+    ApiLogger.req('GET', uri);
     try {
       final response = await http.get(uri, headers: _headers());
+      ApiLogger.res('GET', uri, response.statusCode, response.body);
       if (response.statusCode == 200) {
         _storage.write('doctor_profile_json', response.body);
         return json.decode(response.body) as Map<String, dynamic>;
@@ -446,8 +489,8 @@ class DoctorService {
       final cached = _storage.read<String>('doctor_profile_json');
       if (cached != null) return json.decode(cached) as Map<String, dynamic>;
       return null;
-    } catch (e) {
-      debugPrint('fetchDoctorProfile error: $e');
+    } catch (e, s) {
+      ApiLogger.err('GET', uri, e, s);
       final cached = _storage.read<String>('doctor_profile_json');
       if (cached != null) return json.decode(cached) as Map<String, dynamic>;
       return null;
@@ -465,12 +508,14 @@ class DoctorService {
 
     final uri = Uri.parse('${ApiConstants.baseUrl}/doctor/profile');
 
+    ApiLogger.req('PUT', uri, body: body);
     try {
       final response = await http.put(
         uri,
         headers: _headers(),
         body: json.encode(body),
       );
+      ApiLogger.res('PUT', uri, response.statusCode, response.body);
       final respBody = json.decode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         return {'success': true, 'data': respBody};
@@ -479,7 +524,8 @@ class DoctorService {
         'success': false,
         'message': respBody['message'] ?? 'Update failed',
       };
-    } catch (e) {
+    } catch (e, s) {
+      ApiLogger.err('PUT', uri, e, s);
       return {'success': false, 'message': 'Network error: $e'};
     }
   }

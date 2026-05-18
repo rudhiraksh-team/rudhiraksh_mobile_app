@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:rudhirakshapp/core/utils/api_constant.dart';
+import 'package:rudhirakshapp/core/utils/api_logger.dart';
 import 'package:rudhirakshapp/data/services/error_reporting_service.dart';
 
 class ProfilePhotoResult {
@@ -51,16 +52,18 @@ class ProfilePhotoService {
 
     // ---- Step 1: upload to storage bucket ----
     final String publicUrl;
+    final uploadUri = Uri.parse(
+      '${ApiConstants.baseUrl}/uploads/single?bucket=profile-images',
+    );
+    ApiLogger.req('POST', uploadUri, body: 'file=${file.path} (${size}B)');
     try {
-      final uri = Uri.parse(
-        '${ApiConstants.baseUrl}/uploads/single?bucket=profile-images',
-      );
-      final request = http.MultipartRequest('POST', uri)
+      final request = http.MultipartRequest('POST', uploadUri)
         ..headers['Authorization'] = 'Bearer $token'
         ..files.add(await http.MultipartFile.fromPath('file', file.path));
 
       final streamed = await request.send().timeout(_uploadTimeout);
       final body = await streamed.stream.bytesToString();
+      ApiLogger.res('POST', uploadUri, streamed.statusCode, body);
 
       if (streamed.statusCode != 200 && streamed.statusCode != 201) {
         await ErrorReportingService.recordError(
@@ -98,22 +101,27 @@ class ProfilePhotoService {
         return ProfilePhotoResult.fail('Upload succeeded but no URL returned');
       }
       publicUrl = url;
-    } on TimeoutException {
+    } on TimeoutException catch (e, s) {
+      ApiLogger.err('POST', uploadUri, e, s);
       return ProfilePhotoResult.fail(
         'Upload timed out. Try a smaller image or better connection.',
       );
-    } on SocketException {
+    } on SocketException catch (e, s) {
+      ApiLogger.err('POST', uploadUri, e, s);
       return ProfilePhotoResult.fail('No internet connection');
     } catch (e, s) {
+      ApiLogger.err('POST', uploadUri, e, s);
       await ErrorReportingService.recordError(e, s, tag: 'profile_photo.upload');
       return ProfilePhotoResult.fail('Upload failed. Please try again.');
     }
 
     // ---- Step 2: persist URL on patient profile ----
+    final persistUri = Uri.parse('${ApiConstants.baseUrl}/patients/profile');
+    ApiLogger.req('PUT', persistUri, body: {'profileImageUrl': publicUrl});
     try {
       final resp = await http
           .put(
-            Uri.parse('${ApiConstants.baseUrl}/patients/profile'),
+            persistUri,
             headers: {
               'Authorization': 'Bearer $token',
               'Content-Type': 'application/json',
@@ -121,6 +129,7 @@ class ProfilePhotoService {
             body: json.encode({'profileImageUrl': publicUrl}),
           )
           .timeout(_persistTimeout);
+      ApiLogger.res('PUT', persistUri, resp.statusCode, resp.body);
 
       if (resp.statusCode == 200 || resp.statusCode == 201) {
         return ProfilePhotoResult.ok(publicUrl);
@@ -138,13 +147,16 @@ class ProfilePhotoService {
       return ProfilePhotoResult.fail(
         'Photo uploaded but profile not updated (${resp.statusCode})',
       );
-    } on TimeoutException {
+    } on TimeoutException catch (e, s) {
+      ApiLogger.err('PUT', persistUri, e, s);
       return ProfilePhotoResult.fail(
         'Profile update timed out. Photo uploaded — try refreshing.',
       );
-    } on SocketException {
+    } on SocketException catch (e, s) {
+      ApiLogger.err('PUT', persistUri, e, s);
       return ProfilePhotoResult.fail('No internet connection');
     } catch (e, s) {
+      ApiLogger.err('PUT', persistUri, e, s);
       await ErrorReportingService.recordError(e, s, tag: 'profile_photo.persist');
       return ProfilePhotoResult.fail('Could not save profile photo.');
     }
