@@ -510,11 +510,15 @@ class _DashboardStatsRow extends StatelessWidget {
     return Obx(() {
       String ferritinValue = 'N/A';
       String hbValue = 'N/A';
+      String weightValue = 'N/A';
 
       if (controller.doneTransfusions.isNotEmpty) {
         final latest = controller.doneTransfusions.first;
         if (latest.preHb != null) {
           hbValue = latest.preHb!.toStringAsFixed(1);
+        }
+        if (latest.patientWeightKg != null) {
+          weightValue = latest.patientWeightKg!.toStringAsFixed(1);
         }
       }
 
@@ -538,6 +542,17 @@ class _DashboardStatsRow extends StatelessWidget {
               unit: hbValue != 'N/A' ? 'g/dL' : '',
               color: AppColors.brandRed,
               icon: SolarLinearIcons.heartPulse,
+              colors: colors,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _StatCard(
+              label: 'Recent Weight',
+              value: weightValue,
+              unit: weightValue != 'N/A' ? 'kg' : '',
+              color: AppColors.brandRose,
+              icon: SolarLinearIcons.scale,
               colors: colors,
             ),
           ),

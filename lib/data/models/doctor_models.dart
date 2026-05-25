@@ -11,6 +11,7 @@ class AssignedPatient {
   final String? dateOfBirth;
   final String? bloodGroup;
   final String? thalassemiaType;
+  final String? thalassemiaPatientId;
   final String? currentHemoglobin;
   final String? lastTransfusionDate;
   final String? nextTransfusionDate;
@@ -28,6 +29,7 @@ class AssignedPatient {
     this.dateOfBirth,
     this.bloodGroup,
     this.thalassemiaType,
+    this.thalassemiaPatientId,
     this.currentHemoglobin,
     this.lastTransfusionDate,
     this.nextTransfusionDate,
@@ -64,6 +66,8 @@ class AssignedPatient {
       dateOfBirth: patient['date_of_birth'],
       bloodGroup: enumLabel(patient['bloodGroup'] ?? patient['blood_group']),
       thalassemiaType: enumLabel(patient['thalassemiaType'] ?? patient['thalassemia_type']),
+      thalassemiaPatientId: patient['thalassemia_user_id'] ?? patient['thalassemiaUserId'] ??
+          patient['thalassemia_patient_id'] ?? patient['thalassemiaPatientId'],
       currentHemoglobin: patient['current_hemoglobin']?.toString(),
       lastTransfusionDate: patient['last_transfusion_date'],
       nextTransfusionDate: patient['next_transfusion_date'],

@@ -2,6 +2,29 @@
 
 All notable changes to the Rudhiraksh app will be documented in this file.
 
+## [1.2.4+11] - 2026-05-25
+
+### Customer release notes
+
+**For patients**
+- Your **Thalassemia ID** now appears on your profile and on each transfusion record, so it's easy to find and share.
+- The dashboard now shows a **Recent Weight** stat, pulled from your most recent transfusion record.
+
+**For doctors**
+- A patient's **Thalassemia ID** is now shown in the patient detail header alongside their other key details.
+
+### Dev release notes
+
+**Surface Thalassemia ID across patient & doctor screens**
+- `lib/data/models/doctor_models.dart`: added `thalassemiaPatientId` to `AssignedPatient` (field + constructor) and parsed it in `fromJson`, accepting any of `thalassemia_user_id` / `thalassemiaUserId` / `thalassemia_patient_id` / `thalassemiaPatientId` from the API.
+- `lib/controllers/profile_review_controller.dart`: added `thalassemiaIdController`, populated from `patient.thalassemiaPatientId` on load and disposed in `onClose`.
+- `lib/screens/user profile/widgets/personal_info_section.dart`: renders the Thalassemia ID on the patient profile.
+- `lib/screens/.../transfusion_record_detail_screen.dart`: shows the Thalassemia ID on the transfusion record detail.
+- `lib/screens/doctor/doctor_patient_detail_screen.dart`: shows the Thalassemia ID in the doctor's patient detail header.
+
+**Recent Weight stat on the patient dashboard**
+- `lib/screens/dashboard/dashboard_screen.dart`: `_DashboardStatsRow` now derives `weightValue` from `controller.doneTransfusions.first.patientWeightKg` (latest done transfusion) and renders a new `Recent Weight` `_StatCard` (unit `kg`, `AppColors.brandRose`, scale icon). Weight was already captured/shown on the transfusion detail; this just promotes it to the dashboard.
+
 ## [1.2.3+10] - 2026-05-14
 
 ### Customer release notes

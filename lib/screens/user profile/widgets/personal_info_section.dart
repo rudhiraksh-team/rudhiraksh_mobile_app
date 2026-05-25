@@ -37,6 +37,12 @@ class PersonalInfoSection extends StatelessWidget {
           label: 'Blood Group',
           value: controller.bloodGroupController.text,
         ),
+        if (controller.thalassemiaIdController.text.isNotEmpty)
+          ProfileInfoRow(
+            icon: SolarLinearIcons.card,
+            label: 'Thalassemia ID',
+            value: controller.thalassemiaIdController.text,
+          ),
       ],
     );
   }

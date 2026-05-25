@@ -55,6 +55,15 @@ class DoctorPatientDetailScreen extends StatelessWidget {
                     color: Colors.white.withValues(alpha: 0.8),
                   ),
                 ),
+              if (patient.thalassemiaPatientId != null &&
+                  patient.thalassemiaPatientId!.isNotEmpty)
+                Text(
+                  'Thalassemia ID: ${patient.thalassemiaPatientId}',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.white.withValues(alpha: 0.8),
+                  ),
+                ),
             ],
           ),
           bottom: TabBar(

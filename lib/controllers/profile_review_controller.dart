@@ -16,6 +16,7 @@ class ProfileReviewController extends GetxController {
   final dobController = TextEditingController();
   final genderController = TextEditingController();
   final bloodGroupController = TextEditingController();
+  final thalassemiaIdController = TextEditingController();
   final bloodBaankNameController = TextEditingController();
   final emailController = TextEditingController();
   final contactController = TextEditingController();
@@ -40,6 +41,7 @@ class ProfileReviewController extends GetxController {
         dobController.text = patient.dateOfBirth;
         genderController.text = patient.gender;
         bloodGroupController.text = patient.bloodGroup;
+        thalassemiaIdController.text = patient.thalassemiaPatientId ?? '';
         emailController.text = patient.email;
         contactController.text = patient.phoneNumber;
       } catch (e) {
@@ -65,6 +67,7 @@ class ProfileReviewController extends GetxController {
     dobController.dispose();
     genderController.dispose();
     bloodGroupController.dispose();
+    thalassemiaIdController.dispose();
     bloodBaankNameController.dispose();
     emailController.dispose();
     contactController.dispose();
