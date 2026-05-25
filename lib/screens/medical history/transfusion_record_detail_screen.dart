@@ -33,10 +33,16 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
     }
 
     String bloodGroup = "-";
+    String? thalassemiaId;
     final patientData = globalProfile.profileData['data']?['patient'] ?? globalProfile.profileData['data'];
     if (patientData != null && patientData is Map<String, dynamic>) {
       final bg = patientData['blood_group'] ?? patientData['bloodGroup'];
       bloodGroup = (bg is Map ? bg['value'] ?? bg['label'] : bg)?.toString() ?? "-";
+      thalassemiaId = (patientData['thalassemia_user_id'] ??
+              patientData['thalassemiaUserId'] ??
+              patientData['thalassemia_patient_id'] ??
+              patientData['thalassemiaPatientId'])
+          ?.toString();
     }
 
     String doctorName = record.attendingStaff?.fullName ?? "-";
@@ -182,6 +188,17 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
                       letterSpacing: -0.3,
                     ),
                   ),
+                  if (thalassemiaId != null && thalassemiaId.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      "Thalassemia ID: $thalassemiaId",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 16),
 
                   // Quick info grid
