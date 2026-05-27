@@ -12,6 +12,8 @@ import 'package:rudhirakshapp/data/services/push_notification_service.dart';
 import 'package:rudhirakshapp/screens/doctor/widgets/patient_card.dart';
 import 'package:rudhirakshapp/screens/doctor/doctor_profile_screen.dart';
 import 'package:rudhirakshapp/screens/articles/articles_screen.dart';
+import 'package:rudhirakshapp/screens/chatbot/chat_screen.dart';
+import 'package:rudhirakshapp/core/theme/doctor_theme_wrapper.dart';
 
 class DoctorDashboardScreen extends StatefulWidget {
   const DoctorDashboardScreen({super.key});
@@ -426,6 +428,13 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
       final idx = controller.bottomNavIndex.value;
       return Scaffold(
         backgroundColor: colors.backgroundColor,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () =>
+              Get.to(() => const DoctorThemeWrapper(child: ChatScreen())),
+          backgroundColor: colors.primaryColor,
+          tooltip: 'AI Assistant',
+          child: const Icon(Icons.auto_awesome, color: Colors.white),
+        ),
         body: IndexedStack(
           index: idx,
           children: [

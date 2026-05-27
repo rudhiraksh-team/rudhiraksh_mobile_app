@@ -17,6 +17,7 @@ import 'package:rudhirakshapp/screens/doctor/doctor_dashboard_screen.dart';
 import 'package:rudhirakshapp/screens/doctor/doctor_patient_detail_screen.dart';
 import 'package:rudhirakshapp/screens/doctor/doctor_transfusion_detail_screen.dart';
 import 'package:rudhirakshapp/screens/patient_lab_requests/patient_lab_requests_screen.dart';
+import 'package:rudhirakshapp/screens/chatbot/chat_screen.dart';
 
 class AppRoutes {
   // Route Names
@@ -58,6 +59,9 @@ class AppRoutes {
   // Blood Bank Info
   static const String bloodBankInfo = '/blood-bank-info';
 
+  // AI Assistant (all roles)
+  static const String chatbot = '/chatbot';
+
   // GetX Page Routes
   static final routes = [
     GetPage(name: splash, page: () => const SplashScreen()),
@@ -74,6 +78,7 @@ class AppRoutes {
     GetPage(name: articles, page: () => const ArticlesScreen()),
     GetPage(name: terms, page: () => const TermsScreen()),
     GetPage(name: bloodBankInfo, page: () => const BloodBankInfoScreen()),
+    GetPage(name: chatbot, page: () => const ChatScreen()),
     // Doctor routes — wrapped with green theme
     GetPage(name: doctorDashboard, page: () => const DoctorThemeWrapper(child: DoctorDashboardScreen())),
     GetPage(name: doctorPatientDetail, page: () => const DoctorThemeWrapper(child: DoctorPatientDetailScreen())),

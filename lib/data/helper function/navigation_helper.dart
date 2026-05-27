@@ -15,6 +15,10 @@ class NavigationHelper {
     Get.toNamed(AppRoutes.notification);
   }
 
+  static void goToChatbot() {
+    Get.toNamed(AppRoutes.chatbot);
+  }
+
   static void goToNextTransfusionDetails() {
     Get.toNamed(AppRoutes.nextTransfusionDetails);
   }
