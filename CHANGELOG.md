@@ -2,6 +2,23 @@
 
 All notable changes to the Rudhiraksh app will be documented in this file.
 
+## [1.2.6+13] - 2026-05-29
+
+### Customer release notes
+
+**For patients, doctors & blood banks**
+- When a blood bank updates its logo, the new logo now shows up on the dashboard after a pull-to-refresh — previously the old logo stayed until you reopened the app.
+
+### Dev release notes
+
+**Bug: blood bank logo didn't refresh on the dashboard for either role**
+- Root cause: pull-to-refresh on either dashboard never re-synced the blood bank logo.
+  - Doctor: `DoctorDashboardController.refreshData()` only re-fetched the assigned-patients list (`fetchAssignedPatients`); it never refreshed `DoctorProfileController`, which holds `bloodBankLogo` (`profileData['bloodBank']?['logo_url']`) rendered in the dashboard header.
+  - Patient: `SplashController.refreshAllData()` → `_fetchBackgroundData()` refreshed `globalProfile.bloodBankData` but not the profile. The header reads `DashboardController.bloodBankPhoto`, which is only copied across by `profile_review_screen`'s post-frame callback — and that callback's `Obx` is keyed on `globalProfile.profileData`, which the refresh never touched. So the header logo stayed stale.
+- Fix:
+  - `lib/controllers/doctor_dashboard_controller.dart`: `refreshData()` now runs `fetchAssignedPatients()` and `DoctorProfileController.fetchProfile()` together via `Future.wait` (guarded by `Get.isRegistered<DoctorProfileController>()`). Also covers the doctor path of `refreshAllData()`, which routes through `refreshData()`.
+  - `lib/controllers/splash_controller.dart`: the patient branch of `refreshAllData()` now awaits `_fetchProfileInBackground(token)` alongside `_fetchBackgroundData(...)`, then pushes the latest values straight into `DashboardController.setProfileAndBloodBankData(...)` (guarded by `Get.isRegistered<DashboardController>()`) rather than relying on the profile-tab callback.
+
 ## [1.2.5+12] - 2026-05-27
 
 ### Customer release notes

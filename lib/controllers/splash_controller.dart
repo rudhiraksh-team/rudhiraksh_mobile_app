@@ -241,7 +241,20 @@ class SplashController extends GetxController {
           await Get.find<DoctorDashboardController>().refreshData();
         }
       } else if (userRole == 'patient') {
-        await _fetchBackgroundData(token, bloodBankId, patientId);
+        // Refresh profile + blood bank in parallel, then push the latest
+        // blood bank logo/name into the dashboard header. The header reads
+        // DashboardController.bloodBankPhoto, which only re-syncs via the
+        // profile tab's post-frame callback, so update it directly here.
+        await Future.wait([
+          _fetchProfileInBackground(token),
+          _fetchBackgroundData(token, bloodBankId, patientId),
+        ]);
+        if (Get.isRegistered<DashboardController>()) {
+          Get.find<DashboardController>().setProfileAndBloodBankData(
+            globalProfile.profileData,
+            globalProfile.bloodBankData,
+          );
+        }
       } else {
         await _fetchDashboardData();
       }
