@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:rudhirakshapp/data/models/doctor_models.dart';
 import 'package:rudhirakshapp/data/services/doctor_service.dart';
+import 'package:rudhirakshapp/controllers/doctor_profile_controller.dart';
 
 class DoctorDashboardController extends GetxController {
   final storage = GetStorage();
@@ -70,6 +71,12 @@ class DoctorDashboardController extends GetxController {
   }
 
   Future<void> refreshData() async {
-    await fetchAssignedPatients();
+    await Future.wait([
+      fetchAssignedPatients(),
+      // Also refresh the doctor profile so the blood bank logo/name shown in
+      // the dashboard header stay in sync on pull-to-refresh.
+      if (Get.isRegistered<DoctorProfileController>())
+        Get.find<DoctorProfileController>().fetchProfile(),
+    ]);
   }
 }

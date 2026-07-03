@@ -386,6 +386,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
       final idx = controller.bottomNavIndex.value;
       return Scaffold(
         backgroundColor: colors.backgroundColor,
+        floatingActionButton: FloatingActionButton(
+          onPressed: NavigationHelper.goToChatbot,
+          backgroundColor: colors.primaryColor,
+          tooltip: 'AI Assistant',
+          child: const Icon(Icons.auto_awesome, color: Colors.white),
+        ),
         body: IndexedStack(
           index: idx,
           children: [
