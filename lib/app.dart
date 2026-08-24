@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import 'package:rudhirakshapp/core/constants/app_strings.dart';
 import 'package:rudhirakshapp/data/services/app_update_service.dart';
 import 'package:rudhirakshapp/data/services/push_notification_service.dart';
+import 'package:rudhirakshapp/screens/no_internet/no_internet_screen.dart';
 import 'core/theme/app_theme.dart';
+import 'controllers/connectivity_controller.dart';
 import 'controllers/theme_controller.dart';
 import 'routes/app_routes.dart';
 
@@ -63,6 +65,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         themeMode: themeController.themeMode.value,
         initialRoute: AppRoutes.splash,
         getPages: AppRoutes.routes,
+        builder: (context, child) {
+          final connectivity = Get.find<ConnectivityController>();
+          return Obx(
+            () => connectivity.isOnline.value
+                ? child ?? const SizedBox.shrink()
+                : const NoInternetScreen(),
+          );
+        },
       ),
     );
   }

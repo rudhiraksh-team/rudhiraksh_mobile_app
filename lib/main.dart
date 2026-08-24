@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:rudhirakshapp/controllers/connectivity_controller.dart';
 import 'package:rudhirakshapp/controllers/dashboard_controller.dart';
 import 'package:rudhirakshapp/controllers/global_profile_controller.dart';
 import 'package:rudhirakshapp/controllers/theme_controller.dart';
@@ -85,6 +86,7 @@ void main() async {
   Get.put(DashboardController());
   Get.put(GlobalProfileController());
   Get.put(ThemeController());
+  Get.put(ConnectivityController());
 
   runApp(const MyApp());
 }
