@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/controllers/global_profile_controller.dart';
 import 'package:rudhirakshapp/core/widgets/custom_elevated_button.dart';
 import 'package:rudhirakshapp/data/models/blood_bank_model.dart';
@@ -28,7 +28,7 @@ class CallButton extends StatelessWidget {
 
     return CustomElevatedButton(
       label: "Contact Blood Bank",
-      icon: SolarLinearIcons.phoneCalling,
+      icon: SolarIconsOutline.phoneCalling,
       onPressed: () async {
         if (phoneNumber.isEmpty) {
           Get.snackbar('Error', 'No contact number found');

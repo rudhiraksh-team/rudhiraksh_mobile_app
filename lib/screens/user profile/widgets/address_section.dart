@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 
 import '../../../controllers/global_profile_controller.dart';
 import '../../../core/constants/app_colors.dart';
@@ -27,33 +27,33 @@ class AddressSection extends StatelessWidget {
       String orNotSet(String? v) => (v == null || v.trim().isEmpty) ? 'Not set' : v;
 
       return ProfileSectionCard(
-        icon: SolarLinearIcons.mapPoint,
+        icon: SolarIconsOutline.mapPoint,
         title: 'Address',
         accentColor: AppColors.sky,
         onEdit: NavigationHelper.goToEditAddress,
         rows: [
           ProfileInfoRow(
-            icon: SolarLinearIcons.streetsMapPoint,
+            icon: SolarIconsOutline.streetsMapPoint,
             label: 'Street',
             value: orNotSet(patient?.addressStreet),
           ),
           ProfileInfoRow(
-            icon: SolarLinearIcons.map,
+            icon: SolarIconsOutline.map,
             label: 'Area',
             value: orNotSet(patient?.addressArea),
           ),
           ProfileInfoRow(
-            icon: SolarLinearIcons.buildings2,
+            icon: SolarIconsOutline.buildings_2,
             label: 'City',
             value: orNotSet(patient?.addressCity),
           ),
           ProfileInfoRow(
-            icon: SolarLinearIcons.mapPoint,
+            icon: SolarIconsOutline.mapPoint,
             label: 'State',
             value: orNotSet(patient?.addressState),
           ),
           ProfileInfoRow(
-            icon: SolarLinearIcons.mapPointWave,
+            icon: SolarIconsOutline.mapPointWave,
             label: 'Pincode',
             value: orNotSet(patient?.addressPincode),
           ),

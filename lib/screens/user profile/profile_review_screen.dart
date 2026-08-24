@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/controllers/dashboard_controller.dart';
 import 'package:rudhirakshapp/controllers/global_profile_controller.dart';
 import 'package:rudhirakshapp/controllers/logout_controller.dart';
@@ -59,7 +59,7 @@ class ProfileReviewScreen extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            SolarLinearIcons.userRounded,
+                            SolarIconsOutline.userRounded,
                             size: 48,
                             color: colors.textSecondary,
                           ),
@@ -186,7 +186,7 @@ class ProfileReviewScreen extends StatelessWidget {
                               child: OutlinedButton.icon(
                                 onPressed: NavigationHelper.goToBloodBankInfo,
                                 icon: Icon(
-                                  SolarLinearIcons.buildings2,
+                                  SolarIconsOutline.buildings_2,
                                   size: 20,
                                   color: colors.primaryColor,
                                 ),
@@ -217,7 +217,7 @@ class ProfileReviewScreen extends StatelessWidget {
                               child: OutlinedButton.icon(
                                 onPressed: NavigationHelper.goToTerms,
                                 icon: Icon(
-                                  SolarLinearIcons.document,
+                                  SolarIconsOutline.document,
                                   size: 20,
                                   color: colors.primaryColor,
                                 ),
@@ -249,7 +249,7 @@ class ProfileReviewScreen extends StatelessWidget {
                                 onPressed: () =>
                                     logoutController.logoutImmediate(),
                                 icon: const Icon(
-                                  SolarLinearIcons.logout2,
+                                  SolarIconsOutline.logout_2,
                                   size: 20,
                                 ),
                                 label: const Text(

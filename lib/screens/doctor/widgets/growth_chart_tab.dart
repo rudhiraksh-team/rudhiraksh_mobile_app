@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 import 'package:rudhirakshapp/controllers/doctor_patient_detail_controller.dart';
@@ -23,7 +23,7 @@ class GrowthChartTab extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(SolarLinearIcons.chartSquare, size: 48, color: colors.textSecondary),
+              Icon(SolarIconsOutline.chartSquare, size: 48, color: colors.textSecondary),
               const SizedBox(height: 12),
               Text(
                 'No growth data available',

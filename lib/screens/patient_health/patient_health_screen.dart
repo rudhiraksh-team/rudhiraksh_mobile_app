@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 import 'package:rudhirakshapp/controllers/patient_health_controller.dart';
@@ -26,7 +26,7 @@ class PatientHealthScreen extends StatelessWidget {
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(SolarLinearIcons.heartPulse, color: AppColors.brandRed, size: 22),
+            Icon(SolarIconsOutline.heartPulse, color: AppColors.brandRed, size: 22),
             const SizedBox(width: 8),
             Text(
               'My Health',
@@ -56,7 +56,7 @@ class PatientHealthScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(SolarLinearIcons.chartSquare, size: 48, color: colors.textSecondary),
+                Icon(SolarIconsOutline.chartSquare, size: 48, color: colors.textSecondary),
                 const SizedBox(height: 12),
                 Text(
                   'No health data available yet',
@@ -127,7 +127,7 @@ class _FerritinSection extends StatelessWidget {
     if (valid.length < 2) {
       return _SingleValueCard(
         title: 'Ferritin Level',
-        icon: SolarLinearIcons.bagHeart,
+        icon: SolarIconsOutline.bagHeart,
         iconColor: AppColors.warning,
         value: valid.isNotEmpty
             ? '${valid.last['ferritinValue']} ng/mL'
@@ -164,7 +164,7 @@ class _FerritinSection extends StatelessWidget {
                   color: AppColors.warning.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(SolarLinearIcons.bagHeart, size: 18, color: AppColors.warning),
+                child: const Icon(SolarIconsOutline.bagHeart, size: 18, color: AppColors.warning),
               ),
               const SizedBox(width: 10),
               Text(
@@ -344,7 +344,7 @@ class _GrowthSection extends StatelessWidget {
         if (hasHb)
           _GrowthChart(
             title: 'Hemoglobin (g/dL)',
-            icon: SolarLinearIcons.heartPulse,
+            icon: SolarIconsOutline.heartPulse,
             iconColor: AppColors.brandRed,
             entries: sorted,
             getKey: 'hbValue',
@@ -355,7 +355,7 @@ class _GrowthSection extends StatelessWidget {
         if (hasHeight)
           _GrowthChart(
             title: 'Height (cm)',
-            icon: SolarLinearIcons.chartSquare,
+            icon: SolarIconsOutline.chartSquare,
             iconColor: AppColors.doctorGreen,
             entries: sorted,
             getKey: 'heightCm',
@@ -366,7 +366,7 @@ class _GrowthSection extends StatelessWidget {
         if (hasWeight)
           _GrowthChart(
             title: 'Weight (kg)',
-            icon: SolarLinearIcons.chartSquare,
+            icon: SolarIconsOutline.chartSquare,
             iconColor: AppColors.teal,
             entries: sorted,
             getKey: 'weightKg',

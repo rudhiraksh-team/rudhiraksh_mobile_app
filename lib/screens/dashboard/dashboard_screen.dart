@@ -3,7 +3,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/controllers/global_profile_controller.dart';
 import 'package:rudhirakshapp/controllers/splash_controller.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
@@ -101,7 +101,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                           child: controller.bloodBankPhoto.value.isEmpty
                               ? const Icon(
-                                  SolarLinearIcons.buildings,
+                                  SolarIconsOutline.buildings,
                                   size: 20,
                                   color: Colors.white,
                                 )
@@ -151,7 +151,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: const Icon(
-                          SolarLinearIcons.bellBing,
+                          SolarIconsOutline.bellBing,
                           color: Colors.white,
                           size: 22,
                         ),
@@ -181,7 +181,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                           child: photoUrl == null
                               ? const Icon(
-                                  SolarLinearIcons.userRounded,
+                                  SolarIconsOutline.userRounded,
                                   color: Colors.white,
                                   size: 22,
                                 )
@@ -328,7 +328,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                             BorderRadius.circular(12),
                                       ),
                                       child: Icon(
-                                        SolarLinearIcons.calendarMinimalistic,
+                                        SolarIconsOutline.calendarMinimalistic,
                                         color: AppColors.calendarAccent,
                                         size: 20,
                                       ),
@@ -431,12 +431,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 destinations: [
                   NavigationDestination(
                     icon: Icon(
-                      SolarLinearIcons.homeAngle,
+                      SolarIconsOutline.homeAngle,
                       size: 24,
                       color: colors.textSecondary,
                     ),
                     selectedIcon: Icon(
-                      SolarBoldIcons.homeAngle,
+                      SolarIconsBold.homeAngle,
                       size: 24,
                       color: colors.primaryColor,
                     ),
@@ -444,12 +444,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   NavigationDestination(
                     icon: Icon(
-                      SolarLinearIcons.history,
+                      SolarIconsOutline.history,
                       size: 24,
                       color: colors.textSecondary,
                     ),
                     selectedIcon: Icon(
-                      SolarBoldIcons.history,
+                      SolarIconsBold.history,
                       size: 24,
                       color: colors.primaryColor,
                     ),
@@ -457,12 +457,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   NavigationDestination(
                     icon: Icon(
-                      SolarLinearIcons.heartPulse,
+                      SolarIconsOutline.heartPulse,
                       size: 24,
                       color: colors.textSecondary,
                     ),
                     selectedIcon: Icon(
-                      SolarBoldIcons.heartPulse,
+                      SolarIconsBold.heartPulse,
                       size: 24,
                       color: colors.primaryColor,
                     ),
@@ -470,12 +470,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   NavigationDestination(
                     icon: Icon(
-                      SolarLinearIcons.notebook,
+                      SolarIconsOutline.notebook,
                       size: 24,
                       color: colors.textSecondary,
                     ),
                     selectedIcon: Icon(
-                      SolarBoldIcons.notebook,
+                      SolarIconsBold.notebook,
                       size: 24,
                       color: colors.primaryColor,
                     ),
@@ -483,12 +483,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   NavigationDestination(
                     icon: Icon(
-                      SolarLinearIcons.userRounded,
+                      SolarIconsOutline.userRounded,
                       size: 24,
                       color: colors.textSecondary,
                     ),
                     selectedIcon: Icon(
-                      SolarBoldIcons.userRounded,
+                      SolarIconsBold.userRounded,
                       size: 24,
                       color: colors.primaryColor,
                     ),
@@ -536,7 +536,7 @@ class _DashboardStatsRow extends StatelessWidget {
               value: ferritinValue,
               unit: ferritinValue != 'N/A' ? 'ng/mL' : '',
               color: AppColors.brandCrimson,
-              icon: SolarLinearIcons.testTube,
+              icon: SolarIconsOutline.testTube,
               colors: colors,
             ),
           ),
@@ -547,7 +547,7 @@ class _DashboardStatsRow extends StatelessWidget {
               value: hbValue,
               unit: hbValue != 'N/A' ? 'g/dL' : '',
               color: AppColors.brandRed,
-              icon: SolarLinearIcons.heartPulse,
+              icon: SolarIconsOutline.heartPulse,
               colors: colors,
             ),
           ),
@@ -558,7 +558,7 @@ class _DashboardStatsRow extends StatelessWidget {
               value: weightValue,
               unit: weightValue != 'N/A' ? 'kg' : '',
               color: AppColors.brandRose,
-              icon: SolarLinearIcons.scale,
+              icon: SolarIconsOutline.scale,
               colors: colors,
             ),
           ),
@@ -687,7 +687,7 @@ class _LabRequestsCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: const Icon(
-                  SolarLinearIcons.testTube,
+                  SolarIconsOutline.testTube,
                   color: AppColors.brandCrimson,
                   size: 22,
                 ),
@@ -739,7 +739,7 @@ class _LabRequestsCard extends StatelessWidget {
                   ),
                 ),
               const SizedBox(width: 6),
-              Icon(SolarLinearIcons.altArrowRight,
+              Icon(SolarIconsOutline.altArrowRight,
                   color: colors.textSecondary, size: 20),
             ],
           ),

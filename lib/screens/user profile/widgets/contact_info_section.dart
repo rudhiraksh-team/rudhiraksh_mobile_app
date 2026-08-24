@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 
 import '../../../controllers/profile_review_controller.dart';
 import '../../../core/constants/app_colors.dart';
@@ -12,23 +12,23 @@ class ContactInfoSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ProfileSectionCard(
-      icon: SolarLinearIcons.phone,
+      icon: SolarIconsOutline.phone,
       title: 'Contact Information',
       accentColor: AppColors.transfusionAccent,
       locked: true,
       rows: [
         ProfileInfoRow(
-          icon: SolarLinearIcons.letter,
+          icon: SolarIconsOutline.letter,
           label: 'Email',
           value: controller.emailController.text.trim(),
         ),
         ProfileInfoRow(
-          icon: SolarLinearIcons.phone,
+          icon: SolarIconsOutline.phone,
           label: 'Phone',
           value: '+91 ${controller.contactController.text.trim()}',
         ),
         ProfileInfoRow(
-          icon: SolarLinearIcons.buildings,
+          icon: SolarIconsOutline.buildings,
           label: 'Blood Bank',
           value: controller.bloodBaankNameController.text,
         ),

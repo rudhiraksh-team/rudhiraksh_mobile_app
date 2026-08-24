@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/constants/app_strings.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
@@ -149,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen>
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
-                                  SolarLinearIcons.infoCircle,
+                                  SolarIconsOutline.infoCircle,
                                   size: 16,
                                   color: AppColors.brandCrimson.withValues(alpha: 0.7),
                                 ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 import 'package:rudhirakshapp/controllers/doctor_patient_detail_controller.dart';
@@ -79,7 +79,7 @@ class LabRequestsTab extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(SolarLinearIcons.testTube, size: 48, color: colors.textSecondary),
+                  Icon(SolarIconsOutline.testTube, size: 48, color: colors.textSecondary),
                   const SizedBox(height: 12),
                   Text('No report requests yet',
                       style: TextStyle(color: colors.textSecondary, fontSize: 14)),
@@ -180,7 +180,7 @@ class _LabRequestCard extends StatelessWidget {
                   color: statusColor.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(SolarLinearIcons.testTube, size: 20, color: statusColor),
+                child: Icon(SolarIconsOutline.testTube, size: 20, color: statusColor),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -262,7 +262,7 @@ class _LabRequestCard extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(SolarLinearIcons.eye, size: 16, color: colors.primaryColor),
+                    Icon(SolarIconsOutline.eye, size: 16, color: colors.primaryColor),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(

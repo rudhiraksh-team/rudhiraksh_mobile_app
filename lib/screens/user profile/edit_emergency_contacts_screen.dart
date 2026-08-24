@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 
 import '../../controllers/edit_emergency_contacts_controller.dart';
 import '../../core/theme/app_theme_colors.dart';
@@ -42,14 +42,14 @@ class EditEmergencyContactsScreen extends StatelessWidget {
               ModernTextField(
                 labelText: 'Name',
                 controller: controller.name1Controller,
-                prefixIcon: SolarLinearIcons.user,
+                prefixIcon: SolarIconsOutline.user,
                 screenWidth: screenWidth,
               ),
               const SizedBox(height: 12),
               ModernTextField(
                 labelText: 'Relation',
                 controller: controller.relationship1Controller,
-                prefixIcon: SolarLinearIcons.usersGroupRounded,
+                prefixIcon: SolarIconsOutline.usersGroupRounded,
                 screenWidth: screenWidth,
               ),
               const SizedBox(height: 12),
@@ -72,14 +72,14 @@ class EditEmergencyContactsScreen extends StatelessWidget {
               ModernTextField(
                 labelText: 'Name',
                 controller: controller.name2Controller,
-                prefixIcon: SolarLinearIcons.user,
+                prefixIcon: SolarIconsOutline.user,
                 screenWidth: screenWidth,
               ),
               const SizedBox(height: 12),
               ModernTextField(
                 labelText: 'Relation',
                 controller: controller.relationship2Controller,
-                prefixIcon: SolarLinearIcons.usersGroupRounded,
+                prefixIcon: SolarIconsOutline.usersGroupRounded,
                 screenWidth: screenWidth,
               ),
               const SizedBox(height: 12),

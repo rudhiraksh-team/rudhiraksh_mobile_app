@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/enums/transfusion_status.dart';
 import 'package:rudhirakshapp/data/helper%20function/navigation_helper.dart';
@@ -43,17 +43,17 @@ class UpcomingTransfusionCardWidget extends StatelessWidget {
       case TransfusionStatus.upcoming:
         statusText = "Upcoming";
         statusColor = AppColors.transfusionAccent;
-        statusIcon = SolarLinearIcons.clockCircle;
+        statusIcon = SolarIconsOutline.clockCircle;
         break;
       case TransfusionStatus.missed:
         statusText = "Missed";
         statusColor = AppColors.error;
-        statusIcon = SolarLinearIcons.closeCircle;
+        statusIcon = SolarIconsOutline.closeCircle;
         break;
       case TransfusionStatus.done:
         statusColor = AppColors.success;
         statusText = "Completed";
-        statusIcon = SolarLinearIcons.checkCircle;
+        statusIcon = SolarIconsOutline.checkCircle;
         break;
     }
 
@@ -157,7 +157,7 @@ class UpcomingTransfusionCardWidget extends StatelessWidget {
                     Row(
                       children: [
                         Icon(
-                          SolarLinearIcons.clockCircle,
+                          SolarIconsOutline.clockCircle,
                           size: 14,
                           color: colors.textSecondary,
                         ),
@@ -255,7 +255,7 @@ class UpcomingTransfusionCardWidget extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       const Icon(
-                        SolarLinearIcons.altArrowRight,
+                        SolarIconsOutline.altArrowRight,
                         color: Colors.white,
                         size: 18,
                       ),

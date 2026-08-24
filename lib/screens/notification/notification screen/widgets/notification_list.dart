@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import '../../../../controllers/notification_controller.dart';
 import '../../../../core/theme/app_theme_colors.dart';
@@ -37,7 +37,7 @@ class NotificationList extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        SolarLinearIcons.bellOff,
+                        SolarIconsOutline.bellOff,
                         color: AppColors.notifAccent.withValues(alpha: 0.5),
                         size: 40,
                       ),
@@ -126,7 +126,7 @@ class NotificationList extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
-                      SolarLinearIcons.bellBing,
+                      SolarIconsOutline.bellBing,
                       size: 18,
                       color: !item.isRead
                           ? AppColors.notifAccent

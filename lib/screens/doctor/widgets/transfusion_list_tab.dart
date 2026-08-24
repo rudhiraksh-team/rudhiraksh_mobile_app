@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 import 'package:rudhirakshapp/controllers/doctor_patient_detail_controller.dart';
@@ -28,7 +28,7 @@ class TransfusionListTab extends StatelessWidget {
         Obx(() {
           if (controller.transfusions.isEmpty) {
             return _EmptyState(
-              icon: SolarLinearIcons.waterdrop,
+              icon: SolarIconsOutline.waterdrop,
               message: 'No transfusion records found',
               colors: colors,
             );
@@ -68,7 +68,7 @@ class TransfusionListTab extends StatelessWidget {
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: const Icon(
-                              SolarLinearIcons.waterdrop,
+                              SolarIconsOutline.waterdrop,
                               size: 18,
                               color: AppColors.doctorGreen,
                             ),
@@ -105,7 +105,7 @@ class TransfusionListTab extends StatelessWidget {
                             ),
                           const SizedBox(width: 6),
                           Icon(
-                            SolarLinearIcons.altArrowRight,
+                            SolarIconsOutline.altArrowRight,
                             size: 16,
                             color: colors.textSecondary,
                           ),

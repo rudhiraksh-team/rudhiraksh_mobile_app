@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/utils/string_utils.dart';
 import 'package:rudhirakshapp/data/helper%20function/navigation_helper.dart';
 
@@ -58,7 +58,7 @@ class DashboardAppBar extends StatelessWidget {
                 ),
                 child: controller.bloodBankPhoto.value.isEmpty
                     ? const Icon(
-                        SolarLinearIcons.buildings,
+                        SolarIconsOutline.buildings,
                         size: 20,
                         color: Colors.white,
                       )
@@ -113,7 +113,7 @@ class DashboardAppBar extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
               ),
               child: const Icon(
-                SolarLinearIcons.bellBing,
+                SolarIconsOutline.bellBing,
                 color: Colors.white,
                 size: 22,
               ),

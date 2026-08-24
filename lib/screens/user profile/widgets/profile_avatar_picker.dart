@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/controllers/global_profile_controller.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 import 'package:rudhirakshapp/data/services/profile_photo_service.dart';
@@ -45,12 +45,12 @@ class _ProfileAvatarPickerState extends State<ProfileAvatarPicker> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 ListTile(
-                  leading: Icon(SolarLinearIcons.camera, color: colors.primaryColor),
+                  leading: Icon(SolarIconsOutline.camera, color: colors.primaryColor),
                   title: const Text('Take photo'),
                   onTap: () => Navigator.pop(sheetCtx, ImageSource.camera),
                 ),
                 ListTile(
-                  leading: Icon(SolarLinearIcons.gallery, color: colors.primaryColor),
+                  leading: Icon(SolarIconsOutline.gallery, color: colors.primaryColor),
                   title: const Text('Choose from gallery'),
                   onTap: () => Navigator.pop(sheetCtx, ImageSource.gallery),
                 ),
@@ -166,7 +166,7 @@ class _ProfileAvatarPickerState extends State<ProfileAvatarPicker> {
                 border: Border.all(color: colors.backgroundColor, width: 2.5),
               ),
               child: const Icon(
-                SolarLinearIcons.camera,
+                SolarIconsOutline.camera,
                 color: Colors.white,
                 size: 16,
               ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/widgets/custom_back_button.dart';
 import 'package:rudhirakshapp/routes/app_routes.dart';
@@ -44,7 +44,7 @@ class NotificationAppBar extends StatelessWidget
           children: [
             if (!controller.isSelectionMode.value)
               Icon(
-                SolarLinearIcons.bell,
+                SolarIconsOutline.bell,
                 color: AppColors.notifAccent,
                 size: 20,
               ),
@@ -76,7 +76,7 @@ class NotificationAppBar extends StatelessWidget
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
-                    SolarLinearIcons.trashBinMinimalistic,
+                    SolarIconsOutline.trashBinMinimalistic,
                     color: colors.errorColor,
                     size: 20,
                   ),
@@ -106,7 +106,7 @@ class NotificationAppBar extends StatelessWidget
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
-                  SolarLinearIcons.checkRead,
+                  SolarIconsOutline.checkCircle,
                   color: AppColors.notifAccent,
                   size: 20,
                 ),

@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 import 'package:rudhirakshapp/controllers/doctor_dashboard_controller.dart';
@@ -91,7 +91,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                           child: profileController
                                   .bloodBankLogo.isEmpty
                               ? const Icon(
-                                  SolarLinearIcons.hospital,
+                                  SolarIconsOutline.hospital,
                                   size: 22,
                                   color: Colors.white,
                                 )
@@ -154,7 +154,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                             alignment: Alignment.center,
                             children: [
                               const Icon(
-                                SolarLinearIcons.bellBing,
+                                SolarIconsOutline.bellBing,
                                 color: Colors.white,
                                 size: 22,
                               ),
@@ -210,7 +210,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                                       ),
                                     )
                                   : const Icon(
-                                      SolarLinearIcons.userRounded,
+                                      SolarIconsOutline.userRounded,
                                       color: Colors.white,
                                       size: 22,
                                     ),
@@ -260,7 +260,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                         Obx(() => Row(
                               children: [
                                 _StatChip(
-                                  icon: SolarLinearIcons.usersGroupRounded,
+                                  icon: SolarIconsOutline.usersGroupRounded,
                                   label: 'Total',
                                   value:
                                       '${controller.assignedPatients.length}',
@@ -269,7 +269,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 _StatChip(
-                                  icon: SolarLinearIcons.clockCircle,
+                                  icon: SolarIconsOutline.clockCircle,
                                   label: 'Upcoming',
                                   value:
                                       '${controller.upcomingTransfusionCount}',
@@ -278,7 +278,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 _StatChip(
-                                  icon: SolarLinearIcons.shieldWarning,
+                                  icon: SolarIconsOutline.shieldWarning,
                                   label: 'Low HB',
                                   value: '${controller.lowHbCount}',
                                   color: AppColors.error,
@@ -288,7 +288,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                                     0) ...[
                                   const SizedBox(width: 8),
                                   _StatChip(
-                                    icon: SolarLinearIcons.closeCircle,
+                                    icon: SolarIconsOutline.closeCircle,
                                     label: 'Missed',
                                     value:
                                         '${controller.missedTransfusionCount}',
@@ -311,7 +311,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                             hintStyle: TextStyle(
                                 color: colors.textSecondary, fontSize: 13),
                             prefixIcon: Icon(
-                              SolarLinearIcons.magnifer,
+                              SolarIconsOutline.magnifier,
                               size: 20,
                               color: colors.textSecondary,
                             ),
@@ -369,7 +369,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(
-                                      SolarLinearIcons.usersGroupRounded,
+                                      SolarIconsOutline.usersGroupRounded,
                                       size: 48,
                                       color: colors.textSecondary,
                                     ),
@@ -473,12 +473,12 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                 destinations: [
                   NavigationDestination(
                     icon: Icon(
-                      SolarLinearIcons.usersGroupRounded,
+                      SolarIconsOutline.usersGroupRounded,
                       size: 24,
                       color: colors.textSecondary,
                     ),
                     selectedIcon: Icon(
-                      SolarBoldIcons.usersGroupRounded,
+                      SolarIconsBold.usersGroupRounded,
                       size: 24,
                       color: colors.primaryColor,
                     ),
@@ -486,12 +486,12 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                   ),
                   NavigationDestination(
                     icon: Icon(
-                      SolarLinearIcons.notebook,
+                      SolarIconsOutline.notebook,
                       size: 24,
                       color: colors.textSecondary,
                     ),
                     selectedIcon: Icon(
-                      SolarBoldIcons.notebook,
+                      SolarIconsBold.notebook,
                       size: 24,
                       color: colors.primaryColor,
                     ),
@@ -499,12 +499,12 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                   ),
                   NavigationDestination(
                     icon: Icon(
-                      SolarLinearIcons.userRounded,
+                      SolarIconsOutline.userRounded,
                       size: 24,
                       color: colors.textSecondary,
                     ),
                     selectedIcon: Icon(
-                      SolarBoldIcons.userRounded,
+                      SolarIconsBold.userRounded,
                       size: 24,
                       color: colors.primaryColor,
                     ),

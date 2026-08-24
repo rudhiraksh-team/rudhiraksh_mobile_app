@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 
@@ -78,7 +78,7 @@ class FileViewerHelper {
                 ),
                 const SizedBox(height: 12),
                 _SheetAction(
-                  icon: SolarLinearIcons.eye,
+                  icon: SolarIconsOutline.eye,
                   label: 'View',
                   description: 'Preview inside the app',
                   onTap: () async {
@@ -88,7 +88,7 @@ class FileViewerHelper {
                 ),
                 const SizedBox(height: 8),
                 _SheetAction(
-                  icon: SolarLinearIcons.downloadMinimalistic,
+                  icon: SolarIconsOutline.downloadMinimalistic,
                   label: 'Download',
                   description: 'Open in browser to save the file',
                   onTap: () async {
@@ -179,7 +179,7 @@ class _SheetAction extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(SolarLinearIcons.altArrowRight,
+            Icon(SolarIconsOutline.altArrowRight,
                 color: colors.textSecondary, size: 18),
           ],
         ),

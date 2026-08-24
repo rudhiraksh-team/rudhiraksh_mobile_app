@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 import 'package:rudhirakshapp/data/models/doctor_models.dart';
@@ -66,14 +66,14 @@ class PatientCard extends StatelessWidget {
                         children: [
                           if (patient.age.isNotEmpty)
                             _InfoChip(
-                              icon: SolarLinearIcons.userRounded,
+                              icon: SolarIconsOutline.userRounded,
                               label: patient.age,
                               colors: colors,
                             ),
                           if (patient.bloodGroup != null &&
                               patient.bloodGroup!.isNotEmpty)
                             _InfoChip(
-                              icon: SolarLinearIcons.waterdrop,
+                              icon: SolarIconsOutline.waterdrop,
                               label: patient.bloodGroup!,
                               colors: colors,
                               accentColor: AppColors.doctorGreen,
@@ -81,7 +81,7 @@ class PatientCard extends StatelessWidget {
                           if (patient.gender != null &&
                               patient.gender!.isNotEmpty)
                             _InfoChip(
-                              icon: SolarLinearIcons.usersGroupRounded,
+                              icon: SolarIconsOutline.usersGroupRounded,
                               label: patient.gender!,
                               colors: colors,
                             ),
@@ -113,7 +113,7 @@ class PatientCard extends StatelessWidget {
                     ],
                     const SizedBox(height: 2),
                     Icon(
-                      SolarLinearIcons.altArrowRight,
+                      SolarIconsOutline.altArrowRight,
                       size: 16,
                       color: colors.textSecondary,
                     ),
@@ -159,7 +159,7 @@ class PatientCard extends StatelessWidget {
                     if (patient.lastTransfusionFormatted.isNotEmpty)
                       Expanded(
                         child: _TransfusionInfo(
-                          icon: SolarLinearIcons.clockCircle,
+                          icon: SolarIconsOutline.clockCircle,
                           label: 'Last',
                           value: patient.lastTransfusionFormatted,
                           color: colors.textSecondary,
@@ -178,7 +178,7 @@ class PatientCard extends StatelessWidget {
                     if (patient.nextTransfusionFormatted.isNotEmpty)
                       Expanded(
                         child: _TransfusionInfo(
-                          icon: SolarLinearIcons.calendarMark,
+                          icon: SolarIconsOutline.calendarMark,
                           label: daysLeft < 0
                               ? 'Overdue'
                               : daysLeft == 0
@@ -203,7 +203,7 @@ class PatientCard extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(SolarLinearIcons.phone,
+                  Icon(SolarIconsOutline.phone,
                       size: 13, color: colors.textSecondary),
                   const SizedBox(width: 6),
                   Text(

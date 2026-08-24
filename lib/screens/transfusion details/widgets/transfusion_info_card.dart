@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/controllers/dashboard_controller.dart';
 import 'package:rudhirakshapp/controllers/global_profile_controller.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
@@ -101,7 +101,7 @@ class TransfusionInfoCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
-                  SolarLinearIcons.calendar,
+                  SolarIconsOutline.calendar,
                   color: AppColors.transfusionAccent,
                   size: 22,
                 ),
@@ -163,7 +163,7 @@ class TransfusionInfoCard extends StatelessWidget {
               Expanded(
                 child: _compactDetail(
                   colors,
-                  SolarLinearIcons.hospital,
+                  SolarIconsOutline.hospital,
                   "Blood Bank",
                   bloodBankName,
                 ),
@@ -172,7 +172,7 @@ class TransfusionInfoCard extends StatelessWidget {
               Expanded(
                 child: _compactDetail(
                   colors,
-                  SolarLinearIcons.stethoscope,
+                  SolarIconsOutline.stethoscope,
                   "Doctor",
                   attendingName,
                 ),
@@ -185,7 +185,7 @@ class TransfusionInfoCard extends StatelessWidget {
               Expanded(
                 child: _compactDetail(
                   colors,
-                  SolarLinearIcons.mapPoint,
+                  SolarIconsOutline.mapPoint,
                   "Address",
                   bloodBankAddress,
                 ),
@@ -194,7 +194,7 @@ class TransfusionInfoCard extends StatelessWidget {
               Expanded(
                 child: _compactDetail(
                   colors,
-                  SolarLinearIcons.phone,
+                  SolarIconsOutline.phone,
                   "Contact",
                   bloodBankContact,
                 ),

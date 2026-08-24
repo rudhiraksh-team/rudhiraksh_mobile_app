@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/controllers/patient_lab_requests_controller.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
@@ -21,7 +21,7 @@ class PatientLabRequestsScreen extends StatelessWidget {
         backgroundColor: colors.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(SolarLinearIcons.arrowLeft, color: colors.textPrimary),
+          icon: Icon(SolarIconsOutline.arrowLeft, color: colors.textPrimary),
           onPressed: () => Get.back(),
         ),
         title: Text(
@@ -45,7 +45,7 @@ class PatientLabRequestsScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(SolarLinearIcons.testTube, size: 56, color: colors.textSecondary),
+                Icon(SolarIconsOutline.testTube, size: 56, color: colors.textSecondary),
                 const SizedBox(height: 12),
                 Text(
                   'No lab requests yet',
@@ -149,7 +149,7 @@ class _LabRequestCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
-                  SolarLinearIcons.testTube,
+                  SolarIconsOutline.testTube,
                   size: 20,
                   color: statusColor,
                 ),
@@ -210,7 +210,7 @@ class _LabRequestCard extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  SolarLinearIcons.calendar,
+                  SolarIconsOutline.calendar,
                   size: 14,
                   color: req.isOverdue ? AppColors.error : colors.textSecondary,
                 ),

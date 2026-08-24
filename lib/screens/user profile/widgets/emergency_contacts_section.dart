@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 
 import '../../../controllers/global_profile_controller.dart';
 import '../../../core/constants/app_colors.dart';
@@ -27,38 +27,38 @@ class EmergencyContactsSection extends StatelessWidget {
       String orNotSet(String? v) => (v == null || v.trim().isEmpty) ? 'Not set' : v;
 
       return ProfileSectionCard(
-        icon: SolarLinearIcons.phoneCalling,
+        icon: SolarIconsOutline.phoneCalling,
         title: 'Emergency Contacts',
         accentColor: AppColors.rose,
         onEdit: NavigationHelper.goToEditEmergencyContacts,
         rows: [
           ProfileInfoRow(
-            icon: SolarLinearIcons.user,
+            icon: SolarIconsOutline.user,
             label: 'Contact 1 Name',
             value: orNotSet(patient?.emergencyContactName),
           ),
           ProfileInfoRow(
-            icon: SolarLinearIcons.usersGroupRounded,
+            icon: SolarIconsOutline.usersGroupRounded,
             label: 'Contact 1 Relation',
             value: orNotSet(patient?.emergencyContactRelationship),
           ),
           ProfileInfoRow(
-            icon: SolarLinearIcons.phone,
+            icon: SolarIconsOutline.phone,
             label: 'Contact 1 Phone',
             value: orNotSet(patient?.emergencyContactPhone),
           ),
           ProfileInfoRow(
-            icon: SolarLinearIcons.user,
+            icon: SolarIconsOutline.user,
             label: 'Contact 2 Name',
             value: orNotSet(patient?.emergencyContactName2),
           ),
           ProfileInfoRow(
-            icon: SolarLinearIcons.usersGroupRounded,
+            icon: SolarIconsOutline.usersGroupRounded,
             label: 'Contact 2 Relation',
             value: orNotSet(patient?.emergencyContactRelationship2),
           ),
           ProfileInfoRow(
-            icon: SolarLinearIcons.phone,
+            icon: SolarIconsOutline.phone,
             label: 'Contact 2 Phone',
             value: orNotSet(patient?.emergencyContactPhone2),
           ),

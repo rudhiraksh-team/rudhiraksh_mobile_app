@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 
 class CustomBackButton extends StatelessWidget {
@@ -23,7 +23,7 @@ class CustomBackButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
         ),
         child: Icon(
-          SolarLinearIcons.altArrowLeft,
+          SolarIconsOutline.altArrowLeft,
           color: colors.primaryColor,
           size: iconSize,
         ),

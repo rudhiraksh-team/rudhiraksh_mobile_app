@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 
 import '../../../core/theme/app_theme_colors.dart';
 
@@ -63,7 +63,7 @@ class ProfileSectionCard extends StatelessWidget {
               ),
               if (locked)
                 Icon(
-                  SolarLinearIcons.lock,
+                  SolarIconsOutline.lock,
                   size: 14,
                   color: colors.textSecondary.withValues(alpha: 0.5),
                 ),
@@ -77,7 +77,7 @@ class ProfileSectionCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Icon(
-                      SolarLinearIcons.pen,
+                      SolarIconsOutline.pen,
                       size: 16,
                       color: accentColor,
                     ),

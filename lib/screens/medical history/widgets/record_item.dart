@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/data/models/transfusion_list_model.dart';
 import 'package:rudhirakshapp/routes/app_routes.dart';
 import '../../../core/constants/app_colors.dart';
@@ -22,15 +22,15 @@ class RecordItem extends StatelessWidget {
     switch (status) {
       case "Upcoming":
         statusColor = AppColors.upcoming;
-        statusIcon = SolarLinearIcons.clockCircle;
+        statusIcon = SolarIconsOutline.clockCircle;
         break;
       case "Missed":
         statusColor = AppColors.error;
-        statusIcon = SolarLinearIcons.closeCircle;
+        statusIcon = SolarIconsOutline.closeCircle;
         break;
       default:
         statusColor = AppColors.success;
-        statusIcon = SolarLinearIcons.checkCircle;
+        statusIcon = SolarIconsOutline.checkCircle;
     }
 
     return GestureDetector(
@@ -62,7 +62,7 @@ class RecordItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
-                SolarLinearIcons.heartPulse,
+                SolarIconsOutline.heartPulse,
                 color: statusColor,
                 size: 22,
               ),

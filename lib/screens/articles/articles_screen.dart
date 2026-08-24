@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/controllers/articles_controller.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
@@ -124,7 +124,7 @@ class _ArticleCard extends StatelessWidget {
                   errorWidget: (_, _, _) => Container(
                     color: AppColors.brandRed.withValues(alpha: 0.05),
                     child: Icon(
-                      SolarLinearIcons.gallery,
+                      SolarIconsOutline.gallery,
                       size: 48,
                       color: colors.textSecondary.withValues(alpha: 0.3),
                     ),
@@ -168,7 +168,7 @@ class _ArticleCard extends StatelessWidget {
                   Row(
                     children: [
                       if (article.authorName != null) ...[
-                        Icon(SolarLinearIcons.user, size: 14, color: colors.textSecondary),
+                        Icon(SolarIconsOutline.user, size: 14, color: colors.textSecondary),
                         const SizedBox(width: 4),
                         Text(
                           article.authorName!,
@@ -181,7 +181,7 @@ class _ArticleCard extends StatelessWidget {
                         const SizedBox(width: 12),
                       ],
                       if (dateStr.isNotEmpty) ...[
-                        Icon(SolarLinearIcons.calendar, size: 14, color: colors.textSecondary),
+                        Icon(SolarIconsOutline.calendar, size: 14, color: colors.textSecondary),
                         const SizedBox(width: 4),
                         Text(
                           dateStr,
@@ -196,8 +196,8 @@ class _ArticleCard extends StatelessWidget {
                           children: [
                             Icon(
                               article.isLikedByMe
-                                  ? SolarBoldIcons.heart
-                                  : SolarLinearIcons.heart,
+                                  ? SolarIconsBold.heart
+                                  : SolarIconsOutline.heart,
                               size: 18,
                               color: article.isLikedByMe
                                   ? AppColors.brandRed
@@ -219,7 +219,7 @@ class _ArticleCard extends StatelessWidget {
                       // Comments count
                       Row(
                         children: [
-                          Icon(SolarLinearIcons.chatRound, size: 18, color: colors.textSecondary),
+                          Icon(SolarIconsOutline.chatRound, size: 18, color: colors.textSecondary),
                           const SizedBox(width: 4),
                           Text(
                             '${article.commentsCount}',
@@ -254,7 +254,7 @@ class _ArticlesEmptyState extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            SolarLinearIcons.notebook,
+            SolarIconsOutline.notebook,
             size: 64,
             color: colors.textSecondary.withValues(alpha: 0.3),
           ),
@@ -293,7 +293,7 @@ class _ArticlesErrorState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              SolarLinearIcons.dangerCircle,
+              SolarIconsOutline.dangerCircle,
               size: 64,
               color: colors.errorColor.withValues(alpha: 0.5),
             ),
@@ -318,7 +318,7 @@ class _ArticlesErrorState extends StatelessWidget {
             const SizedBox(height: 20),
             OutlinedButton.icon(
               onPressed: onRetry,
-              icon: Icon(SolarLinearIcons.refresh, size: 18, color: colors.primaryColor),
+              icon: Icon(SolarIconsOutline.refresh, size: 18, color: colors.primaryColor),
               label: Text(
                 'Retry',
                 style: TextStyle(
