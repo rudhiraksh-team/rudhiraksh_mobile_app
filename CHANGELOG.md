@@ -2,6 +2,33 @@
 
 All notable changes to the Rudhiraksh app will be documented in this file.
 
+## [1.2.7+14] - 2026-08-24
+
+### Customer release notes
+
+**For everyone**
+- Icons throughout the app now display correctly — a bug in a third-party icon library was causing many icons to render blank.
+- Added a clear "No Internet Connection" screen with a Try Again button, shown automatically whenever your device loses connectivity, instead of the app appearing to hang or misbehave.
+- Upgraded to the latest Flutter platform release under the hood, for better stability and future compatibility.
+
+### Dev release notes
+
+**Flutter/Android platform upgrade**
+- Flutter SDK was already on the latest stable (3.47.1 / Dart 3.13.1); ran `flutter pub upgrade --major-versions` to bring all dependencies current, including major bumps: `file_picker` 8→12, `fl_chart` 0.69→1.2, `flutter_dotenv` 5→6, `flutter_local_notifications` 19→22, `google_fonts` 6→8, `in_app_update` 4→5, plus transitive/minor bumps across Firebase, `connectivity_plus`, `intl`, etc.
+- `lib/data/services/push_notification_service.dart`: `flutter_local_notifications` v22 made `initialize()`'s `settings` param and `show()`'s `id` param named/required — updated both call sites.
+- `lib/screens/doctor/widgets/upload_document_sheet.dart`, `lib/screens/patient_lab_requests/upload_lab_report_sheet.dart`: `file_picker` v12 removed `FilePicker.platform.pickFiles()` (and the `FilePickerResult.files.single` wrapper); switched to the new single-file `FilePicker.pickFile()` API.
+- `android/`: bumped Gradle 8.14→9.3.1, AGP 8.11.1→9.1.0, Kotlin Gradle Plugin 2.2.20→2.4.0, `google-services` plugin 4.4.2→4.5.0, `firebase-crashlytics` plugin 3.0.5→3.0.8 — matched to what a fresh Flutter 3.47.1 template ships, since the previous Gradle version couldn't run on the JDK 25 bundled with current Android Studio. Migrated the deprecated `kotlinOptions {}` DSL to `kotlin { compilerOptions {} }`. (AGP 9's built-in-Kotlin migration was attempted and reverted — its bundled Kotlin Gradle Plugin version was older than Flutter's minimum, so the app keeps the explicit `kotlin-android` plugin for now.)
+
+**Bug: most icons across the app rendered blank**
+- Root cause: `solar_icon_pack` 0.3.0 (pulled in by the major-version upgrade) has a packaging bug — its generated icon data references font families as `'solar_bold_icons'`/`'solar_linear_icons'`, but its own `pubspec.yaml` registers them as `'SolarBoldIcons'`/`'SolarLinearIcons'`. Flutter font-family lookups are case-sensitive, so every icon from the package silently failed to resolve. The prior version, 0.2.1, doesn't have this bug but no longer compiles against the current Flutter SDK (it extends `IconData`, which is now a `final` class).
+- Fix: replaced `solar_icon_pack` with `solar_icons` (^0.1.0), a differently-maintained wrapper of the same Solar icon set with correctly-registered fonts (`SolarIconsOutline`, `SolarIconsBold`, `SolarIconsBroken`). 61 of the app's 65 used icon names matched 1:1; 4 were remapped (`buildings2`→`buildings_2`, `logout2`→`logout_2`, `magnifer`→`magnifier`, `checkRead`→`checkCircle`). Updated imports and icon references across all 43 files that used the old package.
+
+**New: app-wide "no internet" screen**
+- `lib/controllers/connectivity_controller.dart`: new `ConnectivityController` (GetX) wrapping `connectivity_plus`'s connectivity stream into a reactive `isOnline` flag, with a `retry()` for manual re-checks.
+- `lib/screens/no_internet/no_internet_screen.dart`: new `NoInternetScreen` — icon, message, and a "Try Again" button styled with the app's existing `AppThemeColors`/`CustomElevatedButton` conventions.
+- `lib/app.dart`: `GetMaterialApp.builder` now swaps in `NoInternetScreen` whenever `ConnectivityController.isOnline` is false, and restores whatever route was active the instant connectivity returns — no per-screen changes needed, navigation state is untouched.
+- `lib/main.dart`: registers `ConnectivityController` alongside the other app-wide controllers at startup.
+
 ## [1.2.6+13] - 2026-05-29
 
 ### Customer release notes
