@@ -46,7 +46,7 @@ class PushNotificationService {
       android: androidInit,
       iOS: DarwinInitializationSettings(),
     );
-    await _flutterLocalNotificationsPlugin.initialize(initSettings);
+    await _flutterLocalNotificationsPlugin.initialize(settings: initSettings);
 
     // Explicitly create the high-importance channel so background FCM pushes
     // (which Android dispatches without going through this plugin) can find it.
@@ -396,10 +396,10 @@ class PushNotificationService {
         iOS: DarwinNotificationDetails(),
       );
       await _flutterLocalNotificationsPlugin.show(
-        _generateNotificationId(message),
-        notification.title,
-        notification.body,
-        details,
+        id: _generateNotificationId(message),
+        title: notification.title,
+        body: notification.body,
+        notificationDetails: details,
         payload: message.messageId,
       );
     } catch (e) {
