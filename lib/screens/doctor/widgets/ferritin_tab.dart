@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 import 'package:rudhirakshapp/controllers/doctor_patient_detail_controller.dart';
@@ -20,7 +20,7 @@ class FerritinTab extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(SolarLinearIcons.testTubeMinimalistic, size: 48, color: colors.textSecondary),
+              Icon(SolarIconsOutline.testTubeMinimalistic, size: 48, color: colors.textSecondary),
               const SizedBox(height: 12),
               Text(
                 'No ferritin records yet',
@@ -56,7 +56,7 @@ class FerritinTab extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(
-                      SolarLinearIcons.testTubeMinimalistic,
+                      SolarIconsOutline.testTubeMinimalistic,
                       size: 20,
                       color: AppColors.amber,
                     ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 import 'package:rudhirakshapp/core/widgets/custom_back_button.dart';
@@ -28,7 +28,7 @@ class NextTransfusionDetailsScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              SolarLinearIcons.calendarMark,
+              SolarIconsOutline.calendarMark,
               color: AppColors.transfusionAccent,
               size: 20,
             ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 import 'package:rudhirakshapp/controllers/doctor_patient_detail_controller.dart';
@@ -90,7 +90,7 @@ class DocumentsTab extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(SolarLinearIcons.document, size: 48, color: colors.textSecondary),
+                  Icon(SolarIconsOutline.document, size: 48, color: colors.textSecondary),
                   const SizedBox(height: 12),
                   Text(
                     'No documents yet',
@@ -183,7 +183,7 @@ class _DocumentRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
-                isLabReport ? SolarLinearIcons.testTube : SolarLinearIcons.file,
+                isLabReport ? SolarIconsOutline.testTube : SolarIconsOutline.file,
                 size: 22,
                 color: accent,
               ),

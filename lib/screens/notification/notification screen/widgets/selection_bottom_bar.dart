@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import '../../../../controllers/notification_controller.dart';
 import '../../../../core/theme/app_theme_colors.dart';
 
@@ -33,8 +33,8 @@ class SelectionBottomBar extends StatelessWidget {
                     child: OutlinedButton.icon(
                       icon: Icon(
                         allSelected
-                            ? SolarLinearIcons.closeCircle
-                            : SolarLinearIcons.checkCircle,
+                            ? SolarIconsOutline.closeCircle
+                            : SolarIconsOutline.checkCircle,
                         size: 18,
                       ),
                       label: Text(allSelected ? "Deselect" : "Select All"),
@@ -57,7 +57,7 @@ class SelectionBottomBar extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton.icon(
                       icon: const Icon(
-                        SolarLinearIcons.trashBinMinimalistic,
+                        SolarIconsOutline.trashBinMinimalistic,
                         size: 18,
                       ),
                       label: Text("Delete ($selectedCount)"),

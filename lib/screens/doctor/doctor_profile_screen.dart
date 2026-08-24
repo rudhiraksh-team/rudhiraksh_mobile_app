@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 import 'package:rudhirakshapp/controllers/doctor_profile_controller.dart';
@@ -141,7 +141,7 @@ class DoctorProfileScreen extends StatelessWidget {
                             children: [
                               Row(
                                 children: [
-                                  Icon(SolarLinearIcons.userRounded,
+                                  Icon(SolarIconsOutline.userRounded,
                                       size: 18,
                                       color: colors.primaryColor),
                                   const SizedBox(width: 8),
@@ -169,7 +169,7 @@ class DoctorProfileScreen extends StatelessWidget {
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(SolarLinearIcons.pen,
+                                        Icon(SolarIconsOutline.pen,
                                             size: 14,
                                             color: colors.primaryColor),
                                         const SizedBox(width: 4),
@@ -202,7 +202,7 @@ class DoctorProfileScreen extends StatelessWidget {
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(SolarLinearIcons.closeCircle,
+                                        Icon(SolarIconsOutline.closeCircle,
                                             size: 14,
                                             color: AppColors.error),
                                         const SizedBox(width: 4),
@@ -225,7 +225,7 @@ class DoctorProfileScreen extends StatelessWidget {
                           if (!isEditing.value) ...[
                             // Read-only view
                             _ProfileRow(
-                              icon: SolarLinearIcons.userRounded,
+                              icon: SolarIconsOutline.userRounded,
                               label: 'Name',
                               value: controller.doctorName.isNotEmpty
                                   ? controller.doctorName
@@ -234,7 +234,7 @@ class DoctorProfileScreen extends StatelessWidget {
                             ),
                             Divider(color: colors.dividerColor, height: 24),
                             _ProfileRow(
-                              icon: SolarLinearIcons.letter,
+                              icon: SolarIconsOutline.letter,
                               label: 'Email',
                               value: controller.doctorEmail.isNotEmpty
                                   ? controller.doctorEmail
@@ -243,7 +243,7 @@ class DoctorProfileScreen extends StatelessWidget {
                             ),
                             Divider(color: colors.dividerColor, height: 24),
                             _ProfileRow(
-                              icon: SolarLinearIcons.phone,
+                              icon: SolarIconsOutline.phone,
                               label: 'Phone',
                               value: controller.doctorPhone.isNotEmpty
                                   ? controller.doctorPhone
@@ -252,7 +252,7 @@ class DoctorProfileScreen extends StatelessWidget {
                             ),
                             Divider(color: colors.dividerColor, height: 24),
                             _ProfileRow(
-                              icon: SolarLinearIcons.buildings2,
+                              icon: SolarIconsOutline.buildings_2,
                               label: 'Blood Bank',
                               value: controller.bloodBankName.isNotEmpty
                                   ? controller.bloodBankName
@@ -264,14 +264,14 @@ class DoctorProfileScreen extends StatelessWidget {
                             _EditField(
                               controller: controller.nameController,
                               label: 'Name',
-                              icon: SolarLinearIcons.userRounded,
+                              icon: SolarIconsOutline.userRounded,
                               colors: colors,
                             ),
                             const SizedBox(height: 12),
                             _EditField(
                               controller: controller.phoneController,
                               label: 'Phone (10 digits)',
-                              icon: SolarLinearIcons.phone,
+                              icon: SolarIconsOutline.phone,
                               keyboardType: TextInputType.phone,
                               colors: colors,
                             ),
@@ -286,7 +286,7 @@ class DoctorProfileScreen extends StatelessWidget {
                               ),
                               child: Row(
                                 children: [
-                                  Icon(SolarLinearIcons.infoCircle,
+                                  Icon(SolarIconsOutline.infoCircle,
                                       size: 16,
                                       color: colors.textSecondary),
                                   const SizedBox(width: 8),
@@ -365,7 +365,7 @@ class DoctorProfileScreen extends StatelessWidget {
                       child: OutlinedButton.icon(
                         onPressed: NavigationHelper.goToTerms,
                         icon: Icon(
-                          SolarLinearIcons.document,
+                          SolarIconsOutline.document,
                           size: 20,
                           color: colors.primaryColor,
                         ),
@@ -393,7 +393,7 @@ class DoctorProfileScreen extends StatelessWidget {
                       width: double.infinity,
                       child: OutlinedButton.icon(
                         onPressed: () => logoutController.logoutImmediate(),
-                        icon: const Icon(SolarLinearIcons.logout2, size: 20),
+                        icon: const Icon(SolarIconsOutline.logout_2, size: 20),
                         label: const Text(
                           'Logout',
                           style: TextStyle(fontWeight: FontWeight.w600),

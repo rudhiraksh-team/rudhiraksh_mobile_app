@@ -55,14 +55,14 @@ class _UploadDocumentSheetState extends State<UploadDocumentSheet> {
   }
 
   Future<void> _pickPdf() async {
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: ['pdf'],
     );
-    if (result?.files.single.path != null) {
+    if (result?.path != null) {
       setState(() {
-        _selectedFile = File(result!.files.single.path!);
-        _selectedFileName = result.files.single.name;
+        _selectedFile = File(result!.path!);
+        _selectedFileName = result.name;
         _error = null;
       });
     }

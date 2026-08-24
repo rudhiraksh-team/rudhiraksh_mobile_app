@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 
 import '../../controllers/edit_address_controller.dart';
 import '../../core/theme/app_theme_colors.dart';
@@ -39,7 +39,7 @@ class EditAddressScreen extends StatelessWidget {
               Obx(() => ModernTextField(
                     labelText: 'Street',
                     controller: controller.streetController,
-                    prefixIcon: SolarLinearIcons.streetsMapPoint,
+                    prefixIcon: SolarIconsOutline.streetsMapPoint,
                     screenWidth: screenWidth,
                     keyboardType: TextInputType.streetAddress,
                     errorText: controller.streetError.value,
@@ -48,7 +48,7 @@ class EditAddressScreen extends StatelessWidget {
               Obx(() => ModernTextField(
                     labelText: 'Area',
                     controller: controller.areaController,
-                    prefixIcon: SolarLinearIcons.map,
+                    prefixIcon: SolarIconsOutline.map,
                     screenWidth: screenWidth,
                     keyboardType: TextInputType.streetAddress,
                     errorText: controller.areaError.value,
@@ -60,7 +60,7 @@ class EditAddressScreen extends StatelessWidget {
                     child: Obx(() => ModernTextField(
                           labelText: 'City',
                           controller: controller.cityController,
-                          prefixIcon: SolarLinearIcons.buildings2,
+                          prefixIcon: SolarIconsOutline.buildings_2,
                           screenWidth: screenWidth,
                           keyboardType: TextInputType.text,
                           errorText: controller.cityError.value,
@@ -71,7 +71,7 @@ class EditAddressScreen extends StatelessWidget {
                     child: Obx(() => ModernTextField(
                           labelText: 'State',
                           controller: controller.stateController,
-                          prefixIcon: SolarLinearIcons.mapPoint,
+                          prefixIcon: SolarIconsOutline.mapPoint,
                           screenWidth: screenWidth,
                           keyboardType: TextInputType.text,
                           errorText: controller.stateError.value,
@@ -83,7 +83,7 @@ class EditAddressScreen extends StatelessWidget {
               Obx(() => ModernTextField(
                     labelText: 'Pincode',
                     controller: controller.pincodeController,
-                    prefixIcon: SolarLinearIcons.mapPointWave,
+                    prefixIcon: SolarIconsOutline.mapPointWave,
                     screenWidth: screenWidth,
                     keyboardType: TextInputType.number,
                     errorText: controller.pincodeError.value,

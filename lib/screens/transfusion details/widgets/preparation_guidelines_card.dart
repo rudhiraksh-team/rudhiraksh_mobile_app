@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import '../../../core/theme/app_theme_colors.dart';
 
@@ -26,7 +26,7 @@ class PreparationGuidelinesCard extends StatelessWidget {
           Row(
             children: [
               Icon(
-                SolarLinearIcons.checklist,
+                SolarIconsOutline.checklist,
                 color: AppColors.emerald,
                 size: 16,
               ),
@@ -46,10 +46,10 @@ class PreparationGuidelinesCard extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              _tipChip(colors, SolarLinearIcons.waterdrop, "Stay hydrated"),
-              _tipChip(colors, SolarLinearIcons.card, "Bring ID card"),
-              _tipChip(colors, SolarLinearIcons.tShirt, "Comfortable clothes"),
-              _tipChip(colors, SolarLinearIcons.clockCircle, "Arrive early"),
+              _tipChip(colors, SolarIconsOutline.waterdrop, "Stay hydrated"),
+              _tipChip(colors, SolarIconsOutline.card, "Bring ID card"),
+              _tipChip(colors, SolarIconsOutline.tShirt, "Comfortable clothes"),
+              _tipChip(colors, SolarIconsOutline.clockCircle, "Arrive early"),
             ],
           ),
         ],

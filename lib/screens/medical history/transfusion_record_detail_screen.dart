@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 import 'package:rudhirakshapp/core/widgets/custom_back_button.dart';
@@ -52,15 +52,15 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
     switch (status) {
       case "Upcoming":
         statusColor = AppColors.upcoming;
-        statusIcon = SolarLinearIcons.clockCircle;
+        statusIcon = SolarIconsOutline.clockCircle;
         break;
       case "Missed":
         statusColor = AppColors.error;
-        statusIcon = SolarLinearIcons.closeCircle;
+        statusIcon = SolarIconsOutline.closeCircle;
         break;
       default:
         statusColor = AppColors.success;
-        statusIcon = SolarLinearIcons.checkCircle;
+        statusIcon = SolarIconsOutline.checkCircle;
     }
 
     return Scaffold(
@@ -75,7 +75,7 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              SolarLinearIcons.documentText,
+              SolarIconsOutline.documentText,
               color: AppColors.historyAccent,
               size: 20,
             ),
@@ -207,7 +207,7 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
                       Expanded(
                         child: _infoTile(
                           colors,
-                          SolarLinearIcons.hospital,
+                          SolarIconsOutline.hospital,
                           "Blood Bank",
                           bloodBankName,
                           AppColors.historyAccent,
@@ -217,7 +217,7 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
                       Expanded(
                         child: _infoTile(
                           colors,
-                          SolarLinearIcons.stethoscope,
+                          SolarIconsOutline.stethoscope,
                           "Doctor",
                           doctorName,
                           AppColors.transfusionAccent,
@@ -236,7 +236,7 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
               // Vitals card
               _sectionCard(
                 colors,
-                SolarLinearIcons.heartPulse,
+                SolarIconsOutline.heartPulse,
                 "Vitals",
                 AppColors.coral,
                 child: Column(
@@ -299,7 +299,7 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
                   Expanded(
                     child: _sectionCard(
                       colors,
-                      SolarLinearIcons.bagHeart,
+                      SolarIconsOutline.bagHeart,
                       "Blood Unit",
                       AppColors.rose,
                       child: Column(
@@ -324,7 +324,7 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
                   Expanded(
                     child: _sectionCard(
                       colors,
-                      SolarLinearIcons.clockCircle,
+                      SolarIconsOutline.clockCircle,
                       "Timeline",
                       AppColors.sky,
                       child: Column(
@@ -344,7 +344,7 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
               // Safety checks
               _sectionCard(
                 colors,
-                SolarLinearIcons.shieldCheck,
+                SolarIconsOutline.shieldCheck,
                 "Safety Checks",
                 AppColors.emerald,
                 child: Wrap(
@@ -364,7 +364,7 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 _sectionCard(
                   colors,
-                  SolarLinearIcons.shieldWarning,
+                  SolarIconsOutline.shieldWarning,
                   "Reactions",
                   AppColors.error,
                   child: Column(
@@ -390,7 +390,7 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 _sectionCard(
                   colors,
-                  SolarLinearIcons.pill,
+                  SolarIconsOutline.pill,
                   "Medications",
                   AppColors.amber,
                   child: Text(
@@ -409,7 +409,7 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 _sectionCard(
                   colors,
-                  SolarLinearIcons.notes,
+                  SolarIconsOutline.notes,
                   "Pre-Symptoms",
                   AppColors.orange,
                   child: Text(
@@ -428,7 +428,7 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 _sectionCard(
                   colors,
-                  SolarLinearIcons.stethoscope,
+                  SolarIconsOutline.stethoscope,
                   "Lab Tests",
                   AppColors.indigo,
                   child: Text(
@@ -446,7 +446,7 @@ class TransfusionRecordDetailScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 _sectionCard(
                   colors,
-                  SolarLinearIcons.documentText,
+                  SolarIconsOutline.documentText,
                   "Notes",
                   AppColors.sky,
                   child: Text(

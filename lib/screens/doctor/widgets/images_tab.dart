@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
 import 'package:rudhirakshapp/controllers/doctor_patient_detail_controller.dart';
 import 'package:rudhirakshapp/data/models/doctor_models.dart';
@@ -56,7 +56,7 @@ class ImagesTab extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(SolarLinearIcons.gallery, size: 48, color: colors.textSecondary),
+              Icon(SolarIconsOutline.gallery, size: 48, color: colors.textSecondary),
               const SizedBox(height: 12),
               Text(
                 'No images yet',

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/controllers/dashboard_controller.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/enums/transfusion_status.dart';
@@ -127,7 +127,7 @@ class CalendarSection extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
-                SolarLinearIcons.altArrowLeft,
+                SolarIconsOutline.altArrowLeft,
                 color: AppColors.calendarAccent,
                 size: 18,
               ),
@@ -139,7 +139,7 @@ class CalendarSection extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
-                SolarLinearIcons.altArrowRight,
+                SolarIconsOutline.altArrowRight,
                 color: AppColors.calendarAccent,
                 size: 18,
               ),

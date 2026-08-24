@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:rudhirakshapp/controllers/articles_controller.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
 import 'package:rudhirakshapp/core/theme/app_theme_colors.dart';
@@ -76,7 +76,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                     Row(
                       children: [
                         if (article.authorName != null) ...[
-                          Icon(SolarLinearIcons.user, size: 16, color: colors.textSecondary),
+                          Icon(SolarIconsOutline.user, size: 16, color: colors.textSecondary),
                           const SizedBox(width: 4),
                           Text(
                             article.authorName!,
@@ -85,7 +85,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                           const SizedBox(width: 16),
                         ],
                         if (article.createdAt != null) ...[
-                          Icon(SolarLinearIcons.calendar, size: 16, color: colors.textSecondary),
+                          Icon(SolarIconsOutline.calendar, size: 16, color: colors.textSecondary),
                           const SizedBox(width: 4),
                           Text(
                             DateFormat('dd MMM yyyy').format(DateTime.parse(article.createdAt!)),
@@ -104,7 +104,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                           child: Row(
                             children: [
                               Icon(
-                                article.isLikedByMe ? SolarBoldIcons.heart : SolarLinearIcons.heart,
+                                article.isLikedByMe ? SolarIconsBold.heart : SolarIconsOutline.heart,
                                 color: article.isLikedByMe ? AppColors.brandRed : colors.textSecondary,
                                 size: 20,
                               ),
@@ -114,7 +114,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                           ),
                         ),
                         const SizedBox(width: 20),
-                        Icon(SolarLinearIcons.chatRound, size: 20, color: colors.textSecondary),
+                        Icon(SolarIconsOutline.chatRound, size: 20, color: colors.textSecondary),
                         const SizedBox(width: 4),
                         // Use the server-side total (commentsCount) instead of the
                         // loaded array length. The detail endpoint caps `comments`
@@ -210,7 +210,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                   await controller.addComment(widget.articleId, text);
                 }
               },
-              icon: Icon(SolarBoldIcons.plain2, color: AppColors.brandRed, size: 24),
+              icon: Icon(SolarIconsBold.plain2, color: AppColors.brandRed, size: 24),
             ),
           ],
         ),
@@ -248,7 +248,7 @@ class _CommentTile extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(SolarLinearIcons.userCircle, size: 18, color: colors.textSecondary),
+              Icon(SolarIconsOutline.userCircle, size: 18, color: colors.textSecondary),
               const SizedBox(width: 6),
               Text(
                 comment.userName ?? 'User',

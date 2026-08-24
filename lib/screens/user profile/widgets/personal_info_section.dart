@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 
 import '../../../controllers/profile_review_controller.dart';
 import '../../../core/constants/app_colors.dart';
@@ -12,34 +12,34 @@ class PersonalInfoSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ProfileSectionCard(
-      icon: SolarLinearIcons.userCircle,
+      icon: SolarIconsOutline.userCircle,
       title: 'Personal Information',
       accentColor: AppColors.profileAccent,
       locked: true,
       rows: [
         ProfileInfoRow(
-          icon: SolarLinearIcons.user,
+          icon: SolarIconsOutline.user,
           label: 'Name',
           value: controller.nameController.text,
         ),
         ProfileInfoRow(
-          icon: SolarLinearIcons.calendar,
+          icon: SolarIconsOutline.calendar,
           label: 'Date of Birth',
           value: controller.dobController.text,
         ),
         ProfileInfoRow(
-          icon: SolarLinearIcons.usersGroupRounded,
+          icon: SolarIconsOutline.usersGroupRounded,
           label: 'Gender',
           value: controller.genderController.text,
         ),
         ProfileInfoRow(
-          icon: SolarLinearIcons.heartPulse,
+          icon: SolarIconsOutline.heartPulse,
           label: 'Blood Group',
           value: controller.bloodGroupController.text,
         ),
         if (controller.thalassemiaIdController.text.isNotEmpty)
           ProfileInfoRow(
-            icon: SolarLinearIcons.card,
+            icon: SolarIconsOutline.card,
             label: 'Thalassemia ID',
             value: controller.thalassemiaIdController.text,
           ),

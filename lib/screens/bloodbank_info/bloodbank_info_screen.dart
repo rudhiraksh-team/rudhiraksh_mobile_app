@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:solar_icon_pack/solar_icon_pack.dart';
+import 'package:solar_icons/solar_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:rudhirakshapp/controllers/global_profile_controller.dart';
 import 'package:rudhirakshapp/core/constants/app_colors.dart';
@@ -110,7 +110,7 @@ class BloodBankInfoScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   if (phone.isNotEmpty)
                     _contactTile(
-                      icon: SolarLinearIcons.phone,
+                      icon: SolarIconsOutline.phone,
                       label: 'Phone',
                       value: phone,
                       colors: colors,
@@ -118,7 +118,7 @@ class BloodBankInfoScreen extends StatelessWidget {
                     ),
                   if (email.isNotEmpty)
                     _contactTile(
-                      icon: SolarLinearIcons.letter,
+                      icon: SolarIconsOutline.letter,
                       label: 'Email',
                       value: email,
                       colors: colors,
@@ -126,7 +126,7 @@ class BloodBankInfoScreen extends StatelessWidget {
                     ),
                   if (address.isNotEmpty)
                     _contactTile(
-                      icon: SolarLinearIcons.mapPoint,
+                      icon: SolarIconsOutline.mapPoint,
                       label: 'Address',
                       value: address,
                       colors: colors,
@@ -148,7 +148,7 @@ class BloodBankInfoScreen extends StatelessWidget {
         color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const Icon(SolarLinearIcons.buildings2, color: Colors.white, size: 40),
+      child: const Icon(SolarIconsOutline.buildings_2, color: Colors.white, size: 40),
     );
   }
 
@@ -209,7 +209,7 @@ class BloodBankInfoScreen extends StatelessWidget {
               ),
             ),
             if (onTap != null)
-              Icon(SolarLinearIcons.altArrowRight, size: 18, color: colors.textSecondary),
+              Icon(SolarIconsOutline.altArrowRight, size: 18, color: colors.textSecondary),
           ],
         ),
       ),
